@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { DataTable } from 'primereact/datatable';
+import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
-import { Toolbar } from 'primereact/toolbar';
+import { DataTable } from 'primereact/datatable';
+import { Dialog } from 'primereact/dialog';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
+import { Toolbar } from 'primereact/toolbar';
+import { classNames } from 'primereact/utils';
+import React, { useEffect, useState } from 'react';
 import { ProfessorService } from '../service/ProfessorService';
 import { ProfessorRequestDTO } from '../types';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { Dialog } from 'primereact/dialog';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { classNames } from 'primereact/utils';
+
 
 export default function ProfessorsDemo() {
     const emptyProfessor: ProfessorRequestDTO = {
@@ -28,6 +29,8 @@ export default function ProfessorsDemo() {
     const [professor, setProfessor] = useState<ProfessorRequestDTO>(emptyProfessor);
     const [selectedProfessors, setSelectedProfessors] = useState<ProfessorRequestDTO[] | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
+    const [deleteSelectedProfessorsDialog, setDeleteSelectedProfessorsDialog] = useState<boolean>(false);
+
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
@@ -48,26 +51,34 @@ export default function ProfessorsDemo() {
         setProfessorDialog(false);
     };
 
-    const saveProfessor = async () => {
-        setSubmitted(true);
+    const validateFields = () => {
+        return professor.name && professor.researchArea && professor.email && professor.locationOfWork && professor.title;
+    };
 
-        if (professor.name.trim()) {
-            try {
-                if (professor.id) {
-                    // Atualizar professor existente
-                    await ProfessorService.updateProfessor(professor);
-                    setProfessors(professors.map(p => (p.id === professor.id ? professor : p)));
-                } else {
-                    // Criar novo professor
-                    const newProfessor = await ProfessorService.createProfessor(professor);
-                    setProfessors([...professors, newProfessor]);
+    const saveProfessor = async () => {
+        if (validateFields()) {
+            if (professor.name.trim()) {
+                try {
+                    if (professor.id) {
+                        // Atualizar professor existente
+                        await ProfessorService.updateProfessor(professor);
+                        setProfessors(professors.map(p => (p.id === professor.id ? professor : p)));
+                    } else {
+                        // Criar novo professor
+                        const newProfessor = await ProfessorService.createProfessor(professor);
+                        setProfessors([...professors, newProfessor]);
+                    }
+
+                    setProfessorDialog(false);
+                    setProfessor(emptyProfessor);
+
+                    window.location.reload();
+                } catch (error) {
+                    console.error("Erro ao salvar professor:", error);
                 }
-                setProfessorDialog(false);
-                setProfessor(emptyProfessor);
-            } catch (error) {
-                console.error("Erro ao salvar professor:", error);
             }
         }
+        setSubmitted(true);
     };
 
     const editProfessor = (professor: ProfessorRequestDTO) => {
@@ -89,11 +100,34 @@ export default function ProfessorsDemo() {
         } catch (error) {
             console.error("Erro ao excluir professor:", error);
         }
+
+        window.location.reload();
+    };
+
+    const deleteProfessors = () => {
+        if (selectedProfessors && selectedProfessors.length > 0) {
+            setDeleteSelectedProfessorsDialog(true);
+        }
+    };
+
+    const confirmDeleteSelectedProfessors = async () => {
+        if (selectedProfessors) {
+            try {
+                await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
+                setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
+                setSelectedProfessors(null);
+            } catch (error) {
+                console.error("Erro ao excluir professores:", error);
+            }
+            setDeleteSelectedProfessorsDialog(false);
+        }
+
+        window.location.reload();
     };
 
     const header = (
         <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-            <h4 className="m-0">Manage Professors</h4>
+            {/* <h4 className="m-0">Gerenciar Professores</h4> */}
             <div className="p-inputgroup">
                 <span className="p-inputgroup-addon">
                     <i className="pi pi-search" aria-hidden="true" />
@@ -112,17 +146,18 @@ export default function ProfessorsDemo() {
         return (
             <div className="flex flex-wrap gap-2">
                 <Button
-                    label="New"
+                    label="Cadastrar Professor"
                     icon="pi pi-plus"
                     severity="success"
                     onClick={openNew}
                     aria-label="New Professor"
                 />
                 <Button
-                    label="Delete"
+                    label="Inativar Selecionados"
                     icon="pi pi-trash"
                     severity="danger"
-                    disabled={!selectedProfessors}
+                    disabled={!selectedProfessors || selectedProfessors.length === 0}
+                    onClick={deleteProfessors}
                     aria-label="Delete Selected Professors"
                 />
             </div>
@@ -132,17 +167,17 @@ export default function ProfessorsDemo() {
     const professorsDialogFooter = (
         <React.Fragment>
             <Button
-                label="Cancel"
+                label="Cancelar"
                 icon="pi pi-times"
                 outlined
                 onClick={hideDialog}
-                aria-label="Cancel"
+                aria-label="Cancelar"
             />
             <Button
-                label="Save"
+                label="Salvar"
                 icon="pi pi-check"
                 onClick={saveProfessor}
-                aria-label="Save"
+                aria-label="Salvar"
             />
         </React.Fragment>
     );
@@ -171,10 +206,22 @@ export default function ProfessorsDemo() {
     };
 
     const rightToolbarTemplate = () => {
-        return <Button label="Export" icon="pi pi-upload" className="p-button-help" aria-label="Export Data" />;
+        // return <Button label="Export" icon="pi pi-upload" className="p-button-help" aria-label="Export Data" />;
     };
 
     const footer = `In total there are ${professors.length} professors.`;
+    const locationOptions = [
+        { label: 'Interno', value: 'Interno' },
+        { label: 'Externo', value: 'Externo' }
+    ];
+
+    const titleOptions = [
+        { label: 'Licenciatura', value: 'Licenciatura' },
+        { label: 'Bacharelado', value: 'Bacharelado' },
+        { label: 'Mestre', value: 'Mestre' },
+        { label: 'Doutor', value: 'Doutor' },
+        { label: 'Pós Doutor', value: 'Pós Doutor' }
+    ];
 
     return (
         <div>
@@ -190,7 +237,7 @@ export default function ProfessorsDemo() {
                     rows={10}
                     rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} professors"
+                    currentPageReportTemplate="Exibindo {first} - {last} de {totalRecords} professores"
                     globalFilter={globalFilter}
                     header={header}
                     selection={selectedProfessors}
@@ -200,11 +247,11 @@ export default function ProfessorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
-                    <Column field="name" header="Name" aria-label="Name" />
-                    <Column field="researchArea" header="Research Area" aria-label="Research Area" />
-                    <Column field="email" header="Email" aria-label="Email" />
-                    <Column field="locationOfWork" header="Location of Work" sortable style={{ width: '25%' }} aria-label="Location of Work" />
-                    <Column header="Title" body={statusBodyTemplate} sortable style={{ width: '25%' }} aria-label="Title" />
+                    <Column field="name" header="Nome" aria-label="Name" />
+                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" />
+                    <Column field="email" header="E-mail" aria-label="Email" />
+                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '25%' }} aria-label="Location of Work" />
+                    <Column header="Titulação" body={statusBodyTemplate} sortable style={{ width: '25%' }} aria-label="Title" />
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -213,16 +260,16 @@ export default function ProfessorsDemo() {
                 visible={professorDialog}
                 style={{ width: '32rem' }}
                 breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header="Professor Details"
+                header="Editar Professor"
                 modal
                 className="p-fluid"
                 footer={professorsDialogFooter}
                 onHide={hideDialog}
                 aria-labelledby="professor-details-header"
             >
-                <div className="field">
+                <div className="field mb-4">
                     <label htmlFor="name" className="font-bold">
-                        Name
+                        Nome
                     </label>
                     <InputText
                         id="name"
@@ -233,26 +280,25 @@ export default function ProfessorsDemo() {
                         className={`border border-gray-300 p-2 rounded ${classNames({ 'p-invalid': submitted && !professor.name })}`}
                         aria-describedby="name-help"
                     />
-                    {submitted && !professor.name && <small id="name-help" className="p-error">Name is required.</small>}
+                    {submitted && !professor.name && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field">
+                <div className="field mb-4">
                     <label htmlFor="researchArea" className="font-bold">
-                        Research Area
+                        Área de Pesquisa
                     </label>
-                    <InputTextarea
+                    <InputText
                         id="researchArea"
                         value={professor.researchArea}
                         onChange={(e) => setProfessor({ ...professor, researchArea: e.target.value })}
                         required
-                        rows={3}
-                        cols={20}
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="research-area-help"
                     />
+                    {submitted && !professor.researchArea && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field">
+                <div className="field mb-4">
                     <label htmlFor="email" className="font-bold">
-                        Email
+                        E-mail
                     </label>
                     <InputText
                         id="email"
@@ -262,53 +308,90 @@ export default function ProfessorsDemo() {
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="email-help"
                     />
+                    {submitted && !professor.email && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
+
                 </div>
-                <div className="field">
+                <div className="field mb-4">
                     <label htmlFor="locationOfWork" className="font-bold">
-                        Location of Work
+                        Local de Atuação
                     </label>
-                    <InputText
+                    <Dropdown
                         id="locationOfWork"
                         value={professor.locationOfWork}
-                        onChange={(e) => setProfessor({ ...professor, locationOfWork: e.target.value })}
+                        options={locationOptions}
+                        onChange={(e) => setProfessor({ ...professor, locationOfWork: e.value })}
                         required
-                        className="border border-gray-300 p-2 rounded"
+                        className="border border-gray-300 rounded p-2 h-10 flex items-center"
                         aria-describedby="location-of-work-help"
                     />
+                    {submitted && !professor.locationOfWork && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field">
+                <div className="field mb-4">
                     <label htmlFor="title" className="font-bold">
-                        Title
+                        Título
                     </label>
-                    <InputText
+                    <Dropdown
                         id="title"
                         value={professor.title}
-                        onChange={(e) => setProfessor({ ...professor, title: e.target.value })}
+                        options={titleOptions}
+                        onChange={(e) => setProfessor({ ...professor, title: e.value })}
                         required
-                        className="border border-gray-300 p-2 rounded"
+                        className="border border-gray-300 rounded p-2 h-10 flex items-center"
                         aria-describedby="title-help"
                     />
+                    {submitted && !professor.title && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
+
                 </div>
             </Dialog>
 
             <Dialog
+                header="Confirmar Inativação"
                 visible={deleteProfessorDialog}
-                style={{ width: '450px' }}
-                header="Confirm"
-                modal
+                onHide={() => setDeleteProfessorDialog(false)}
                 footer={
                     <React.Fragment>
-                        <Button label="No" icon="pi pi-times" className="p-button-text" onClick={() => setDeleteProfessorDialog(false)} aria-label="No" />
-                        <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteProfessor} aria-label="Yes" />
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            outlined
+                            onClick={() => setDeleteProfessorDialog(false)}
+                            aria-label="Cancelar"
+                        />
+                        <Button
+                            label="Inativar"
+                            icon="pi pi-check"
+                            severity="danger"
+                            onClick={deleteProfessor}
+                            aria-label="Inativar"
+                        />
                     </React.Fragment>
                 }
-                onHide={() => setDeleteProfessorDialog(false)}
-                aria-labelledby="confirm-delete-header"
             >
-                <div className="confirmation-content">
-                    <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
-                    {professor && <span>Are you sure you want to delete <b>{professor.name}</b>?</span>}
-                </div>
+                <p>Tem certeza de que deseja excluir o professor <strong>{professor.name}</strong>?</p>
+            </Dialog>
+
+            <Dialog
+                header="Confirmar Inativação em Massa"
+                visible={deleteSelectedProfessorsDialog}
+                onHide={() => setDeleteSelectedProfessorsDialog(false)}
+                footer={
+                    <React.Fragment>
+                        <Button
+                            label="Cancelar"
+                            outlined
+                            onClick={() => setDeleteSelectedProfessorsDialog(false)}
+                            aria-label="Cancelar"
+                        />
+                        <Button
+                            label="Inativar"
+                            severity="danger"
+                            onClick={confirmDeleteSelectedProfessors}
+                            aria-label="Inativar"
+                        />
+                    </React.Fragment>
+                }
+            >
+                <p>Tem certeza de que deseja excluir os professores selecionados?</p>
             </Dialog>
         </div>
     );
