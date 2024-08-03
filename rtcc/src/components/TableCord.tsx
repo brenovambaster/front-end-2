@@ -30,7 +30,7 @@ export default function ProfessorsDemo() {
     const [submitted, setSubmitted] = useState<boolean>(false);
 
     useEffect(() => {
-        ProfessorService.getProfessors().then((data) => setProfessors(data));
+        ProfessorService.getProfessors().then(data => setProfessors(data));
     }, []);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
@@ -60,9 +60,8 @@ export default function ProfessorsDemo() {
                 } else {
                     // Criar novo professor
                     const newProfessor = await ProfessorService.createProfessor(professor);
-
+                    setProfessors([...professors, newProfessor]);
                 }
-                setProfessors(await ProfessorService.getProfessors());
                 setProfessorDialog(false);
                 setProfessor(emptyProfessor);
             } catch (error) {
@@ -82,11 +81,13 @@ export default function ProfessorsDemo() {
     };
 
     const deleteProfessor = async () => {
-        if (professor.id) {
+        try {
             await ProfessorService.deleteProfessor(professor.id);
             setProfessors(professors.filter(val => val.id !== professor.id));
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
+        } catch (error) {
+            console.error("Erro ao excluir professor:", error);
         }
     };
 
@@ -95,12 +96,13 @@ export default function ProfessorsDemo() {
             <h4 className="m-0">Manage Professors</h4>
             <div className="p-inputgroup">
                 <span className="p-inputgroup-addon">
-                    <i className="pi pi-search" />
+                    <i className="pi pi-search" aria-hidden="true" />
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                    onInput={(e) => setGlobalFilter(e.target.value)}
                     placeholder="Search..."
+                    aria-label="Search professors"
                 />
             </div>
         </div>
@@ -109,30 +111,67 @@ export default function ProfessorsDemo() {
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
-                <Button label="New" icon="pi pi-plus" severity="success" onClick={openNew} />
-                <Button label="Delete" icon="pi pi-trash" severity="danger" disabled={!selectedProfessors || !selectedProfessors.length} />
+                <Button
+                    label="New"
+                    icon="pi pi-plus"
+                    severity="success"
+                    onClick={openNew}
+                    aria-label="New Professor"
+                />
+                <Button
+                    label="Delete"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    disabled={!selectedProfessors}
+                    aria-label="Delete Selected Professors"
+                />
             </div>
         );
     };
 
     const professorsDialogFooter = (
         <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" onClick={saveProfessor} />
+            <Button
+                label="Cancel"
+                icon="pi pi-times"
+                outlined
+                onClick={hideDialog}
+                aria-label="Cancel"
+            />
+            <Button
+                label="Save"
+                icon="pi pi-check"
+                onClick={saveProfessor}
+                aria-label="Save"
+            />
         </React.Fragment>
     );
 
     const actionBodyTemplate = (rowData: ProfessorRequestDTO) => {
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={() => editProfessor(rowData)} />
-                <Button icon="pi pi-trash" rounded outlined severity="danger" onClick={() => confirmDeleteProfessor(rowData)} />
+                <Button
+                    icon="pi pi-pencil"
+                    rounded
+                    outlined
+                    className="mr-2"
+                    onClick={() => editProfessor(rowData)}
+                    aria-label={`Edit ${rowData.name}`}
+                />
+                <Button
+                    icon="pi pi-trash"
+                    rounded
+                    outlined
+                    severity="danger"
+                    onClick={() => confirmDeleteProfessor(rowData)}
+                    aria-label={`Delete ${rowData.name}`}
+                />
             </React.Fragment>
         );
     };
 
     const rightToolbarTemplate = () => {
-        return <Button label="Export" icon="pi pi-upload" className="p-button-help" />;
+        return <Button label="Export" icon="pi pi-upload" className="p-button-help" aria-label="Export Data" />;
     };
 
     const footer = `In total there are ${professors.length} professors.`;
@@ -144,6 +183,7 @@ export default function ProfessorsDemo() {
                 <DataTable
                     value={professors}
                     stripedRows
+                    sortMode='multiple'
                     showGridlines
                     dataKey="id"
                     paginator
@@ -155,58 +195,116 @@ export default function ProfessorsDemo() {
                     header={header}
                     selection={selectedProfessors}
                     onSelectionChange={(e) => setSelectedProfessors(e.value)}
+                    size="small"
+                    aria-label="Professors Table"
                 >
-                    <Column selectionMode="multiple" exportable={false}></Column>
-                    <Column field="id" header="ID"></Column>
-                    <Column field="name" header="Name"></Column>
-                    <Column field="researchArea" header="Research Area"></Column>
-                    <Column field="email" header="Email"></Column>
-                    <Column field="locationOfWork" header="Location of Work" sortable style={{ width: '25%' }}></Column>
-                    <Column header="Title" body={statusBodyTemplate} sortable style={{ width: '25%' }}></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
+                    <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
+                    <Column field="id" header="ID" aria-label="ID" />
+                    <Column field="name" header="Name" aria-label="Name" />
+                    <Column field="researchArea" header="Research Area" aria-label="Research Area" />
+                    <Column field="email" header="Email" aria-label="Email" />
+                    <Column field="locationOfWork" header="Location of Work" sortable style={{ width: '25%' }} aria-label="Location of Work" />
+                    <Column header="Title" body={statusBodyTemplate} sortable style={{ width: '25%' }} aria-label="Title" />
+                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
 
-            <Dialog visible={professorDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Professor Details" modal className="p-fluid" footer={professorsDialogFooter} onHide={hideDialog}>
+            <Dialog
+                visible={professorDialog}
+                style={{ width: '32rem' }}
+                breakpoints={{ '960px': '75vw', '641px': '90vw' }}
+                header="Professor Details"
+                modal
+                className="p-fluid"
+                footer={professorsDialogFooter}
+                onHide={hideDialog}
+                aria-labelledby="professor-details-header"
+            >
                 <div className="field">
                     <label htmlFor="name" className="font-bold">
                         Name
                     </label>
-                    <InputText id="name" value={professor.name} onChange={(e) => setProfessor({ ...professor, name: e.target.value })} required autoFocus className={classNames({ 'p-invalid': submitted && !professor.name })} />
-                    {submitted && !professor.name && <small className="p-error">Name is required.</small>}
+                    <InputText
+                        id="name"
+                        value={professor.name}
+                        onChange={(e) => setProfessor({ ...professor, name: e.target.value })}
+                        required
+                        autoFocus
+                        className={`border border-gray-300 p-2 rounded ${classNames({ 'p-invalid': submitted && !professor.name })}`}
+                        aria-describedby="name-help"
+                    />
+                    {submitted && !professor.name && <small id="name-help" className="p-error">Name is required.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="researchArea" className="font-bold">
                         Research Area
                     </label>
-                    <InputTextarea id="researchArea" value={professor.researchArea} onChange={(e) => setProfessor({ ...professor, researchArea: e.target.value })} required rows={3} cols={20} />
+                    <InputTextarea
+                        id="researchArea"
+                        value={professor.researchArea}
+                        onChange={(e) => setProfessor({ ...professor, researchArea: e.target.value })}
+                        required
+                        rows={3}
+                        cols={20}
+                        className="border border-gray-300 p-2 rounded"
+                        aria-describedby="research-area-help"
+                    />
                 </div>
                 <div className="field">
                     <label htmlFor="email" className="font-bold">
                         Email
                     </label>
-                    <InputText id="email" value={professor.email} onChange={(e) => setProfessor({ ...professor, email: e.target.value })} required />
+                    <InputText
+                        id="email"
+                        value={professor.email}
+                        onChange={(e) => setProfessor({ ...professor, email: e.target.value })}
+                        required
+                        className="border border-gray-300 p-2 rounded"
+                        aria-describedby="email-help"
+                    />
                 </div>
                 <div className="field">
                     <label htmlFor="locationOfWork" className="font-bold">
                         Location of Work
                     </label>
-                    <InputText id="locationOfWork" value={professor.locationOfWork} onChange={(e) => setProfessor({ ...professor, locationOfWork: e.target.value })} required />
+                    <InputText
+                        id="locationOfWork"
+                        value={professor.locationOfWork}
+                        onChange={(e) => setProfessor({ ...professor, locationOfWork: e.target.value })}
+                        required
+                        className="border border-gray-300 p-2 rounded"
+                        aria-describedby="location-of-work-help"
+                    />
                 </div>
                 <div className="field">
                     <label htmlFor="title" className="font-bold">
                         Title
                     </label>
-                    <InputText id="title" value={professor.title} onChange={(e) => setProfessor({ ...professor, title: e.target.value })} required />
+                    <InputText
+                        id="title"
+                        value={professor.title}
+                        onChange={(e) => setProfessor({ ...professor, title: e.target.value })}
+                        required
+                        className="border border-gray-300 p-2 rounded"
+                        aria-describedby="title-help"
+                    />
                 </div>
             </Dialog>
 
-            <Dialog visible={deleteProfessorDialog} style={{ width: '450px' }} header="Confirm" modal footer={(
-                <React.Fragment>
-                    <Button label="No" icon="pi pi-times" className="p-button-text" onClick={() => setDeleteProfessorDialog(false)} />
-                    <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteProfessor} />
-                </React.Fragment>
-            )} onHide={() => setDeleteProfessorDialog(false)}>
+            <Dialog
+                visible={deleteProfessorDialog}
+                style={{ width: '450px' }}
+                header="Confirm"
+                modal
+                footer={
+                    <React.Fragment>
+                        <Button label="No" icon="pi pi-times" className="p-button-text" onClick={() => setDeleteProfessorDialog(false)} aria-label="No" />
+                        <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteProfessor} aria-label="Yes" />
+                    </React.Fragment>
+                }
+                onHide={() => setDeleteProfessorDialog(false)}
+                aria-labelledby="confirm-delete-header"
+            >
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
                     {professor && <span>Are you sure you want to delete <b>{professor.name}</b>?</span>}

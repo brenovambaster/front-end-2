@@ -1,10 +1,5 @@
 export default function Features() {
     return (
-        <main >
-            <h1> Features index </h1>
-            <div className="flex">
-
-            </div>
-        </main >
+        <h1 className="text-2xl p-2">featues h1</h1>
     )
 }

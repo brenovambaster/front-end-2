@@ -1,23 +1,27 @@
 
 import React from 'react';
 import { Menubar } from 'primereact/menubar';
-import { link } from 'fs';
-import { Card } from 'primereact/card';
+
 
 export default function BasicDemo() {
     const items = [
         {
             label: 'Home',
-            icon: 'pi pi-home',
+            icon: 'pi pi-users',
             url: '/'
         },
         {
-            label: 'Features',
-            icon: 'pi pi-star',
+            label: 'TCC',
+            icon: 'pi pi-book',
             url: '/features/features'
         },
         {
-            label: 'Projects',
+            label: 'Cursos',
+            icon: 'pi pi-info-circle',
+            url: '/courses/courses'
+        },
+        {
+            label: 'Algumas coisa',
             icon: 'pi pi-search',
             items: [
                 {

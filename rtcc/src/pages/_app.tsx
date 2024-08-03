@@ -1,10 +1,14 @@
 
-// _app.js
+// src/pages/_app.tsx
 import { PrimeReactProvider } from 'primereact/api';
+
+// NÃO ALTEE A ORDEM DE IMPORTAÇÃO DOS ARQUIVOS CSS
+import '../styles/globals.css';
 import 'primereact/resources/themes/tailwind-light/theme.css';
-import 'primereact/resources/primereact.min.css';
-import Menu from "@/components/Menu";
+
+
 import 'primeicons/primeicons.css';
+import Menu from "@/components/Menu";
 
 import React from 'react';
 
