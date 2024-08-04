@@ -1,7 +1,6 @@
 import './curso.css';
 
 import 'primeicons/primeicons.css';
-import 'primereact/resources/themes/tailwind-light/theme.css';
 import TableCurso from "../../../components/TableCurso";
 
 
