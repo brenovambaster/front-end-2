@@ -1,6 +1,5 @@
 
 import './professor.css';
-import 'primeicons/primeicons.css';
 import TableProf from "../../../components/TableProf";
 
 

@@ -1,6 +1,6 @@
 import './curso.css';
 
-import 'primeicons/primeicons.css';
+
 import TableCurso from "../../../components/TableCurso";
 
 
