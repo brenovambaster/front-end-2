@@ -10,6 +10,8 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useState } from 'react';
 import { ProfessorService } from '../service/ProfessorService';
 import { ProfessorRequestDTO } from '../types';
+import { Toast } from 'primereact/toast';
+import { useRef } from 'react';
 
 
 export default function ProfessorsDemo() {
@@ -30,10 +32,10 @@ export default function ProfessorsDemo() {
     const [selectedProfessors, setSelectedProfessors] = useState<ProfessorRequestDTO[] | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [deleteSelectedProfessorsDialog, setDeleteSelectedProfessorsDialog] = useState<boolean>(false);
-
+    const toastBottomLeft = useRef<Toast>(null);
 
     useEffect(() => {
-        ProfessorService.getProfessors().then(data => setProfessors(data));
+        ProfessorService.getProfessors().then(data => setProfessors(data));       
     }, []);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
@@ -71,13 +73,13 @@ export default function ProfessorsDemo() {
 
                     setProfessorDialog(false);
                     setProfessor(emptyProfessor);
-
                     window.location.reload();
                 } catch (error) {
                     console.error("Erro ao salvar professor:", error);
                 }
             }
         }
+
         setSubmitted(true);
     };
 
@@ -98,7 +100,7 @@ export default function ProfessorsDemo() {
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
         } catch (error) {
-            console.error("Erro ao excluir professor:", error);
+            console.error("Erro ao inativar professor:", error);
         }
 
         window.location.reload();
@@ -117,7 +119,7 @@ export default function ProfessorsDemo() {
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
             } catch (error) {
-                console.error("Erro ao excluir professores:", error);
+                console.error("Erro ao inativar professores:", error);
             }
             setDeleteSelectedProfessorsDialog(false);
         }
@@ -151,6 +153,7 @@ export default function ProfessorsDemo() {
                     severity="success"
                     onClick={openNew}
                     aria-label="New Professor"
+                    className="p-button-sm" 
                 />
                 <Button
                     label="Inativar Selecionados"
@@ -159,6 +162,7 @@ export default function ProfessorsDemo() {
                     disabled={!selectedProfessors || selectedProfessors.length === 0}
                     onClick={deleteProfessors}
                     aria-label="Delete Selected Professors"
+                    className="p-button-sm" 
                 />
             </div>
         );
@@ -172,12 +176,14 @@ export default function ProfessorsDemo() {
                 outlined
                 onClick={hideDialog}
                 aria-label="Cancelar"
+                className="p-button-sm" 
             />
             <Button
                 label="Salvar"
                 icon="pi pi-check"
                 onClick={saveProfessor}
                 aria-label="Salvar"
+                className="p-button-sm" 
             />
         </React.Fragment>
     );
@@ -189,7 +195,7 @@ export default function ProfessorsDemo() {
                     icon="pi pi-pencil"
                     rounded
                     outlined
-                    className="mr-2"
+                    className="mr-2 p-button-sm"
                     onClick={() => editProfessor(rowData)}
                     aria-label={`Edit ${rowData.name}`}
                 />
@@ -200,6 +206,7 @@ export default function ProfessorsDemo() {
                     severity="danger"
                     onClick={() => confirmDeleteProfessor(rowData)}
                     aria-label={`Delete ${rowData.name}`}
+                    className="p-button-sm" 
                 />
             </React.Fragment>
         );
@@ -356,6 +363,7 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteProfessorDialog(false)}
                             aria-label="Cancelar"
+                            className="p-button-sm" 
                         />
                         <Button
                             label="Inativar"
@@ -363,11 +371,12 @@ export default function ProfessorsDemo() {
                             severity="danger"
                             onClick={deleteProfessor}
                             aria-label="Inativar"
+                            className="p-button-sm" 
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja excluir o professor <strong>{professor.name}</strong>?</p>
+                <p>Tem certeza de que deseja inativar o professor <strong>{professor.name}</strong>?</p>
             </Dialog>
 
             <Dialog
@@ -381,17 +390,19 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteSelectedProfessorsDialog(false)}
                             aria-label="Cancelar"
+                            className="p-button-sm" 
                         />
                         <Button
                             label="Inativar"
                             severity="danger"
                             onClick={confirmDeleteSelectedProfessors}
                             aria-label="Inativar"
+                            className="p-button-sm" 
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja excluir os professores selecionados?</p>
+                <p>Tem certeza de que deseja inativar os professores selecionados?</p>
             </Dialog>
         </div>
     );
