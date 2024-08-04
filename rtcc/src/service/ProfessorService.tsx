@@ -10,7 +10,8 @@ export class ProfessorService {
             return response.data;
         } catch (error) {
             console.error('Error fetching professors:', error);
-            throw error;
+            // throw error;
+            return [];
         }
     }
 

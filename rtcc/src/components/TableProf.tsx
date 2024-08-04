@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -5,9 +7,10 @@ import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
+import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ProfessorService } from '../service/ProfessorService';
 import { ProfessorRequestDTO } from '../types';
 
@@ -30,11 +33,11 @@ export default function ProfessorsDemo() {
     const [selectedProfessors, setSelectedProfessors] = useState<ProfessorRequestDTO[] | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [deleteSelectedProfessorsDialog, setDeleteSelectedProfessorsDialog] = useState<boolean>(false);
-
+    const toastBottomLeft = useRef<Toast>(null);
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
-    }, []);
+    }, [professors, professor, selectedProfessors]);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
         return <Tag value={professor.title} />;
@@ -70,14 +73,14 @@ export default function ProfessorsDemo() {
                     }
 
                     setProfessorDialog(false);
-                    setProfessor(emptyProfessor);
-
-                    window.location.reload();
+                    // setProfessor(emptyProfessor);
+                    // window.location.reload();
                 } catch (error) {
                     console.error("Erro ao salvar professor:", error);
                 }
             }
         }
+
         setSubmitted(true);
     };
 
@@ -98,10 +101,10 @@ export default function ProfessorsDemo() {
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
         } catch (error) {
-            console.error("Erro ao excluir professor:", error);
+            console.error("Erro ao inativar professor:", error);
         }
 
-        window.location.reload();
+        // window.location.reload();
     };
 
     const deleteProfessors = () => {
@@ -117,12 +120,12 @@ export default function ProfessorsDemo() {
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
             } catch (error) {
-                console.error("Erro ao excluir professores:", error);
+                console.error("Erro ao inativar professores:", error);
             }
             setDeleteSelectedProfessorsDialog(false);
         }
 
-        window.location.reload();
+        // window.location.reload();
     };
 
     const header = (
@@ -134,7 +137,7 @@ export default function ProfessorsDemo() {
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter(e.target.value)}
+                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
                     placeholder="Search..."
                     aria-label="Search professors"
                 />
@@ -151,6 +154,7 @@ export default function ProfessorsDemo() {
                     severity="success"
                     onClick={openNew}
                     aria-label="New Professor"
+                    className="p-button-sm"
                 />
                 <Button
                     label="Inativar Selecionados"
@@ -159,6 +163,7 @@ export default function ProfessorsDemo() {
                     disabled={!selectedProfessors || selectedProfessors.length === 0}
                     onClick={deleteProfessors}
                     aria-label="Delete Selected Professors"
+                    className="p-button-sm"
                 />
             </div>
         );
@@ -172,12 +177,14 @@ export default function ProfessorsDemo() {
                 outlined
                 onClick={hideDialog}
                 aria-label="Cancelar"
+                className="p-button-sm"
             />
             <Button
                 label="Salvar"
                 icon="pi pi-check"
                 onClick={saveProfessor}
                 aria-label="Salvar"
+                className="p-button-sm"
             />
         </React.Fragment>
     );
@@ -189,7 +196,7 @@ export default function ProfessorsDemo() {
                     icon="pi pi-pencil"
                     rounded
                     outlined
-                    className="mr-2"
+                    className="mr-2 p-button-sm"
                     onClick={() => editProfessor(rowData)}
                     aria-label={`Edit ${rowData.name}`}
                 />
@@ -200,6 +207,7 @@ export default function ProfessorsDemo() {
                     severity="danger"
                     onClick={() => confirmDeleteProfessor(rowData)}
                     aria-label={`Delete ${rowData.name}`}
+                    className="p-button-sm"
                 />
             </React.Fragment>
         );
@@ -226,7 +234,10 @@ export default function ProfessorsDemo() {
     return (
         <div>
             <div className="card m-2">
-                <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                <Toolbar
+                    start={leftToolbarTemplate}
+                    className="mb-4"
+                />
                 <DataTable
                     value={professors}
                     stripedRows
@@ -241,7 +252,7 @@ export default function ProfessorsDemo() {
                     globalFilter={globalFilter}
                     header={header}
                     selection={selectedProfessors}
-                    onSelectionChange={(e) => setSelectedProfessors(e.value)}
+                    onSelectionChange={(e) => setSelectedProfessors(e.value as ProfessorRequestDTO[])}
                     size="small"
                     aria-label="Professors Table"
                 >
@@ -356,6 +367,7 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteProfessorDialog(false)}
                             aria-label="Cancelar"
+                            className="p-button-sm"
                         />
                         <Button
                             label="Inativar"
@@ -363,11 +375,12 @@ export default function ProfessorsDemo() {
                             severity="danger"
                             onClick={deleteProfessor}
                             aria-label="Inativar"
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja excluir o professor <strong>{professor.name}</strong>?</p>
+                <p>Tem certeza de que deseja inativar o professor <strong>{professor.name}</strong>?</p>
             </Dialog>
 
             <Dialog
@@ -381,17 +394,19 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteSelectedProfessorsDialog(false)}
                             aria-label="Cancelar"
+                            className="p-button-sm"
                         />
                         <Button
                             label="Inativar"
                             severity="danger"
                             onClick={confirmDeleteSelectedProfessors}
                             aria-label="Inativar"
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja excluir os professores selecionados?</p>
+                <p>Tem certeza de que deseja inativar os professores selecionados?</p>
             </Dialog>
         </div>
     );

@@ -1,15 +1,15 @@
-// src/pages/index.tsx
-import TableCord from "../components/TableCord";
+
+import './professor.css';
+import TableProf from "../../../components/TableProf";
 
 
-export default function Home() {
+export default function ManageProfessorsPage() {
   return (
     <main >
-
       <div className=" justify-center items-center">
         <h1 className="text-center text-2xl font-bold my-4">Gerenciamento de Professores</h1>
         <div className=" ">
-          <TableCord />
+          <TableProf />
         </div>
       </div>
 
