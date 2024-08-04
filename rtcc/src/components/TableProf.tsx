@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -5,13 +7,12 @@ import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
+import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ProfessorService } from '../service/ProfessorService';
 import { ProfessorRequestDTO } from '../types';
-import { Toast } from 'primereact/toast';
-import { useRef } from 'react';
 
 
 export default function ProfessorsDemo() {
