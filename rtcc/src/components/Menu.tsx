@@ -8,7 +8,7 @@ export default function BasicDemo() {
         {
             label: 'Home',
             icon: 'pi pi-users',
-            url: '/'
+            url: '/gerenciar/professor'
         },
         {
             label: 'TCC',
@@ -18,7 +18,7 @@ export default function BasicDemo() {
         {
             label: 'Cursos',
             icon: 'pi pi-info-circle',
-            url: '/courses/courses'
+            url: '/gerenciar/curso'
         },
         {
             label: 'Algumas coisa',

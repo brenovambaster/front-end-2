@@ -36,7 +36,7 @@ export default function ProfessorsDemo() {
     const toastBottomLeft = useRef<Toast>(null);
 
     useEffect(() => {
-        ProfessorService.getProfessors().then(data => setProfessors(data));       
+        ProfessorService.getProfessors().then(data => setProfessors(data));
     }, [professors, professor, selectedProfessors]);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
@@ -137,7 +137,7 @@ export default function ProfessorsDemo() {
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter(e.target.value)}
+                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
                     placeholder="Search..."
                     aria-label="Search professors"
                 />
@@ -154,7 +154,7 @@ export default function ProfessorsDemo() {
                     severity="success"
                     onClick={openNew}
                     aria-label="New Professor"
-                    className="p-button-sm" 
+                    className="p-button-sm"
                 />
                 <Button
                     label="Inativar Selecionados"
@@ -163,7 +163,7 @@ export default function ProfessorsDemo() {
                     disabled={!selectedProfessors || selectedProfessors.length === 0}
                     onClick={deleteProfessors}
                     aria-label="Delete Selected Professors"
-                    className="p-button-sm" 
+                    className="p-button-sm"
                 />
             </div>
         );
@@ -177,14 +177,14 @@ export default function ProfessorsDemo() {
                 outlined
                 onClick={hideDialog}
                 aria-label="Cancelar"
-                className="p-button-sm" 
+                className="p-button-sm"
             />
             <Button
                 label="Salvar"
                 icon="pi pi-check"
                 onClick={saveProfessor}
                 aria-label="Salvar"
-                className="p-button-sm" 
+                className="p-button-sm"
             />
         </React.Fragment>
     );
@@ -207,7 +207,7 @@ export default function ProfessorsDemo() {
                     severity="danger"
                     onClick={() => confirmDeleteProfessor(rowData)}
                     aria-label={`Delete ${rowData.name}`}
-                    className="p-button-sm" 
+                    className="p-button-sm"
                 />
             </React.Fragment>
         );
@@ -234,7 +234,10 @@ export default function ProfessorsDemo() {
     return (
         <div>
             <div className="card m-2">
-                <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                <Toolbar
+                    start={leftToolbarTemplate}
+                    className="mb-4"
+                />
                 <DataTable
                     value={professors}
                     stripedRows
@@ -249,7 +252,7 @@ export default function ProfessorsDemo() {
                     globalFilter={globalFilter}
                     header={header}
                     selection={selectedProfessors}
-                    onSelectionChange={(e) => setSelectedProfessors(e.value)}
+                    onSelectionChange={(e) => setSelectedProfessors(e.value as ProfessorRequestDTO[])}
                     size="small"
                     aria-label="Professors Table"
                 >
@@ -364,7 +367,7 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteProfessorDialog(false)}
                             aria-label="Cancelar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                         <Button
                             label="Inativar"
@@ -372,7 +375,7 @@ export default function ProfessorsDemo() {
                             severity="danger"
                             onClick={deleteProfessor}
                             aria-label="Inativar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
@@ -391,14 +394,14 @@ export default function ProfessorsDemo() {
                             outlined
                             onClick={() => setDeleteSelectedProfessorsDialog(false)}
                             aria-label="Cancelar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                         <Button
                             label="Inativar"
                             severity="danger"
                             onClick={confirmDeleteSelectedProfessors}
                             aria-label="Inativar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
