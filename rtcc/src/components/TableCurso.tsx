@@ -23,7 +23,7 @@ export default function CursosDemo() {
 
     const campusOptions = [
         { label: 'Montes Claros', value: 'Montes Claros' },
-    ];    
+    ];
 
     const [cursos, setCursos] = useState<CursoRequestDTO[]>([]);
     const [globalFilter, setGlobalFilter] = useState<string | null>(null);
@@ -131,7 +131,7 @@ export default function CursosDemo() {
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter(e.target.value)}
+                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
                     placeholder="Search..."
                     aria-label="Search courses"
                 />
@@ -148,7 +148,7 @@ export default function CursosDemo() {
                     severity="success"
                     onClick={openNew}
                     aria-label="New Course"
-                    className="p-button-sm" 
+                    className="p-button-sm"
                 />
                 <Button
                     label="Inativar Selecionados"
@@ -157,7 +157,7 @@ export default function CursosDemo() {
                     disabled={!selectedCursos || selectedCursos.length === 0}
                     onClick={deleteCursos}
                     aria-label="Delete Selected Courses"
-                    className="p-button-sm" 
+                    className="p-button-sm"
                 />
             </div>
         );
@@ -171,14 +171,14 @@ export default function CursosDemo() {
                 outlined
                 onClick={hideDialog}
                 aria-label="Cancelar"
-                className="p-button-sm" 
+                className="p-button-sm"
             />
             <Button
                 label="Salvar"
                 icon="pi pi-check"
                 onClick={saveCurso}
                 aria-label="Salvar"
-                className="p-button-sm" 
+                className="p-button-sm"
             />
         </React.Fragment>
     );
@@ -209,7 +209,7 @@ export default function CursosDemo() {
     return (
         <div>
             <div className="card m-2">
-                <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
+                <Toolbar className="mb-4" start={leftToolbarTemplate}></Toolbar>
                 <DataTable
                     value={cursos}
                     stripedRows
@@ -224,7 +224,7 @@ export default function CursosDemo() {
                     globalFilter={globalFilter}
                     header={header}
                     selection={selectedCursos}
-                    onSelectionChange={(e) => setSelectedCursos(e.value)}
+                    onSelectionChange={(e) => setSelectedCursos(e.value as CursoRequestDTO[])}
                     size="small"
                     aria-label="Courses Table"
                 >
@@ -307,7 +307,7 @@ export default function CursosDemo() {
                             outlined
                             onClick={() => setDeleteCursoDialog(false)}
                             aria-label="Cancelar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                         <Button
                             label="Excluir"
@@ -315,7 +315,7 @@ export default function CursosDemo() {
                             severity="danger"
                             onClick={deleteCurso}
                             aria-label="Excluir"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
@@ -340,7 +340,7 @@ export default function CursosDemo() {
                             outlined
                             onClick={() => setDeleteSelectedCursosDialog(false)}
                             aria-label="Cancelar"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                         <Button
                             label="Excluir"
@@ -348,7 +348,7 @@ export default function CursosDemo() {
                             severity="danger"
                             onClick={confirmDeleteSelectedCursos}
                             aria-label="Excluir"
-                            className="p-button-sm" 
+                            className="p-button-sm"
                         />
                     </React.Fragment>
                 }
