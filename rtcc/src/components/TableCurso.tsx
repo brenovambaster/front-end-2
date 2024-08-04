@@ -34,7 +34,7 @@ export default function CursosDemo() {
 
     useEffect(() => {
         CursoService.getCursos().then(data => setCursos(data));
-    }, []);
+    }, [cursos, curso, selectedCursos]);
 
     const openNew = () => {
         setCurso(emptyCurso);
@@ -66,8 +66,11 @@ export default function CursosDemo() {
                     }
 
                     setCursoDialog(false);
-                    setCurso(emptyCurso);
-                    window.location.reload();
+
+                    // Estava aparecendo esse campo não pode ficar em branco ao salvar mesmo com todos os campos preenchidos
+                    // setCurso(emptyCurso);   
+
+                    // window.location.reload();
                 } catch (error) {
                     console.error("Erro ao salvar curso:", error);
                 }
@@ -95,7 +98,7 @@ export default function CursosDemo() {
         } catch (error) {
             console.error("Erro ao inativar curso:", error);
         }
-        window.location.reload();
+        // window.location.reload();
     };
 
     const deleteCursos = () => {
@@ -115,7 +118,7 @@ export default function CursosDemo() {
             }
             setDeleteSelectedCursosDialog(false);
         }
-        window.location.reload();
+        // window.location.reload();
     };
 
     const header = (

@@ -36,7 +36,7 @@ export default function ProfessorsDemo() {
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));       
-    }, []);
+    }, [professors, professor, selectedProfessors]);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
         return <Tag value={professor.title} />;
@@ -72,8 +72,8 @@ export default function ProfessorsDemo() {
                     }
 
                     setProfessorDialog(false);
-                    setProfessor(emptyProfessor);
-                    window.location.reload();
+                    // setProfessor(emptyProfessor);
+                    // window.location.reload();
                 } catch (error) {
                     console.error("Erro ao salvar professor:", error);
                 }
@@ -103,7 +103,7 @@ export default function ProfessorsDemo() {
             console.error("Erro ao inativar professor:", error);
         }
 
-        window.location.reload();
+        // window.location.reload();
     };
 
     const deleteProfessors = () => {
@@ -124,7 +124,7 @@ export default function ProfessorsDemo() {
             setDeleteSelectedProfessorsDialog(false);
         }
 
-        window.location.reload();
+        // window.location.reload();
     };
 
     const header = (
