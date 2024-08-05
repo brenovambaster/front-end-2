@@ -28,6 +28,7 @@ export default function ProfessorsDemo() {
     const [professors, setProfessors] = useState<ProfessorRequestDTO[]>([]);
     const [globalFilter, setGlobalFilter] = useState<string | null>(null);
     const [professorDialog, setProfessorDialog] = useState<boolean>(false);
+    const [editprofessorDialog, setEditprofessorDialog] = useState<boolean>(false);
     const [deleteProfessorDialog, setDeleteProfessorDialog] = useState<boolean>(false);
     const [professor, setProfessor] = useState<ProfessorRequestDTO>(emptyProfessor);
     const [selectedProfessors, setSelectedProfessors] = useState<ProfessorRequestDTO[] | null>(null);
@@ -35,6 +36,8 @@ export default function ProfessorsDemo() {
     const [deleteSelectedProfessorsDialog, setDeleteSelectedProfessorsDialog] = useState<boolean>(false);
     const toastBottomLeft = useRef<Toast>(null);
     const toast = useRef<Toast>(null);
+    const [dialogTitle, setDialogTitle] = useState<string>('Novo Professor');
+
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
@@ -48,11 +51,14 @@ export default function ProfessorsDemo() {
         setProfessor(emptyProfessor);
         setSubmitted(false);
         setProfessorDialog(true);
+        setEditprofessorDialog(false);
+        setDialogTitle('Novo Professor');
     };
 
     const hideDialog = () => {
         setSubmitted(false);
         setProfessorDialog(false);
+        setEditprofessorDialog(false);
     };
 
     const validateFields = () => {
@@ -88,6 +94,8 @@ export default function ProfessorsDemo() {
     const editProfessor = (professor: ProfessorRequestDTO) => {
         setProfessor({ ...professor });
         setProfessorDialog(true);
+        setEditprofessorDialog(true);
+        setDialogTitle('Editar Professor');
     };
 
     const confirmDeleteProfessor = (professor: ProfessorRequestDTO) => {
@@ -261,11 +269,11 @@ export default function ProfessorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
-                    <Column field="name" header="Nome" aria-label="Name" />
-                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" />
-                    <Column field="email" header="E-mail" aria-label="Email" />
-                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '25%' }} aria-label="Location of Work" />
-                    <Column header="Titulação" body={statusBodyTemplate} sortable style={{ width: '25%' }} aria-label="Title" />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}/>
+                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }}/>
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}/>
+                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" />
+                    <Column header="Titulação" body={statusBodyTemplate} sortable style={{ width: '10%' }} aria-label="Title" />
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -274,7 +282,7 @@ export default function ProfessorsDemo() {
                 visible={professorDialog}
                 style={{ width: '32rem' }}
                 breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header="Editar Professor"
+                header={dialogTitle}
                 modal
                 className="p-fluid"
                 footer={professorsDialogFooter}

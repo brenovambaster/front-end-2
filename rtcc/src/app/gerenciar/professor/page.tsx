@@ -1,5 +1,3 @@
-
-import './professor.css';
 import TableProf from "../../../components/TableProf";
 
 

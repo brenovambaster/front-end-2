@@ -6,12 +6,12 @@ import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
+import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { CursoService } from '../service/CursoService';
 import { CursoRequestDTO } from '../types';
-import { Toast } from 'primereact/toast';
 
 
 export default function CursosDemo() {
@@ -29,12 +29,14 @@ export default function CursosDemo() {
     const [cursos, setCursos] = useState<CursoRequestDTO[]>([]);
     const [globalFilter, setGlobalFilter] = useState<string | null>(null);
     const [cursoDialog, setCursoDialog] = useState<boolean>(false);
+    const [editCursoDialog, setEditCursoDialog] = useState<boolean>(false);
     const [deleteCursoDialog, setDeleteCursoDialog] = useState<boolean>(false);
     const [curso, setCurso] = useState<CursoRequestDTO>(emptyCurso);
     const [selectedCursos, setSelectedCursos] = useState<CursoRequestDTO[] | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [deleteSelectedCursosDialog, setDeleteSelectedCursosDialog] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
+    const [dialogTitle, setDialogTitle] = useState<string>('Novo Curso');
 
 
     useEffect(() => {
@@ -45,11 +47,14 @@ export default function CursosDemo() {
         setCurso(emptyCurso);
         setSubmitted(false);
         setCursoDialog(true);
+        setEditCursoDialog(false); 
+        setDialogTitle('Novo Curso');
     };
 
     const hideDialog = () => {
         setSubmitted(false);
         setCursoDialog(false);
+        setEditCursoDialog(false);
     };
 
     const validateFields = () => {
@@ -88,6 +93,8 @@ export default function CursosDemo() {
     const editCurso = (curso: CursoRequestDTO) => {
         setCurso({ ...curso });
         setCursoDialog(true);
+        setEditCursoDialog(true);
+        setDialogTitle('Editar Curso');
     };
 
     const confirmDeleteCurso = (curso: CursoRequestDTO) => {
@@ -197,7 +204,10 @@ export default function CursosDemo() {
                     rounded
                     outlined
                     className="mr-2"
-                    onClick={() => editCurso(rowData)}
+                    onClick={() => {
+                        editCurso(rowData);
+                        setEditCursoDialog(true);
+                    }}
                     aria-label={`Edit ${rowData.name}`}
                 />
                 <Button
@@ -247,7 +257,7 @@ export default function CursosDemo() {
                 visible={cursoDialog}
                 style={{ width: '32rem' }}
                 breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header="Editar Curso"
+                header={dialogTitle}
                 modal
                 className="p-fluid"
                 footer={cursosDialogFooter}

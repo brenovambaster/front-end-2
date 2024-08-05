@@ -31,3 +31,21 @@ export interface CursoResponseDTO {
     campus: string,
     codeOfCourse: string
 }
+
+export interface CoordinatorRequestDTO {
+    id: string,
+    name: string,
+    email: string,
+    username: string,
+    password: string,
+    course: string
+}
+
+export interface CoordinatorResponseDTO {
+    id: string,
+    name: string,
+    email: string,
+    username: string,
+    password: string,
+    course: string
+}
