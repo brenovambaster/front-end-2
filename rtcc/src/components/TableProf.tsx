@@ -101,7 +101,7 @@ export default function ProfessorsDemo() {
             setProfessors(professors.filter(val => val.id !== professor.id));
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Professor inativado com sucesso', life: 3000 });
         } catch (error) {
             console.error("Erro ao inativar professor:", error);
         }
@@ -121,7 +121,7 @@ export default function ProfessorsDemo() {
                 await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Professor inativado com sucesso', life: 3000 });
             } catch (error) {
                 console.error("Erro ao inativar professores:", error);
             }
