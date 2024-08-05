@@ -1,4 +1,4 @@
-import TableCurso from "../../../components/TableCurso";
+import TableCurso from "../../../components/TableCoord";
 
 
 export default function ManageCursosPage() {
@@ -6,7 +6,7 @@ export default function ManageCursosPage() {
     <main >
 
       <div className=" justify-center items-center">
-        <h1 className="text-center text-2xl font-bold my-4">Gerenciamento de Cursos</h1>
+        <h1 className="text-center text-2xl font-bold my-4">Gerenciamento de Coordenadores</h1>
         <div className=" ">
           <TableCurso />
         </div>
