@@ -34,6 +34,7 @@ export default function ProfessorsDemo() {
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [deleteSelectedProfessorsDialog, setDeleteSelectedProfessorsDialog] = useState<boolean>(false);
     const toastBottomLeft = useRef<Toast>(null);
+    const toast = useRef<Toast>(null);
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
@@ -71,8 +72,8 @@ export default function ProfessorsDemo() {
                         const newProfessor = await ProfessorService.createProfessor(professor);
                         setProfessors([...professors, newProfessor]);
                     }
-
                     setProfessorDialog(false);
+                    toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
                     // setProfessor(emptyProfessor);
                     // window.location.reload();
                 } catch (error) {
@@ -100,6 +101,7 @@ export default function ProfessorsDemo() {
             setProfessors(professors.filter(val => val.id !== professor.id));
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
         } catch (error) {
             console.error("Erro ao inativar professor:", error);
         }
@@ -119,6 +121,7 @@ export default function ProfessorsDemo() {
                 await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
             } catch (error) {
                 console.error("Erro ao inativar professores:", error);
             }
@@ -408,6 +411,9 @@ export default function ProfessorsDemo() {
             >
                 <p>Tem certeza de que deseja inativar os professores selecionados?</p>
             </Dialog>
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
+            </div>
         </div>
     );
 }

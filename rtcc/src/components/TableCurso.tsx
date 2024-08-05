@@ -8,9 +8,10 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CursoService } from '../service/CursoService';
 import { CursoRequestDTO } from '../types';
+import { Toast } from 'primereact/toast';
 
 
 export default function CursosDemo() {
@@ -33,6 +34,8 @@ export default function CursosDemo() {
     const [selectedCursos, setSelectedCursos] = useState<CursoRequestDTO[] | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [deleteSelectedCursosDialog, setDeleteSelectedCursosDialog] = useState<boolean>(false);
+    const toast = useRef<Toast>(null);
+
 
     useEffect(() => {
         CursoService.getCursos().then(data => setCursos(data));
@@ -69,6 +72,7 @@ export default function CursosDemo() {
 
                     setCursoDialog(false);
 
+                    toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
                     // Estava aparecendo esse campo não pode ficar em branco ao salvar mesmo com todos os campos preenchidos
                     // setCurso(emptyCurso);   
 
@@ -97,6 +101,7 @@ export default function CursosDemo() {
             setCursos(cursos.filter(val => val.id !== curso.id));
             setDeleteCursoDialog(false);
             setCurso(emptyCurso);
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
         } catch (error) {
             console.error("Erro ao inativar curso:", error);
         }
@@ -115,6 +120,7 @@ export default function CursosDemo() {
                 await CursoService.deleteCursos(selectedCursos.map(c => c.id));
                 setCursos(cursos.filter(c => !selectedCursos.includes(c)));
                 setSelectedCursos(null);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
             } catch (error) {
                 console.error("Erro ao inativar cursos:", error);
             }
@@ -359,6 +365,10 @@ export default function CursosDemo() {
                     <span>Você tem certeza que deseja inativar os cursos selecionados?</span>
                 </div>
             </Dialog>
+
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
+            </div>
         </div>
     );
 }
