@@ -340,7 +340,7 @@ export default function CoordenadorsDemo() {
                     />
                     {submitted && !coordenador.username && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field mb-4">
+                {/* <div className="field mb-4">
                     <label htmlFor="password" className="font-bold">
                         Senha
                     </label>
@@ -353,7 +353,7 @@ export default function CoordenadorsDemo() {
                         aria-describedby="password-help"
                     />
                     {submitted && !coordenador.password && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-                </div>
+                </div> */}
             </Dialog>
 
             <Dialog

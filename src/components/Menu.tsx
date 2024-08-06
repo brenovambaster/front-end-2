@@ -1,67 +1,64 @@
-
-import React from 'react';
 import { Menubar } from 'primereact/menubar';
+import Image from 'next/image';
+import graduation_cap_image from '../../public/menu-rtcc-if-logo.png';
+import { InputText } from 'primereact/inputtext';
+import { Avatar } from 'primereact/avatar';
 
+const style = {
+    boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.2)',
+    height: '50px' 
+};
+
+const Logo = () => (
+    <div style={{ marginRight: '0.5rem' }}>
+        <a href="/">
+            <Image 
+                alt="logo" 
+                src={graduation_cap_image} 
+                height={50} 
+                width={50}
+            />
+        </a>
+    </div>
+);
+
+const end = (
+    <div className="flex align-items-center gap-2 pr-3">
+        <Avatar icon='pi pi-user' shape="circle" />
+    </div>
+);
 
 export default function BasicDemo() {
     const items = [
         {
-            label: 'Home',
-            icon: 'pi pi-users',
-            url: '/gerenciar/professor'
-        },
-        {
-            label: 'TCC',
-            icon: 'pi pi-book',
-            url: '/features/features'
-        },
-        {
-            label: 'Cursos',
-            icon: 'pi pi-info-circle',
-            url: '/gerenciar/curso'
-        },
-        {
-            label: 'Algumas coisa',
-            icon: 'pi pi-search',
+            label: 'Gerenciar',
+            icon: 'pi pi-fw pi-cog',
+            className: 'text-xs',
             items: [
                 {
-                    label: 'Components',
-                    icon: 'pi pi-bolt'
+                    label: 'Coordenadores',
+                    url: '/gerenciar/coordenador',
+                    icon: 'pi pi-user-edit',
+                    className: 'text-xs'
                 },
                 {
-                    label: 'Blocks',
-                    icon: 'pi pi-server'
+                    label: 'Cursos',
+                    url: '/gerenciar/curso',
+                    icon: 'pi pi-book',
+                    className: 'text-xs' 
+
                 },
                 {
-                    label: 'UI Kit',
-                    icon: 'pi pi-pencil'
+                    label: 'Professores',
+                    url: '/gerenciar/professor',
+                    icon: 'pi pi-users',
+                    className: 'text-xs'
                 },
-                {
-                    label: 'Templates',
-                    icon: 'pi pi-palette',
-                    items: [
-                        {
-                            label: 'Apollo',
-                            icon: 'pi pi-palette'
-                        },
-                        {
-                            label: 'Ultima',
-                            icon: 'pi pi-palette'
-                        }
-                    ]
-                }
             ]
         },
-        {
-            label: 'Contact',
-            icon: 'pi pi-envelope'
-        }
     ];
 
     return (
-
-        <Menubar className='' model={items} />
-
-
-    )
+        <Menubar className='' model={items} start={<Logo />} style={style} end={end}/>
+    );
 }
