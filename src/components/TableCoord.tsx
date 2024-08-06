@@ -340,20 +340,19 @@ export default function CoordenadorsDemo() {
                     />
                     {submitted && !coordenador.username && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                {/* <div className="field mb-4">
+                <div className="field mb-4">
                     <label htmlFor="password" className="font-bold">
                         Senha
                     </label>
                     <InputText
                         id="password"
-                        value={coordenador.password}
                         onChange={(e) => setCoordenador({ ...coordenador, password: e.target.value })}
                         required
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="password-help"
                     />
                     {submitted && !coordenador.password && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-                </div> */}
+                </div>
             </Dialog>
 
             <Dialog
