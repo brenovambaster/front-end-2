@@ -346,7 +346,6 @@ export default function CoordenadorsDemo() {
                     </label>
                     <InputText
                         id="password"
-                        value={coordenador.password}
                         onChange={(e) => setCoordenador({ ...coordenador, password: e.target.value })}
                         required
                         className="border border-gray-300 p-2 rounded"

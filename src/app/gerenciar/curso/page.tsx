@@ -6,7 +6,7 @@ export default function ManageCursosPage() {
     <main >
 
       <div className=" justify-center items-center">
-        <h1 className="text-center text-2xl font-bold my-4">Gerenciamento de Cursos</h1>
+        <h1 className="text-center text-3xl font-bold mt-8 mb-16">Gerenciamento de Cursos</h1>
         <div className=" ">
           <TableCurso />
         </div>
