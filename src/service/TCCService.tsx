@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { TCCRequestDTO, TCCResponseDTO } from '../types';
 
-const BASE_URL = 'http://localhost:8080/TCC';
+const BASE_URL = 'http://localhost:8080/tcc';
 
 export class TCCService {
     static async getTCCs(): Promise<TCCResponseDTO[]> {
@@ -16,7 +16,7 @@ export class TCCService {
 
     static async createTCC(tcc: TCCRequestDTO): Promise<TCCResponseDTO> {
         try {
-            const response = await axios.post<TCCResponseDTO>("http://localhost:8080/TCC/upload", tcc);
+            const response = await axios.post<TCCResponseDTO>(BASE_URL, tcc);
             return response.data;
         } catch (error) {
             console.error('Error creating TCC:', error);
