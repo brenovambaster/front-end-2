@@ -18,7 +18,7 @@ export interface ProfessorRequestDTO {
     locationOfWork: string;
 }
 
-export interface  CursoRequestDTO {
+export interface CursoRequestDTO {
     id: string,
     name: string,
     campus: string,
@@ -71,8 +71,8 @@ export interface TCCResponseDTO {
     author: string, // Autor
     course: string, // Curso
     defenseDate: string, // Data da Defesa no formato ISO 8601 ou similar
-    advisor: string, // Orientador
-    committeeMembers: string[], // Membros da Banca como array de strings
+    advisor: ProfessorResponseDTO, // Orientador
+    committeeMembers: ProfessorResponseDTO[], // Membros da Banca como array de strings
     summary?: string, // Resumo (opcional, pois pode ser null no banco)
     abstract?: string, // Abstract (alterado para corresponder ao nome da coluna)
     keywords?: string[], // Palavras-chave como array de strings (opcional, pois pode ser null no banco)
