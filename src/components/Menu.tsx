@@ -31,31 +31,24 @@ const end = (
 export default function BasicDemo() {
     const items = [
         {
-            label: 'Gerenciar',
-            icon: 'pi pi-fw pi-cog',
-            className: 'text-xs',
-            items: [
-                {
-                    label: 'Coordenadores',
-                    url: '/gerenciar/coordenador',
-                    icon: 'pi pi-user-edit',
-                    className: 'text-xs'
-                },
-                {
-                    label: 'Cursos',
-                    url: '/gerenciar/curso',
-                    icon: 'pi pi-book',
-                    className: 'text-xs' 
-
-                },
-                {
-                    label: 'Professores',
-                    url: '/gerenciar/professor',
-                    icon: 'pi pi-users',
-                    className: 'text-xs'
-                },
-            ]
+            label: 'Coordenadores',
+            url: '/gerenciar/coordenador',
+            icon: 'pi pi-user-edit',
+            className: 'text-xs'
         },
+        {
+            label: 'Cursos',
+            url: '/gerenciar/curso',
+            icon: 'pi pi-book',
+            className: 'text-xs' 
+
+        },
+        {
+            label: 'Professores',
+            url: '/gerenciar/professor',
+            icon: 'pi pi-users',
+            className: 'text-xs'
+        }
     ];
 
     return (
