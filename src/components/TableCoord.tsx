@@ -262,11 +262,11 @@ export default function CoordenadorsDemo() {
                     aria-label="Coordenadors Table"
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
-                    <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }}/>
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}/>
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}/>
+                    <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }} />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} />
                     <Column field="username" header="Nome de Usuário" aria-label="Username" />
-                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }}/>
+                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }} />
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
             </div>

@@ -269,9 +269,9 @@ export default function ProfessorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}/>
-                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }}/>
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}/>
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} />
+                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }} />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} />
                     <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" />
                     <Column header="Titulação" body={statusBodyTemplate} sortable style={{ width: '10%' }} aria-label="Title" />
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />

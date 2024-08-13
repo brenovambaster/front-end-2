@@ -1,9 +1,33 @@
 import axios from 'axios';
-import { TCCRequestDTO, TCCResponseDTO } from '../types';
+import { FilterTCCRequestDTO, TCCRequestDTO, TCCResponseDTO } from '../types';
 
 const BASE_URL = 'http://localhost:8080/tcc';
 
 export class TCCService {
+
+    static async searchTCCs(query: string): Promise<TCCResponseDTO[]> {
+        try {
+            const response = await axios.get<TCCResponseDTO[]>(BASE_URL+query);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching TCCs:', error);
+            return [];
+        }
+    }
+
+    static async filterTCCs(filter: FilterTCCRequestDTO): Promise<TCCResponseDTO[]> {
+        try {
+            const response = await axios.get<TCCResponseDTO[]>(BASE_URL, {
+                params: filter
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching TCCs:', error);
+            return [];
+        }
+    }
+    
+
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
             const response = await axios.get<TCCResponseDTO[]>(BASE_URL);
@@ -14,19 +38,30 @@ export class TCCService {
         }
     }
 
-    static async createTCC(tcc: TCCRequestDTO): Promise<TCCResponseDTO> {
+    static async createTCC(formData: FormData): Promise<TCCResponseDTO> {
         try {
-            const response = await axios.post<TCCResponseDTO>(BASE_URL, tcc);
+            const response = await axios.post(BASE_URL, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             return response.data;
+
         } catch (error) {
             console.error('Error creating TCC:', error);
             throw error;
         }
     }
 
-    static async updateTCC(tcc: TCCRequestDTO): Promise<TCCResponseDTO> {
+    static async updateTCC(formData: any): Promise<TCCResponseDTO> {
         try {
-            const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${tcc.id}`, tcc);
+
+            const tccData = formData.get('tccData'); // Obtém o JSON como string
+
+            const parsedTCCData = JSON.parse(tccData); // Converte a string JSON de volta para um objeto
+            console.log("ID:", parsedTCCData.id); // Acessa o ID
+
+            const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
             return response.data;
         } catch (error) {
             console.error('Error updating TCC:', error);

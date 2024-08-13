@@ -59,10 +59,11 @@ export interface TCCRequestDTO {
     advisor: string, // Orientador
     committeeMembers: string[], // Membros da Banca como array de strings
     summary?: string, // Resumo (opcional, pois pode ser null no banco)
-    abstract?: string, // Abstract (alterado para corresponder ao nome da coluna)
+    abstractText?: string, // Abstract (alterado para corresponder ao nome da coluna)
     keywords?: string[], // Palavras-chave como array de strings (opcional, pois pode ser null no banco)
     language: string // Idioma
     tcc: undefined, // Arquivo PDF, inicialmente undefined
+
 }
 
 export interface TCCResponseDTO {
@@ -74,8 +75,14 @@ export interface TCCResponseDTO {
     advisor: ProfessorResponseDTO, // Orientador
     committeeMembers: ProfessorResponseDTO[], // Membros da Banca como array de strings
     summary?: string, // Resumo (opcional, pois pode ser null no banco)
-    abstract?: string, // Abstract (alterado para corresponder ao nome da coluna)
+    abstractText?: string, // Abstract (alterado para corresponder ao nome da coluna)
     keywords?: string[], // Palavras-chave como array de strings (opcional, pois pode ser null no banco)
     language: string // Idioma
     tcc?: File; // Arquivo PDF
+    pathFile: string;
+}
+
+export interface FilterTCCRequestDTO {
+    filter: string;
+    value: string;
 }

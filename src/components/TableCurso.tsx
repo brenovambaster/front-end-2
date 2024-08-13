@@ -47,7 +47,7 @@ export default function CursosDemo() {
         setCurso(emptyCurso);
         setSubmitted(false);
         setCursoDialog(true);
-        setEditCursoDialog(false); 
+        setEditCursoDialog(false);
         setDialogTitle('Novo Curso');
     };
 
