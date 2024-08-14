@@ -81,10 +81,10 @@ export default function CoordenadorsDemo() {
                     }
                     setCoordenadorDialog(false);
                     toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
-                    // setCoordenador(emptyCoordenador);
-                    // window.location.reload();
+
                 } catch (error) {
-                    console.error("Erro ao salvar coordenador:", error);
+                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    hideDialog();
                 }
             }
         }
@@ -110,12 +110,13 @@ export default function CoordenadorsDemo() {
             setCoordenadors(coordenadors.filter(val => val.id !== coordenador.id));
             setDeleteCoordenadorDialog(false);
             setCoordenador(emptyCoordenador);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Coordenador inativado com sucesso', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
         } catch (error) {
-            console.error("Erro ao inativar coordenador:", error);
-        }
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
 
-        // window.location.reload();
+            setDeleteCoordenadorDialog(false);
+            setCoordenador(emptyCoordenador);
+        }
     };
 
     const deleteCoordenadors = () => {
@@ -130,14 +131,13 @@ export default function CoordenadorsDemo() {
                 await CoordenadorService.deleteCoordenadors(selectedCoordenadors.map(p => p.id));
                 setCoordenadors(coordenadors.filter(p => !selectedCoordenadors.includes(p)));
                 setSelectedCoordenadors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Coordenador inativado com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+
             } catch (error) {
-                console.error("Erro ao inativar coordenadores:", error);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
             }
             setDeleteSelectedCoordenadorsDialog(false);
         }
-
-        // window.location.reload();
     };
 
     const header = (
@@ -150,7 +150,7 @@ export default function CoordenadorsDemo() {
                 <InputText
                     type="search"
                     onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
-                    placeholder="Search..."
+                    placeholder="Pesquisar..."
                     aria-label="Search coordenadors"
                 />
             </div>
@@ -169,7 +169,7 @@ export default function CoordenadorsDemo() {
                     className="p-button-sm"
                 />
                 <Button
-                    label="Inativar Selecionados"
+                    label="Remover Selecionados"
                     icon="pi pi-trash"
                     severity="danger"
                     disabled={!selectedCoordenadors || selectedCoordenadors.length === 0}
@@ -225,11 +225,6 @@ export default function CoordenadorsDemo() {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        // return <Button label="Export" icon="pi pi-upload" className="p-button-help" aria-label="Export Data" />;
-    };
-
-    const footer = `In total there are ${coordenadors.length} coordenadors.`;
     const courseOptions = [
         { label: 'Ciência da Computação', value: 'Ciência da Computação' },
         { label: 'Engenharia Elétrica', value: 'Engenharia Elétrica' },
@@ -261,12 +256,12 @@ export default function CoordenadorsDemo() {
                     size="small"
                     aria-label="Coordenadors Table"
                 >
-                    <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
-                    <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }}/>
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}/>
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}/>
-                    <Column field="username" header="Nome de Usuário" aria-label="Username" />
-                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }}/>
+                    <Column selectionMode="multiple" exportable={false} aria-label="Select" className=''/>
+                    <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }} />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}  sortable/>
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}  sortable/>
+                    <Column field="username" header="Nome de Usuário" aria-label="Username"  sortable/>
+                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }}  sortable/>
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -356,7 +351,7 @@ export default function CoordenadorsDemo() {
             </Dialog>
 
             <Dialog
-                header="Confirmar Inativação"
+                header="Confirmar Remoção"
                 visible={deleteCoordenadorDialog}
                 onHide={() => setDeleteCoordenadorDialog(false)}
                 footer={
@@ -370,21 +365,21 @@ export default function CoordenadorsDemo() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="Remover"
                             icon="pi pi-check"
                             severity="danger"
                             onClick={deleteCoordenador}
-                            aria-label="Inativar"
+                            aria-label="Remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja inativar o coordenador <strong>{coordenador.name}</strong>?</p>
+                <p>Tem certeza de que deseja remover o coordenador <strong>{coordenador.name}</strong>?</p>
             </Dialog>
 
             <Dialog
-                header="Confirmar Inativação em Massa"
+                header="Confirmar Remoção em Massa"
                 visible={deleteSelectedCoordenadorsDialog}
                 onHide={() => setDeleteSelectedCoordenadorsDialog(false)}
                 footer={
@@ -397,16 +392,16 @@ export default function CoordenadorsDemo() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="Remover"
                             severity="danger"
                             onClick={confirmDeleteSelectedCoordenadors}
-                            aria-label="Inativar"
+                            aria-label="Remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja inativar os coordenadores selecionados?</p>
+                <p>Tem certeza de que deseja remover os coordenadores selecionados?</p>
             </Dialog>
             <div className="card flex justify-content-center">
                 <Toast ref={toast} position="bottom-right" />
