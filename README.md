@@ -1,41 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">Projeto Front-End com Next.js</h1>
 
-## Getting Started
+<p align="center">
+    <img src="https://img.shields.io/badge/Node.js-21.6.2-green.svg" alt="Node.js">
+    <img src="https://img.shields.io/badge/Next.js-14.2.5-blue.svg" alt="Next.js">
+    <img src="https://img.shields.io/badge/React-18.3.1-blue.svg" alt="React">
+</p>
 
-First, run the development server:
-      
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<br>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Descrição
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Este é um projeto desenvolvido com [Next.js](https://nextjs.org/), uma estrutura React que permite a construção de aplicações web modernas e otimizadas. O projeto foi iniciado com [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app), uma ferramenta que facilita a configuração inicial de um ambiente Next.js.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Requisitos
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- **Node.js** versão 21.6.2
+- **npm** versão 10.2.4
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Primeiros Passos
 
-## Learn More
+Para executar o servidor de desenvolvimento, siga os passos abaixo:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Instale as dependências:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+2. **Execute o servidor de desenvolvimento:**
 
-## Deploy on Vercel
+    ```bash
+    npm run dev
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
+3. **Abra o navegador e acesse** [http://localhost:3000](http://localhost:3000) **para ver o resultado.**
