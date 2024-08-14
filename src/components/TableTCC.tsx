@@ -276,7 +276,10 @@ export default function TCCManagement() {
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
+                    onInput={(e) => {
+                        const value = (e.target as HTMLInputElement).value;
+                        setGlobalFilter(value ? value : null);
+                    }}
                     placeholder="Pesquisar..."
                     aria-label="Search TCCs"
                 />
