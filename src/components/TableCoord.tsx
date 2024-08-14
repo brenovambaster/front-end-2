@@ -142,14 +142,16 @@ export default function CoordenadorsDemo() {
 
     const header = (
         <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-            {/* <h4 className="m-0">Gerenciar Coordenadores</h4> */}
             <div className="p-inputgroup">
                 <span className="p-inputgroup-addon">
                     <i className="pi pi-search" aria-hidden="true" />
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
+                    onInput={(e) => {
+                        const value = (e.target as HTMLInputElement).value;
+                        setGlobalFilter(value ? value : null);
+                    }}
                     placeholder="Pesquisar..."
                     aria-label="Search coordenadors"
                 />
