@@ -18,7 +18,6 @@ export default function CursosDemo() {
     const emptyCurso: CursoRequestDTO = {
         id: '',
         name: '',
-        campus: '',
         codeOfCourse: ''
     };
 
@@ -58,7 +57,7 @@ export default function CursosDemo() {
     };
 
     const validateFields = () => {
-        return curso.name && curso.campus && curso.codeOfCourse;
+        return curso.name && curso.codeOfCourse;
     };
 
     const saveCurso = async () => {
@@ -76,14 +75,11 @@ export default function CursosDemo() {
                     }
 
                     setCursoDialog(false);
-
                     toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
-                    // Estava aparecendo esse campo não pode ficar em branco ao salvar mesmo com todos os campos preenchidos
-                    // setCurso(emptyCurso);   
 
-                    // window.location.reload();
                 } catch (error) {
-                    console.error("Erro ao salvar curso:", error);
+                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    hideDialog();
                 }
             }
         }
@@ -108,11 +104,12 @@ export default function CursosDemo() {
             setCursos(cursos.filter(val => val.id !== curso.id));
             setDeleteCursoDialog(false);
             setCurso(emptyCurso);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
         } catch (error) {
-            console.error("Erro ao inativar curso:", error);
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            setDeleteCursoDialog(false);
+            setCurso(emptyCurso);
         }
-        // window.location.reload();
     };
 
     const deleteCursos = () => {
@@ -127,13 +124,14 @@ export default function CursosDemo() {
                 await CursoService.deleteCursos(selectedCursos.map(c => c.id));
                 setCursos(cursos.filter(c => !selectedCursos.includes(c)));
                 setSelectedCursos(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Curso inativado com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
             } catch (error) {
-                console.error("Erro ao inativar cursos:", error);
+                console.error("Erro ao remover cursos:", error);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                setSelectedCursos(null);
             }
             setDeleteSelectedCursosDialog(false);
         }
-        // window.location.reload();
     };
 
     const header = (
@@ -144,8 +142,11 @@ export default function CursosDemo() {
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
-                    placeholder="Search..."
+                    onInput={(e) => {
+                        const value = (e.target as HTMLInputElement).value;
+                        setGlobalFilter(value ? value : null);
+                    }}
+                    placeholder="Pesquisar..."
                     aria-label="Search courses"
                 />
             </div>
@@ -164,7 +165,7 @@ export default function CursosDemo() {
                     className="p-button-sm"
                 />
                 <Button
-                    label="Inativar Selecionados"
+                    label="Remover Selecionados"
                     icon="pi pi-trash"
                     severity="danger"
                     disabled={!selectedCursos || selectedCursos.length === 0}
@@ -246,9 +247,8 @@ export default function CursosDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
-                    <Column field="name" header="Nome" aria-label="Name" />
-                    <Column field="campus" header="Campus" aria-label="Campus" />
-                    <Column field="codeOfCourse" header="Código" aria-label="Code" />
+                    <Column field="name" header="Nome" aria-label="Name" sortable/>
+                    <Column field="codeOfCourse" header="Código" aria-label="Code"/>
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -280,21 +280,6 @@ export default function CursosDemo() {
                     {submitted && !curso.name && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
                 <div className="field mb-4">
-                    <label htmlFor="campus" className="font-bold">
-                        Campus
-                    </label>
-                    <Dropdown
-                        id="campus"
-                        value={curso.campus}
-                        options={campusOptions}
-                        onChange={(e) => setCurso({ ...curso, campus: e.value })}
-                        placeholder="Selecione o Campus"
-                        className="border border-gray-300 rounded p-2 h-10 flex items-center"
-                        aria-describedby="campus-help"
-                    />
-                    {submitted && !curso.campus && <small id="campus-help" className="p-error">Este campo não pode ficar em branco.</small>}
-                </div>
-                <div className="field mb-4">
                     <label htmlFor="code" className="font-bold">
                         Código
                     </label>
@@ -313,7 +298,7 @@ export default function CursosDemo() {
             <Dialog
                 visible={deleteCursoDialog}
                 style={{ width: '40rem' }}
-                header="Confirmar Inativação"
+                header="Confirmar Remoção"
                 modal
                 footer={
                     <React.Fragment>
@@ -339,14 +324,14 @@ export default function CursosDemo() {
                 aria-labelledby="confirm-delete-header"
             >
                 <div className="flex items-center">
-                    <span>Você tem certeza que deseja inativar o curso <b>{curso.name}</b>?</span>
+                    <span>Você tem certeza que deseja remover o curso <b>{curso.name}</b>?</span>
                 </div>
             </Dialog>
 
             <Dialog
                 visible={deleteSelectedCursosDialog}
                 style={{ width: '40rem' }}
-                header="Confirmar Inativação"
+                header="Confirmar Remoção"
                 modal
                 footer={
                     <React.Fragment>
@@ -372,7 +357,7 @@ export default function CursosDemo() {
                 aria-labelledby="confirm-delete-selected-header"
             >
                 <div className="flex align-items-center">
-                    <span>Você tem certeza que deseja inativar os cursos selecionados?</span>
+                    <span>Você tem certeza que deseja remover os cursos selecionados?</span>
                 </div>
             </Dialog>
 

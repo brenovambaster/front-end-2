@@ -12,7 +12,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
 import InputMask from 'react-input-mask';
-import TCC from '../tcc/[id]/page';
+
 
 
 export default function Component() {
@@ -26,11 +26,7 @@ export default function Component() {
     const [professors, setProfessors] = useState<any[]>([]);
     const [filter, setFilter] = useState<FilterTCCRequestDTO | null>(null);
 
-
-    // const professors = [{ label: 'Dr. João', value: 'Dr. João' }, { label: 'Dra. Maria', value: 'Dra. Maria' }];
     const authors = [{ label: 'Carlos Alberto', value: 'Carlos Alberto' }, { label: 'Maria Silva', value: 'Maria Silva' }];
-    // const courses = [{ label: 'Administração', value: 'Administração' }, { label: 'Engenharia de Computação', value: 'Engenharia de Computação' }];
-
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -87,8 +83,6 @@ export default function Component() {
     };
 
     const handleSearchChange = (e) => {
-        // setSearchQuery(e.target.value);
-        // setFilterQuery(e.target.value);
         setSearchValue(e.target.value);
     };
 

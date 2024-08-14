@@ -1,5 +1,3 @@
-// src/types.ts
-
 export interface ProfessorResponseDTO {
     id: string;
     name: string;
@@ -21,14 +19,12 @@ export interface ProfessorRequestDTO {
 export interface CursoRequestDTO {
     id: string,
     name: string,
-    campus: string,
     codeOfCourse: string
 }
 
 export interface CursoResponseDTO {
     id: string,
     name: string,
-    campus: string,
     codeOfCourse: string
 }
 

@@ -80,10 +80,12 @@ export default function ProfessorsDemo() {
                     }
                     setProfessorDialog(false);
                     toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
-                    // setProfessor(emptyProfessor);
-                    // window.location.reload();
+
                 } catch (error) {
                     console.error("Erro ao salvar professor:", error);
+                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    setProfessorDialog(false);
+                    hideDialog();
                 }
             }
         }
@@ -109,12 +111,13 @@ export default function ProfessorsDemo() {
             setProfessors(professors.filter(val => val.id !== professor.id));
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Professor inativado com sucesso', life: 3000 });
-        } catch (error) {
-            console.error("Erro ao inativar professor:", error);
-        }
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
 
-        // window.location.reload();
+        } catch (error) {
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            setDeleteProfessorDialog(false);
+            setProfessor(emptyProfessor);
+        }
     };
 
     const deleteProfessors = () => {
@@ -129,27 +132,28 @@ export default function ProfessorsDemo() {
                 await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Professor inativado com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
             } catch (error) {
-                console.error("Erro ao inativar professores:", error);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                setSelectedProfessors(null);
             }
             setDeleteSelectedProfessorsDialog(false);
         }
-
-        // window.location.reload();
     };
 
     const header = (
         <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-            {/* <h4 className="m-0">Gerenciar Professores</h4> */}
             <div className="p-inputgroup">
                 <span className="p-inputgroup-addon">
                     <i className="pi pi-search" aria-hidden="true" />
                 </span>
                 <InputText
                     type="search"
-                    onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
-                    placeholder="Search..."
+                    onInput={(e) => {
+                        const value = (e.target as HTMLInputElement).value;
+                        setGlobalFilter(value ? value : null);
+                    }}
+                    placeholder="Pesquisar..."
                     aria-label="Search professors"
                 />
             </div>
@@ -168,7 +172,7 @@ export default function ProfessorsDemo() {
                     className="p-button-sm"
                 />
                 <Button
-                    label="Inativar Selecionados"
+                    label="remover Selecionados"
                     icon="pi pi-trash"
                     severity="danger"
                     disabled={!selectedProfessors || selectedProfessors.length === 0}
@@ -224,11 +228,6 @@ export default function ProfessorsDemo() {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        // return <Button label="Export" icon="pi pi-upload" className="p-button-help" aria-label="Export Data" />;
-    };
-
-    const footer = `In total there are ${professors.length} professors.`;
     const locationOptions = [
         { label: 'Interno', value: 'Interno' },
         { label: 'Externo', value: 'Externo' }
@@ -269,11 +268,16 @@ export default function ProfessorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} />
-                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }} />
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} />
-                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" />
-                    <Column header="Titulação" body={statusBodyTemplate} sortable style={{ width: '10%' }} aria-label="Title" />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} sortable
+                    body={(rowData) => (
+                        <div style={{ maxWidth: '40rem', whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                            {rowData.name}
+                        </div>
+                    )}/>
+                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }} sortable/>
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable/>
+                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" sortable/>
+                    <Column header="Titulação"  field="title"  style={{ width: '10%' }} aria-label="Title" sortable/>
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -362,14 +366,14 @@ export default function ProfessorsDemo() {
                         aria-describedby="title-help"
                     />
                     {submitted && !professor.title && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-
                 </div>
             </Dialog>
 
             <Dialog
-                header="Confirmar Inativação"
+                header="Confirmar remoção"
                 visible={deleteProfessorDialog}
                 onHide={() => setDeleteProfessorDialog(false)}
+                style={{ width: '30rem' }}
                 footer={
                     <React.Fragment>
                         <Button
@@ -381,23 +385,24 @@ export default function ProfessorsDemo() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="remover"
                             icon="pi pi-check"
                             severity="danger"
                             onClick={deleteProfessor}
-                            aria-label="Inativar"
+                            aria-label="remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja inativar o professor <strong>{professor.name}</strong>?</p>
+                <p>Tem certeza de que deseja remover o professor <strong>{professor.name}</strong>?</p>
             </Dialog>
 
             <Dialog
-                header="Confirmar Inativação em Massa"
+                header="Confirmar remoção em Massa"
                 visible={deleteSelectedProfessorsDialog}
                 onHide={() => setDeleteSelectedProfessorsDialog(false)}
+                style={{ width: '40rem' }}
                 footer={
                     <React.Fragment>
                         <Button
@@ -408,16 +413,16 @@ export default function ProfessorsDemo() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="remover"
                             severity="danger"
                             onClick={confirmDeleteSelectedProfessors}
-                            aria-label="Inativar"
+                            aria-label="remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja inativar os professores selecionados?</p>
+                <p>Tem certeza de que deseja remover os professores selecionados?</p>
             </Dialog>
             <div className="card flex justify-content-center">
                 <Toast ref={toast} position="bottom-right" />

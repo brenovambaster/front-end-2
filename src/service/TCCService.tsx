@@ -56,10 +56,10 @@ export class TCCService {
     static async updateTCC(formData: any): Promise<TCCResponseDTO> {
         try {
 
-            const tccData = formData.get('tccData'); // Obtém o JSON como string
+            const tccData = formData.get('tccData');
 
-            const parsedTCCData = JSON.parse(tccData); // Converte a string JSON de volta para um objeto
-            console.log("ID:", parsedTCCData.id); // Acessa o ID
+            const parsedTCCData = JSON.parse(tccData); 
+            console.log("ID:", parsedTCCData.id);
 
             const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
             return response.data;
