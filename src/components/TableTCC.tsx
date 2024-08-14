@@ -19,6 +19,7 @@ import { Toolbar } from "primereact/toolbar";
 import React, { useEffect, useRef, useState } from "react";
 import { TCCService } from "../service/TCCService";
 import { TCCRequestDTO, TCCResponseDTO } from "../types";
+import { Console } from "console";
 
 export default function TCCManagement() {
     const emptyTCC: TCCRequestDTO = {
@@ -70,11 +71,26 @@ export default function TCCManagement() {
     ];
 
     const keywordOptions = [
-        "Matemática",
-        "Computação",
-        "Machine Learning",
-        "Data Science",
-        "Engenharia",
+        "Metodologia", "Análise de Dados", "Pesquisa Qualitativa", "Pesquisa Quantitativa", "Métodos Estatísticos",
+        "Estudo de Caso", "Trabalho de Campo", "Revisão de Literatura", "Desenvolvimento de Software", "Engenharia de Software",
+        "Gerenciamento de Projetos", "Inteligência Artificial", "Machine Learning", "Deep Learning",
+        "Data Science", "Big Data", "Algoritmos", "Redes Neurais", "Processamento de Imagem", "Visão Computacional", "Análise de Sentimentos",
+        "Análise Preditiva", "Estatística Aplicada", "Simulação", "Otimização", "Engenharia de Dados", "Banco de Dados", "Modelagem de Dados",
+        "Sistemas Distribuídos", "Segurança da Informação", "Criptografia", "Privacidade de Dados", "Proteção de Dados", "Sistemas de Informação",
+        "Tecnologias Emergentes", "Blockchain", "Internet das Coisas (IoT)", "Computação em Nuvem", "Arquitetura de Software",
+        "Desenvolvimento Web", "Desenvolvimento Mobile", "Interfaces de Usuário", "Experiência do Usuário (UX)", "Usabilidade",
+        "Design de Sistemas", "Tecnologias de Rede", "Gerenciamento de TI", "Engenharia de Requisitos", "Qualidade de Software",
+        "Testes de Software", "Automação", "Robótica", "Sistemas Inteligentes", "Computação Gráfica", "Análise de Redes Sociais",
+        "Gestão de Conhecimento", "Educação a Distância", "Gamificação", "Metodologias Ágeis", "Scrum", "Kanban", "DevOps",
+        "Cibersegurança", "Ética em TI", "Sustentabilidade", "Tecnologia Assistiva", "Realidade Aumentada", "Realidade Virtual",
+        "Bioinformática", "Engenharia Biomédica", "Sistemas de Controle", "Engenharia Eletrônica", "Engenharia de Telecomunicações",
+        "Economia Digital", "Transformação Digital", "Tecnologia da Informação", "Gestão de Projetos Tecnológicos",
+        "Engenharia de Sistemas", "Desenvolvimento de Produtos", "Planejamento Estratégico",
+        "Gestão da Inovação", "Ciência de Dados", "Análise de Risco", "Modelagem de Processos",
+        "Desenvolvimento Sustentável", "Empreendedorismo", "Startups", "Inovação", "Tecnologia da Informação e Comunicação (TIC)",
+        "Computação de Alto Desempenho", "Sistemas Inteligentes de Transporte", "Engenharia de Produção",
+        "Automação Industrial", "Engenharia Mecânica", "Ciências Ambientais", "Gestão Ambiental", "Economia Circular",
+        "Energias Renováveis", "Sustentabilidade em TI"
     ];
 
     const fuse = new Fuse(keywordOptions, {
@@ -126,33 +142,39 @@ export default function TCCManagement() {
     };
 
     const validateFields = () => {
-        return (
-            TCC.title && TCC.title.trim() !== '' &&
-
-            TCC.author && TCC.author.trim() !== '' &&
-
-            TCC.course &&
-
-            TCC.defenseDate && !isNaN(Date.parse(TCC.defenseDate)) &&
-
-            TCC.advisor && TCC.advisor.id && TCC.advisor.id.trim() !== '' &&
-
-            Array.isArray(TCC.committeeMembers) &&
-            TCC.committeeMembers.length === 2 &&
-            TCC.committeeMembers.every(member => member.id && member.id.trim() !== '') &&
-
-            TCC.summary && TCC.summary.trim() !== '' &&
-
-            TCC.abstractText && TCC.abstractText.trim() !== '' &&
-
-            Array.isArray(TCC.keywords) && TCC.keywords.length > 0 &&
-
-            TCC.language && TCC.language.trim() !== '' &&
-
-            TCC.tcc && TCC.tcc.objectURL && TCC.tcc.objectURL.trim() !== ''
-        );
+        if (!editTCCDialog) {
+            return (
+                TCC.title && TCC.title.trim() !== '' &&
+                TCC.author && TCC.author.trim() !== '' &&
+                TCC.course &&
+                TCC.defenseDate && !isNaN(Date.parse(TCC.defenseDate)) &&
+                TCC.advisor && TCC.advisor.id && TCC.advisor.id.trim() !== '' &&
+                Array.isArray(TCC.committeeMembers) &&
+                TCC.committeeMembers.length === 2 &&
+                TCC.committeeMembers.every(member => member.id && member.id.trim() !== '') &&
+                TCC.summary && TCC.summary.trim() !== '' &&
+                TCC.abstractText && TCC.abstractText.trim() !== '' &&
+                Array.isArray(TCC.keywords) && TCC.keywords.length > 0 &&
+                TCC.language && TCC.language.trim() !== '' &&
+                TCC.tcc && TCC.tcc.objectURL && TCC.tcc.objectURL.trim() !== ''
+            );
+        } else {
+            return (
+                TCC.title && TCC.title.trim() !== '' &&
+                TCC.author && TCC.author.trim() !== '' &&
+                TCC.course &&
+                TCC.defenseDate && !isNaN(Date.parse(TCC.defenseDate)) &&
+                TCC.advisor && TCC.advisor.id && TCC.advisor.id.trim() !== '' &&
+                Array.isArray(TCC.committeeMembers) &&
+                TCC.committeeMembers.length === 2 &&
+                TCC.committeeMembers.every(member => member.id && member.id.trim() !== '') &&
+                TCC.summary && TCC.summary.trim() !== '' &&
+                TCC.abstractText && TCC.abstractText.trim() !== '' &&
+                Array.isArray(TCC.keywords) && TCC.keywords.length > 0 &&
+                TCC.language && TCC.language.trim() !== ''
+            );
+        }
     };
-
 
     const saveTCC = async () => {
         if (validateFields()) {
@@ -173,23 +195,13 @@ export default function TCCManagement() {
                     const newTCC = await TCCService.createTCC(formData);
                     setTCCs([...TCCs, newTCC]);
                 }
-                setTCCDialog(false);
-                toast.current.show({
-                    severity: "success",
-                    summary: "info",
-                    detail: "Operação realizada com sucesso",
-                    life: 3000,
-                });
+                toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
 
             } catch (error) {
-                console.error("Erro ao salvar TCC:", error);
-                toast.current.show({
-                    severity: "error",
-                    summary: "Erro",
-                    detail: "Falha ao realizar a operação",
-                    life: 3000,
-                });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
             }
+            setEditTCCDialog(false);
+            setTCCDialog(false);
         }
 
         setSubmitted(true);
@@ -213,14 +225,12 @@ export default function TCCManagement() {
             setTCCs(TCCs.filter((val) => val.id !== TCC.id));
             setDeleteTCCDialog(false);
             setTCC(emptyTCC);
-            toast.current.show({
-                severity: "error",
-                summary: "info",
-                detail: "TCC inativado com sucesso",
-                life: 3000,
-            });
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+
         } catch (error) {
-            console.error("Erro ao inativar TCC:", error);
+            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            setDeleteTCCDialog(false);
+            setTCC(emptyTCC);
         }
     };
 
@@ -236,14 +246,10 @@ export default function TCCManagement() {
                 await TCCService.deleteTCCs(selectedTCCs.map((p) => p.id));
                 setTCCs(TCCs.filter((p) => !selectedTCCs.includes(p)));
                 setSelectedTCCs(null);
-                toast.current.show({
-                    severity: "error",
-                    summary: "info",
-                    detail: "TCC inativado com sucesso",
-                    life: 3000,
-                });
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
             } catch (error) {
-                console.error("Erro ao inativar TCCs:", error);
+                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                setSelectedTCCs(null);
             }
             setDeleteSelectedTCCsDialog(false);
         }
@@ -252,14 +258,6 @@ export default function TCCManagement() {
     const onFileSelect = (e) => {
         let selectedFile = e.files[0];
         setTCC((prevTCC) => ({ ...prevTCC, tcc: selectedFile }));
-    };
-
-    const onFileUpload = () => {
-        toast.current.show({
-            severity: "info",
-            summary: "Success",
-            detail: "Arquivo enviado com sucesso",
-        });
     };
 
     const onFileRemove = (file) => {
@@ -279,7 +277,7 @@ export default function TCCManagement() {
                 <InputText
                     type="search"
                     onInput={(e) => setGlobalFilter((e.target as HTMLInputElement).value)}
-                    placeholder="Search..."
+                    placeholder="Pesquisar..."
                     aria-label="Search TCCs"
                 />
             </div>
@@ -354,14 +352,9 @@ export default function TCCManagement() {
         );
     };
 
-    const renderCommitteeMembers = (rowData: TCCResponseDTO) => {
-        return (
-            <ul>
-                {rowData.committeeMembers.map((member, index) => (
-                    <li key={index}>{member.name}</li>
-                ))}
-            </ul>
-        );
+    const formatDate = (date: any) => {
+        const defenseDate = new Date(date);
+        return `${defenseDate.getDate().toString().padStart(2, '0')}/${(defenseDate.getMonth() + 1).toString().padStart(2, '0')}/${defenseDate.getFullYear()}`;
     };
 
     return (
@@ -398,28 +391,33 @@ export default function TCCManagement() {
                         aria-label="ID"
                         style={{ width: "10%" }}
                     />
-                    <Column field="title" header="Título" aria-label="Título" />
-                    <Column field="author" header="Autor" aria-label="Autor" />
-                    <Column field="course.name" header="Curso" aria-label="Curso" />
+                    <Column
+                        field="title"
+                        header="Título"
+                        aria-label="Título"
+                        sortable
+                        body={(rowData) => (
+                            <div style={{ maxWidth: '30rem', whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                                {rowData.title}
+                            </div>
+                        )}
+                    />
+
+                    <Column field="author" header="Autor" aria-label="Autor" sortable />
+                    <Column field="course.name" header="Curso" aria-label="Curso" sortable />
                     <Column
                         field="defenseDate"
                         header="Data da Defesa"
                         aria-label="Data da Defesa"
+                        sortable
+                        body={(rowData) => formatDate(rowData.defenseDate)}
                     />
-                    <Column field="advisor.name" header="Orientador" aria-label="Orientador" />
-                    <Column
-                        body={renderCommitteeMembers}
-                        header="Membros da Banca"
-                        aria-label="Membros da Banca"
-                    />
-                    <Column field="summary" header="Resumo" aria-label="Resumo" />
-                    <Column field="abstractText" header="abstractText" aria-label="Summary" />
-                    <Column
-                        field="keywords"
-                        header="Palavras-chave"
-                        aria-label="Palavras-chave"
-                    />
-                    <Column field="language" header="Idioma" aria-label="Idioma" />
+                    <Column field="advisor.name" header="Orientador" aria-label="Orientador" sortable
+                        body={(rowData) => (
+                            <div style={{ maxWidth: '30rem', whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                                {rowData.advisor.name}
+                            </div>
+                        )} />
                     <Column
                         body={actionBodyTemplate}
                         headerStyle={{ width: "8rem" }}
@@ -521,11 +519,19 @@ export default function TCCManagement() {
                     </label>
                     <Dropdown
                         id="advisor"
-                        value={editTCCDialog ? TCC.advisor.id : TCC.advisor.id}
+                        value={TCC.advisor?.id}
                         options={professorOptions.map(professor => ({ label: professor.name, value: professor.id }))}
                         onChange={(e) => {
                             const selectedAdvisor = professorOptions.find(advisor => advisor.id === e.value);
-                            setTCC({ ...TCC, advisor: { id: selectedAdvisor.id, name: selectedAdvisor.name } });
+
+                            const isInCommittee = TCC.committeeMembers.some(member => member.id === selectedAdvisor.id);
+
+                            if (!isInCommittee) {
+                                setTCC(prevTCC => ({
+                                    ...prevTCC,
+                                    advisor: { id: selectedAdvisor.id, name: selectedAdvisor.name }
+                                }));
+                            }
                         }}
                         required
                         placeholder="Selecione o orientador"
@@ -538,7 +544,6 @@ export default function TCCManagement() {
                     )}
                 </div>
 
-
                 <div className="field mb-4">
                     <label htmlFor="committeeMembers" className="font-bold">
                         Membros da Banca
@@ -550,16 +555,23 @@ export default function TCCManagement() {
                             label: professor.name,
                             value: professor.id
                         }))}
+
+
                         onChange={(e) => {
+                            const selectedMembers = professorOptions
+                                .filter(option => e.value.includes(option.id)) 
+                                .map(option => ({
+                                    id: option.id,
+                                    name: option.label
+                                }));
+
+                            const filteredMembers = selectedMembers.filter(
+                                member => member.id !== TCC.advisor.id
+                            );
 
                             setTCC(prevTCC => ({
                                 ...prevTCC,
-                                committeeMembers: professorOptions
-                                    .filter(option => e.value.includes(option.id)) // Filtra os membros selecionados
-                                    .map(option => ({
-                                        id: option.id,
-                                        name: option.label
-                                    }))
+                                committeeMembers: filteredMembers
                             }));
                         }}
                         required
@@ -615,7 +627,7 @@ export default function TCCManagement() {
                 </div>
                 <div className="field mb-4">
                     <label htmlFor="keywords" className="font-bold">
-                        Palavras-chave
+                        Palavras-Chave
                     </label>
                     <div className="relative">
                         <AutoComplete
@@ -680,24 +692,34 @@ export default function TCCManagement() {
                     </label>
                     <FileUpload
                         name="file-upload"
-                        multiple={false} // Apenas um arquivo permitido
+                        multiple={false}
                         accept="application/pdf"
                         maxFileSize={100000000}
                         emptyTemplate={
                             <p className="m-0">Arraste e solte o arquivo PDF aqui.</p>
                         }
                         className="w-full"
-                        chooseLabel={
-                            <span className="text-sm px-3 py-2">Escolher Arquivo</span>
-                        }
-                        uploadLabel={<span className="text-sm px-3 py-2">Enviar</span>}
+                        chooseLabel={<span className="text-sm px-3 py-2">Escolher Arquivo</span>}
                         cancelLabel={<span className="text-sm px-3 py-2">Cancelar</span>}
-                        onUpload={onFileUpload}
                         onSelect={onFileSelect}
                         onRemove={onFileRemove}
                         onClear={onFileClear}
+                        customUpload={true}
+                        uploadLabel={" "}
+                        chooseOptions={{
+                            style: {
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }
+                        }}
+                        uploadOptions={{
+                            style: {
+                                display: 'none',
+                            }
+                        }}
                     />
-                    {submitted && !TCC.tcc && (
+                    {submitted && !TCC.tcc && !editTCCDialog && (
                         <small className="p-error text-red-600">
                             Por favor, realize o upload do arquivo PDF.
                         </small>
@@ -706,9 +728,10 @@ export default function TCCManagement() {
             </Dialog>
 
             <Dialog
-                header="Confirmar Inativação"
+                header="Confirmar Remoção"
                 visible={deleteTCCDialog}
                 onHide={() => setDeleteTCCDialog(false)}
+                style={{ width: '40rem' }}
                 footer={
                     <React.Fragment>
                         <Button
@@ -720,23 +743,24 @@ export default function TCCManagement() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="Remover"
                             icon="pi pi-check"
                             severity="danger"
                             onClick={deleteTCC}
-                            aria-label="Inativar"
+                            aria-label="Remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>
-                    Tem certeza de que deseja inativar o TCC <strong>{TCC.title}</strong>?
+                <p style={{ overflowWrap: 'break-word', whiteSpace: 'normal' }}>
+                    Tem certeza de que deseja remover o TCC <strong>{TCC.title}</strong>?
                 </p>
             </Dialog>
 
+
             <Dialog
-                header="Confirmar Inativação em Massa"
+                header="Confirmar Remoção em Massa"
                 visible={deleteSelectedTCCsDialog}
                 onHide={() => setDeleteSelectedTCCsDialog(false)}
                 footer={
@@ -749,16 +773,16 @@ export default function TCCManagement() {
                             className="p-button-sm"
                         />
                         <Button
-                            label="Inativar"
+                            label="Remover"
                             severity="danger"
                             onClick={confirmDeleteSelectedTCCs}
-                            aria-label="Inativar"
+                            aria-label="Remover"
                             className="p-button-sm"
                         />
                     </React.Fragment>
                 }
             >
-                <p>Tem certeza de que deseja inativar os TCCs selecionados?</p>
+                <p>Tem certeza de que deseja remover os TCCs selecionados?</p>
             </Dialog>
             <div className="card flex justify-content-center">
                 <Toast ref={toast} position="bottom-right" />
