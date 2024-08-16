@@ -79,11 +79,11 @@ export default function ProfessorsDemo() {
                         setProfessors([...professors, newProfessor]);
                     }
                     setProfessorDialog(false);
-                    toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {
                     console.error("Erro ao salvar professor:", error);
-                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                     setProfessorDialog(false);
                     hideDialog();
                 }
@@ -111,10 +111,10 @@ export default function ProfessorsDemo() {
             setProfessors(professors.filter(val => val.id !== professor.id));
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+            toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
         }
@@ -132,9 +132,9 @@ export default function ProfessorsDemo() {
                 await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Operação realizada com sucesso', life: 5000 });
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                 setSelectedProfessors(null);
             }
             setDeleteSelectedProfessorsDialog(false);

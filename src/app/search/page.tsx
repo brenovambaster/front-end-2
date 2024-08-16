@@ -13,66 +13,91 @@ import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
 import InputMask from 'react-input-mask';
 
-
-
 export default function Component() {
     const [TCCs, setTCCs] = useState<any[]>([]);
     const [first, setFirst] = useState<number>(0);
     const [rows, setRows] = useState<number>(10);
     const [globalFilter, setGlobalFilter] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [filterQuery, setFilterQuery] = useState('');
     const [courses, setCourses] = useState<any[]>([]);
     const [professors, setProfessors] = useState<any[]>([]);
-    const [filter, setFilter] = useState<FilterTCCRequestDTO | null>(null);
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const [dateFilterOption, setDateFilterOption] = useState<string | null>(null);
+    const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+    const [selectedYear, setSelectedYear] = useState<string | null>(null);
+    const [searchValue, setSearchValue] = useState('');
+    const [filterSearchValue, setFilterSearchValue] = useState('');
 
-    const authors = [{ label: 'Carlos Alberto', value: 'Carlos Alberto' }, { label: 'Maria Silva', value: 'Maria Silva' }];
+    const authors = [{ label: 'Galois', value: 'Galois' }, { label: 'João', value: 'João' }];
 
     const router = useRouter();
     const searchParams = useSearchParams();
 
     useEffect(() => {
-
         CursoService.getCursos().then((data) => setCourses(data));
         ProfessorService.getProfessors().then((data) => setProfessors(data));
 
         const search = searchParams.get('query');
-
         if (search) {
             TCCService.searchTCCs(`/search?query=${search}`).then((data) => setTCCs(data));
         } else {
             TCCService.getTCCs().then((data) => setTCCs(data));
         }
-
-        console.log(JSON.stringify(courses));
-
     }, [first, rows, location.search]);
+
+    useEffect(() => {
+        if (selectedFilter !== null) {
+            setDateFilterOption(null);
+            setSelectedMonth(null);
+            setSelectedYear(null);
+            setSearchValue('');
+        }
+    }, [selectedFilter]);
+
 
     const onPageChange = (event: DataTableStateEvent) => {
         setFirst(event.first || 0);
         setRows(event.rows || 10);
     };
 
-    const [selectedFilter, setSelectedFilter] = useState(null);
-    const [searchValue, setSearchValue] = useState('');
-
     const filterOptions = [
-        { name: 'Data da Defesa', value: 'date' },
+        { name: 'Data da Defesa', value: 'defense_date' },
         { name: 'Título', value: 'title' },
         { name: 'Orientador', value: 'advisor' },
         { name: 'Autor', value: 'author' },
         { name: 'Curso', value: 'course' },
-        { name: 'Palavra-chave', value: 'keyword' }
+        { name: 'Palavra-chave', value: 'keywords' }
     ];
+
+    const dateFilterOptions = [
+        { label: 'Mês e Ano', value: 'month_year' },
+        { label: 'Ano', value: 'year' },
+        { label: 'Data Completa', value: 'full_date' }
+    ];
+
+    const months = [
+        { label: 'Janeiro', value: '01' }, { label: 'Fevereiro', value: '02' }, { label: 'Março', value: '03' },
+        { label: 'Abril', value: '04' }, { label: 'Maio', value: '05' }, { label: 'Junho', value: '06' },
+        { label: 'Julho', value: '07' }, { label: 'Agosto', value: '08' }, { label: 'Setembro', value: '09' },
+        { label: 'Outubro', value: '10' }, { label: 'Novembro', value: '11' }, { label: 'Dezembro', value: '12' }
+    ];
+
+    const years = Array.from({ length: 30 }, (_, index) => ({
+        label: `${new Date().getFullYear() - index}`,
+        value: `${new Date().getFullYear() - index}`
+    }));
 
     const getPlaceholder = () => {
         switch (selectedFilter) {
-            case 'date': return 'Digite a data (DD/MM/AAAA)';
+            case 'defense_date':
+                if (dateFilterOption === 'month_year') return 'Selecione o mês e ano';
+                if (dateFilterOption === 'year') return 'Selecione o ano';
+                return 'Digite a data (DD/MM/AAAA)';
             case 'title': return 'Digite o título...';
             case 'advisor': return 'Selecione o orientador';
             case 'author': return 'Selecione o autor...';
             case 'course': return 'Selecione o curso';
-            case 'keyword': return 'Digite a palavra-chave...';
+            case 'keywords': return 'Digite a palavra-chave...';
             default: return '';
         }
     };
@@ -80,113 +105,204 @@ export default function Component() {
     const handleFilterChange = (e) => {
         setSelectedFilter(e.value);
         setSearchValue('');
+        setDateFilterOption(null);
+        setFilterSearchValue('');
     };
 
-    const handleSearchChange = (e) => {
-        setSearchValue(e.target.value);
+    const handleFilterSearchChange = (e) => {
+        setFilterSearchValue(e.target.value);
+    }
+
+    const handleDateFilterOptionChange = (e) => {
+        setDateFilterOption(e.value);
+        setSearchValue('');
+        setFilterSearchValue('');
     };
 
     const formatDate = (rowData: any) => {
         if (!rowData || !rowData.defenseDate) {
             return '';
         }
-
         const [year, month, day] = rowData.defenseDate.split('-');
         return `${day}/${month}/${year}`;
     };
-
 
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
             e.type === "click"
         ) {
-            const search = searchParams.get('query');
-
-            if ((searchQuery.trim() != "")) {
+            if (searchQuery.trim() !== "") {
                 TCCService.searchTCCs(`/search?query=${searchQuery}`).then((data) => setTCCs(data));
-                router.push(`/search?query=${decodeURIComponent(searchQuery)}`);
+                router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
             }
         }
     };
 
     const handleFilter = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
             e.type === "click"
         ) {
-            if (selectedFilter && searchValue) {
-                const filter = { filter: selectedFilter, value: searchValue };
-                
-                setFilter(filter);
 
-                alert(JSON.stringify(filter));
-                
+            if (selectedFilter && filterSearchValue.trim() !== '') {
+
+                let filterValue = filterSearchValue;
+
+                if (selectedFilter === 'advisor') {
+
+                    const professor = professors.find(prof => prof.name.toLowerCase() === filterSearchValue.toLowerCase());
+                    if (professor) {
+                        filterValue = professor.id;
+                    }
+                }
+
+                if (selectedFilter === 'course') {
+                    const course = courses.find(course => course.name.toLowerCase() === filterSearchValue.toLowerCase());
+                    if (course) {
+                        filterValue = course.id;
+                    }
+                }
+                const filter = { filter: selectedFilter, value: filterValue };
                 TCCService.filterTCCs(filter).then((data) => setTCCs(data));
             }
-        }
-    }
+
+            if (selectedFilter === 'defense_date' && dateFilterOption) {
+                let filterValue = filterSearchValue;
+
+                if (dateFilterOption === 'month_year' && selectedMonth !== null && selectedYear !== null) {
+                    
+                    filterValue = `${selectedYear}_${selectedMonth}`;
+                    const filter = { filter: dateFilterOption, value: filterValue };
+                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+                alert(JSON.stringify(filter));
+
+
+                } else if (dateFilterOption === 'year' && selectedYear !== null) {
+
+                    filterValue = selectedYear;
+                    const filter = { filter: dateFilterOption, value: filterValue };
+                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+                alert(JSON.stringify(filter));
+
+
+                } else if (dateFilterOption === 'full_date' && filterSearchValue) {
+
+                    const [day, month, year] = filterSearchValue.split('/');
+                    filterValue = `${year}-${month}-${day}`;
+
+                    if (!(day.includes('_') || month.includes('_') || year.includes('_'))) {
     
-            
+                        const filter = { filter: selectedFilter, value: filterValue };
+                        TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+                alert(JSON.stringify(filter));
+
+                    }
+                }
+            }
+        }
+    };
 
     const renderInputField = () => {
-        switch (selectedFilter) {
-            case 'date':
-                return (
-                    <InputMask
-                        mask="99/99/9999"
-                        id='dateInput'
-                        value={searchValue}
-                        onChange={handleSearchChange}
-                        placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 pl-3 pr-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                            style={{ display: 'flex', alignItems: 'center' }}
-
+        if (selectedFilter === 'defense_date') {
+            return (
+                <div className="flex gap-4 items-center">
+                    <Dropdown
+                        value={dateFilterOption}
+                        options={dateFilterOptions}
+                        onChange={handleDateFilterOptionChange}
+                        placeholder="Filtrar data por..."
+                        className="h-10 border-2 border-gray-300 rounded-md"
+                        style={{ width: '200px', display: 'flex', alignItems: 'center' }}
                     />
-                );
+
+                    {dateFilterOption === 'month_year' && (
+                        <>
+                            <Dropdown
+                                value={selectedMonth}
+                                options={months}
+                                onChange={(e) => setSelectedMonth(e.value)}
+                                placeholder="Selecione o mês"
+                                className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
+                                style={{ display: 'flex', alignItems: 'center', width: '200px' }}
+                            />
+                            <Dropdown
+                                value={selectedYear}
+                                options={years}
+                                onChange={(e) => setSelectedYear(e.value)}
+                                placeholder="Selecione o ano"
+                                className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
+                                style={{ display: 'flex', alignItems: 'center', width: '200px' }}
+                            />
+                        </>
+                    )}
+
+                    {dateFilterOption === 'year' && (
+                        <Dropdown
+                            value={selectedYear}
+                            options={years}
+                            onChange={(e) => setSelectedYear(e.value)}
+                            placeholder="Selecione o ano"
+                            className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
+                            style={{ display: 'flex', alignItems: 'center', width: '200px' }}
+                        />
+                    )}
+
+                    {dateFilterOption === 'full_date' && (
+                        <InputMask
+                            mask="99/99/9999"
+                            value={filterSearchValue}
+                            onChange={handleFilterSearchChange}
+                            placeholder={getPlaceholder()}
+                            className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        switch (selectedFilter) {
             case 'advisor':
                 return (
                     <Dropdown
-                        value={searchValue}
-                        options={professors.map(professor => professor.name)}
-                        onChange={handleSearchChange}
+                        value={filterSearchValue}
+                        options={professors.map(prof => ({ label: prof.name, value: prof.name }))}
+                        onChange={(e) => setFilterSearchValue(e.value)}
                         placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 pl-3 pr-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                            style={{ display: 'flex', alignItems: 'center' }}
-
+                        className="w-[300px] h-10 border-2 border-gray-300 rounded-md"
+                        style={{ display: 'flex', alignItems: 'center' }}
                     />
                 );
             case 'author':
                 return (
                     <Dropdown
-                        value={searchValue}
+                        value={filterSearchValue}
                         options={authors}
-                        onChange={handleSearchChange}
+                        onChange={(e) => setFilterSearchValue(e.value)}
                         placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 pl-3 pr-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                            style={{ display: 'flex', alignItems: 'center' }}
-
+                        className="w-[300px] h-10 border-2 border-gray-300 rounded-md"
+                        style={{ display: 'flex', alignItems: 'center' }}
                     />
                 );
             case 'course':
                 return (
                     <Dropdown
-                        value={searchValue}
-                        options={courses.map(course => course.name)}
-                        onChange={handleSearchChange}
+                        value={filterSearchValue}
+                        options={courses.map(course => ({ label: course.name, value: course.name }))}
+                        onChange={(e) => setFilterSearchValue(e.value)}
                         placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 pl-3 pr-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                            style={{ display: 'flex', alignItems: 'center' }}
-
+                        className="w-[300px] h-10 border-2 border-gray-300 rounded-md"
+                        style={{ display: 'flex', alignItems: 'center' }}
                     />
                 );
             default:
                 return (
                     <InputText
-                        value={searchValue}
-                        onChange={handleSearchChange}
+                        value={filterSearchValue}
+                        onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 pl-3 pr-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
                     />
                 );
         }
@@ -239,7 +355,7 @@ export default function Component() {
                         {renderInputField()}
                     </div>
                     <div className="flex-shrink-0">
-                        <Button className="p-button-sm h-10 flex items-center" onClick={handleFilter}>
+                        <Button className="p-button-sm h-10 flex items-center" onClick={handleFilter} >
                             <span className="text-sm"><b>Aplicar</b></span>
                         </Button>
                     </div>
@@ -261,7 +377,7 @@ export default function Component() {
                         currentPageReportTemplate="Exibindo {first} - {last} de {totalRecords} TCCs"
                         rowsPerPageOptions={[10, 20, 30]}
                         size="small"
-                        paginatorClassName="text-xs" /* Ajuste o tamanho da fonte do paginator */
+                        paginatorClassName="text-xs" 
                         emptyMessage="Nenhum TCC correspondente foi encontrado."
                     >
                         <Column
