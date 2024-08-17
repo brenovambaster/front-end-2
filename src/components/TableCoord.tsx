@@ -11,8 +11,10 @@ import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
-import { CoordenadorService } from '../service/CoordenadorService.tsx';
-import { CoordenadorRequestDTO } from '../types';
+
+import { CoordenadorService } from '@/service/CoordenadorService.tsx';
+import { CoordenadorRequestDTO, CursoRequestDTO } from '../types';
+import { CursoService } from "@/service/CursoService";
 
 
 export default function CoordenadorsDemo() {
@@ -24,6 +26,12 @@ export default function CoordenadorsDemo() {
         password: '',
         course: ''
     };
+
+    interface CourseOption {
+        label: string;
+        value: string;
+    }
+    
 
 
     const [coordenadors, setCoordenadors] = useState<CoordenadorRequestDTO[]>([]);
@@ -38,14 +46,23 @@ export default function CoordenadorsDemo() {
     const toastBottomLeft = useRef<Toast>(null);
     const toast = useRef<Toast>(null);
     const [dialogTitle, setDialogTitle] = useState<string>('Novo Coordenador');
+    const [courses, setCourses] = useState<CourseOption[]>([]);
 
 
     useEffect(() => {
         CoordenadorService.getCoordenadors().then(data => setCoordenadors(data));
+        CursoService.getCursos().then(data => {
+            const transformedCourses = data.map(transformCourse);
+            setCourses(transformedCourses);
+        });
     }, [coordenadors, coordenador, selectedCoordenadors]);
 
     const statusBodyTemplate = (coordenador: CoordenadorRequestDTO) => {
         return <Tag value={coordenador.title} />;
+    };
+
+    const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
+        return { label: course.name, value: course.id };
     };
 
     const openNew = () => {
@@ -263,7 +280,7 @@ export default function CoordenadorsDemo() {
                     <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}  sortable/>
                     <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}  sortable/>
                     <Column field="username" header="Nome de Usuário" aria-label="Username"  sortable/>
-                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }}  sortable/>
+                    <Column field="course.name" header="Curso" aria-label="Course" style={{ width: '20%' }}  sortable/>
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -315,7 +332,7 @@ export default function CoordenadorsDemo() {
                     <Dropdown
                         id="course"
                         value={coordenador.course}
-                        options={courseOptions}
+                        options={courses}
                         onChange={(e) => setCoordenador({ ...coordenador, course: e.value })}
                         required
                         className="border border-gray-300 rounded p-2 h-10 flex items-center"

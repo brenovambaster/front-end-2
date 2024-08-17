@@ -28,8 +28,6 @@ export class TCCService {
     }
     
     
-    
-
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
             const response = await axios.get<TCCResponseDTO[]>(BASE_URL);
@@ -57,7 +55,6 @@ export class TCCService {
 
     static async updateTCC(formData: any): Promise<TCCResponseDTO> {
         try {
-
             const tccData = formData.get('tccData');
 
             const parsedTCCData = JSON.parse(tccData); 
