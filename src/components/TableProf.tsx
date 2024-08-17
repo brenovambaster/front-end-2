@@ -114,7 +114,15 @@ export default function ProfessorsDemo() {
             toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
         } catch (error) {
-            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+
+            if (error.isAxiosError && error.response && error.response.data.statusCode === 409) {
+
+                toast.current.show({ severity: 'warn', detail: error.response.data.message, life: 5000 });
+
+            } else {
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+            }
+            
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
         }
@@ -132,9 +140,16 @@ export default function ProfessorsDemo() {
                 await ProfessorService.deleteProfessors(selectedProfessors.map(p => p.id));
                 setProfessors(professors.filter(p => !selectedProfessors.includes(p)));
                 setSelectedProfessors(null);
-                toast.current.show({ severity: 'error', detail: 'Operação realizada com sucesso', life: 5000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
+
             } catch (error) {
-                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+                if (error.isAxiosError && error.response && error.response.data.statusCode === 409) {
+
+                    toast.current.show({ severity: 'warn', detail: error.response.data.message, life: 5000 });
+    
+                } else {
+                    toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+                }
                 setSelectedProfessors(null);
             }
             setDeleteSelectedProfessorsDialog(false);

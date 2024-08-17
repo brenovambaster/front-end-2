@@ -135,8 +135,16 @@ export default function CursosDemo() {
                 setSelectedCursos(null);
                 toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
             } catch (error) {
-                console.error("Erro ao remover cursos:", error);
-                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+
+                if (error.isAxiosError && error.response && error.response.data.statusCode === 409) {
+
+                    toast.current.show({ severity: 'warn', detail: error.response.data.message, life: 5000 });
+    
+                } else {
+                    toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
+                }
+                setDeleteCursoDialog(false);
+                setCurso(emptyCurso);
                 setSelectedCursos(null);
             }
             setDeleteSelectedCursosDialog(false);

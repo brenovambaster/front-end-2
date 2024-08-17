@@ -3,7 +3,6 @@
 import { CursoService } from '@/service/CursoService';
 import { ProfessorService } from '@/service/ProfessorService';
 import { TCCService } from '@/service/TCCService';
-import { FilterTCCRequestDTO } from '@/types';
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
