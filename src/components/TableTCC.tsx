@@ -18,8 +18,7 @@ import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
 import React, { useEffect, useRef, useState } from "react";
 import { TCCService } from "../service/TCCService";
-import { TCCRequestDTO, TCCResponseDTO } from "../types";
-import { Console } from "console";
+import { TCCRequestDTO } from "../types";
 
 export default function TCCManagement() {
     const emptyTCC: TCCRequestDTO = {
@@ -139,6 +138,7 @@ export default function TCCManagement() {
         setSubmitted(false);
         setTCCDialog(false);
         setEditTCCDialog(false);
+        setCurrentKeyword('');
     };
 
     const validateFields = () => {
@@ -195,10 +195,10 @@ export default function TCCManagement() {
                     const newTCC = await TCCService.createTCC(formData);
                     setTCCs([...TCCs, newTCC]);
                 }
-                toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             }
             setEditTCCDialog(false);
             setTCCDialog(false);
@@ -225,10 +225,10 @@ export default function TCCManagement() {
             setTCCs(TCCs.filter((val) => val.id !== TCC.id));
             setDeleteTCCDialog(false);
             setTCC(emptyTCC);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+            toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             setDeleteTCCDialog(false);
             setTCC(emptyTCC);
         }
@@ -246,9 +246,9 @@ export default function TCCManagement() {
                 await TCCService.deleteTCCs(selectedTCCs.map((p) => p.id));
                 setTCCs(TCCs.filter((p) => !selectedTCCs.includes(p)));
                 setSelectedTCCs(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Operação realizada com sucesso', life: 5000 });
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                 setSelectedTCCs(null);
             }
             setDeleteSelectedTCCsDialog(false);
@@ -562,7 +562,7 @@ export default function TCCManagement() {
 
                         onChange={(e) => {
                             const selectedMembers = professorOptions
-                                .filter(option => e.value.includes(option.id)) 
+                                .filter(option => e.value.includes(option.id))
                                 .map(option => ({
                                     id: option.id,
                                     name: option.label

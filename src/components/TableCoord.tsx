@@ -80,10 +80,10 @@ export default function CoordenadorsDemo() {
                         setCoordenadors([...coordenadors, newCoordenador]);
                     }
                     setCoordenadorDialog(false);
-                    toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {
-                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                     hideDialog();
                 }
             }
@@ -110,9 +110,9 @@ export default function CoordenadorsDemo() {
             setCoordenadors(coordenadors.filter(val => val.id !== coordenador.id));
             setDeleteCoordenadorDialog(false);
             setCoordenador(emptyCoordenador);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+            toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
 
             setDeleteCoordenadorDialog(false);
             setCoordenador(emptyCoordenador);
@@ -131,10 +131,10 @@ export default function CoordenadorsDemo() {
                 await CoordenadorService.deleteCoordenadors(selectedCoordenadors.map(p => p.id));
                 setCoordenadors(coordenadors.filter(p => !selectedCoordenadors.includes(p)));
                 setSelectedCoordenadors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             }
             setDeleteSelectedCoordenadorsDialog(false);
         }
