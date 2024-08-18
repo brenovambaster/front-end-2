@@ -68,38 +68,38 @@ const TCC = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="mt-8">
-                    <h3 className="px-4 py-2 text-lg font-semibold bg-gray-400 rounded-sm">Arquivos associados a este item:</h3>
+                <div className="mt-8 border">
+                    {/* <h3 className="px-4 py-2 text-lg font-semibold bg-gray-400 rounded-sm">Arquivos associados a este item:</h3> */}
                     <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white">
+                        <table className="min-w-full bg-white table-fixed">
                             <thead>
-                                <tr className="bg-gray-200">
-                                    <th className="px-4 py-2 text-left">Arquivo</th>
-                                    <th className="px-4 py-2 text-left">Descrição</th>
-                                    <th className="px-4 py-2 text-left">Tamanho</th>
-                                    <th className="px-4 py-2 text-left">Formato</th>
-                                    <th className="px-4 py-2 text-center">Ação</th>
+                                <tr className="bg-gray-400">
+                                    <th className="px-4 py-2 text-left w-1/4">Arquivo</th>
+                                    <th className="px-4 py-2 text-left w-1/4">Descrição</th>
+                                    <th className="px-4 py-2 text-left w-1/4">Formato</th>
+                                    <th className="px-4 py-2 text-center w-1/4">Ação</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr className="border-b">
-                                    <td className="px-4 py-2">Texto Final Rafael Nicolino 25.02.pdf</td>
-                                    <td className="px-4 py-2">Monografia de Especialização</td>
-                                    <td className="px-4 py-2">1.07 MB</td>
-                                    <td className="px-4 py-2">Adobe PDF</td>
+                                    <td className="px-4 py-2">827da598-d292-4c19-814f-5fa7358696a4</td>
+                                    <td className="px-4 py-2">Monografia</td>
+                                    <td className="px-4 py-2">PDF</td>
                                     <td className="px-4 py-2 text-center">
-                                        <Button className="p-button-sm text-center text-[14 px]"><b>Pré-visualizar</b></Button>
+                                        <Button className="p-button-sm text-center text-[14px] font-bold">
+                                            <a href="http://localhost:8080/tcc/view/827da598-d292-4c19-814f-5fa7358696a4.pdf" download="arquivo.pdf" target="_blank">
+                                                Visualizar
+                                            </a>
+                                        </Button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div className="flex justify-start mt-4">
-                    <Button className="p-button-sm"><b>Visualizar estatísticas</b></Button>
+
                 </div>
             </div>
-            <Footer margin="16" />
+            {/* <Footer margin="16" /> */}
         </div>
     );
 }

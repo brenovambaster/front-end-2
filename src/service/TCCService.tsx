@@ -7,27 +7,25 @@ export class TCCService {
 
     static async searchTCCs(query: string): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>(BASE_URL+query);
+            const response = await axios.get<TCCResponseDTO[]>(BASE_URL + query);
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
             return [];
         }
     }
-    
+
 
     static async filterTCCs(filter: { filter: string, value: string }): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', {
-                params: filter
-            });
+            const response = await axios.post<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', filter);
             return response.data;
         } catch (error) {
             return [];
         }
     }
-    
-    
+
+
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
             const response = await axios.get<TCCResponseDTO[]>(BASE_URL);
@@ -57,7 +55,7 @@ export class TCCService {
         try {
             const tccData = formData.get('tccData');
 
-            const parsedTCCData = JSON.parse(tccData); 
+            const parsedTCCData = JSON.parse(tccData);
 
             const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
             return response.data;

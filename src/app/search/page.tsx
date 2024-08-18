@@ -27,7 +27,6 @@ export default function Component() {
     const [searchValue, setSearchValue] = useState('');
     const [filterSearchValue, setFilterSearchValue] = useState('');
 
-    const authors = [{ label: 'Galois', value: 'Galois' }, { label: 'João', value: 'João' }];
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -42,6 +41,7 @@ export default function Component() {
         } else {
             TCCService.getTCCs().then((data) => setTCCs(data));
         }
+        
     }, [first, rows, location.search]);
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export default function Component() {
     const dateFilterOptions = [
         { label: 'Mês e Ano', value: 'month_year' },
         { label: 'Ano', value: 'year' },
-        { label: 'Data Completa', value: 'full_date' }
+        { label: 'Data Completa', value: 'defense_date' }
     ];
 
     const months = [
@@ -94,7 +94,7 @@ export default function Component() {
                 return 'Digite a data (DD/MM/AAAA)';
             case 'title': return 'Digite o título...';
             case 'advisor': return 'Selecione o orientador';
-            case 'author': return 'Selecione o autor...';
+            case 'author': return 'Digite o nome do autor...';
             case 'course': return 'Selecione o curso';
             case 'keywords': return 'Digite a palavra-chave...';
             default: return '';
@@ -145,7 +145,7 @@ export default function Component() {
             e.type === "click"
         ) {
 
-            if (selectedFilter && filterSearchValue.trim() !== '') {
+            if (selectedFilter && filterSearchValue.trim() !== '' && selectedFilter != 'defense_date') {
 
                 let filterValue = filterSearchValue;
 
@@ -168,6 +168,7 @@ export default function Component() {
             }
 
             if (selectedFilter === 'defense_date' && dateFilterOption) {
+
                 let filterValue = filterSearchValue;
 
                 if (dateFilterOption === 'month_year' && selectedMonth !== null && selectedYear !== null) {
@@ -175,19 +176,14 @@ export default function Component() {
                     filterValue = `${selectedYear}_${selectedMonth}`;
                     const filter = { filter: dateFilterOption, value: filterValue };
                     TCCService.filterTCCs(filter).then((data) => setTCCs(data));
-                alert(JSON.stringify(filter));
-
 
                 } else if (dateFilterOption === 'year' && selectedYear !== null) {
 
                     filterValue = selectedYear;
                     const filter = { filter: dateFilterOption, value: filterValue };
                     TCCService.filterTCCs(filter).then((data) => setTCCs(data));
-                alert(JSON.stringify(filter));
 
-
-                } else if (dateFilterOption === 'full_date' && filterSearchValue) {
-
+                } else if (dateFilterOption === 'defense_date' && filterSearchValue) {
                     const [day, month, year] = filterSearchValue.split('/');
                     filterValue = `${year}-${month}-${day}`;
 
@@ -195,8 +191,6 @@ export default function Component() {
     
                         const filter = { filter: selectedFilter, value: filterValue };
                         TCCService.filterTCCs(filter).then((data) => setTCCs(data));
-                alert(JSON.stringify(filter));
-
                     }
                 }
             }
@@ -248,7 +242,7 @@ export default function Component() {
                         />
                     )}
 
-                    {dateFilterOption === 'full_date' && (
+                    {dateFilterOption === 'defense_date' && (
                         <InputMask
                             mask="99/99/9999"
                             value={filterSearchValue}
@@ -275,13 +269,11 @@ export default function Component() {
                 );
             case 'author':
                 return (
-                    <Dropdown
+                    <InputText
                         value={filterSearchValue}
-                        options={authors}
-                        onChange={(e) => setFilterSearchValue(e.value)}
+                        onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
-                        className="w-[300px] h-10 border-2 border-gray-300 rounded-md"
-                        style={{ display: 'flex', alignItems: 'center' }}
+                        className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
                     />
                 );
             case 'course':
@@ -428,7 +420,7 @@ export default function Component() {
                             className="px-4 py-4"
                             headerClassName="font-semibold bg-gray-200 text-left"
                             style={{ minWidth: '150px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
-                            body={(rowData) => rowData.keywords}
+                            body={(rowData) => rowData.keywords.map((keyword) => keyword.name).join(', ')}
                         />
                     </DataTable>
                 </div>
