@@ -164,6 +164,7 @@ export default function TCCManagement() {
     const saveTCC = async () => {
         if (validateFields()) {
             const formData = new FormData();
+            console.log(JSON.stringify(TCC));
             formData.append('tccData', JSON.stringify(TCC));
 
             if (TCC.tcc) {
@@ -172,12 +173,11 @@ export default function TCCManagement() {
 
             try {
                 if (TCC.id) {
-                    console.log(JSON.stringify(TCC));
+                    TCC.course = TCC.course.id;
+
                     await TCCService.updateTCC(formData);
                     setTCCs(TCCs.map((p) => (p.id === TCC.id ? TCC : p)));
                 } else {
-                    // Criar novo TCC
-                    console.log(JSON.stringify(TCC));
                     const newTCC = await TCCService.createTCC(formData);
                     setTCCs([...TCCs, newTCC]);
                 }
