@@ -274,6 +274,7 @@ export default function Component() {
                         onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
                         className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
+                        onKeyDown={handleFilter}
                     />
                 );
             case 'course':
@@ -294,6 +295,7 @@ export default function Component() {
                         onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
                         className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
+                        onKeyDown={handleFilter}
                     />
                 );
         }
