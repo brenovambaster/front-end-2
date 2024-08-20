@@ -3,13 +3,16 @@
 import { CursoService } from '@/service/CursoService';
 import { ProfessorService } from '@/service/ProfessorService';
 import { TCCService } from '@/service/TCCService';
+import { TCCResponseDTO } from '@/types';
+import { AxiosResponse } from 'axios';
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable, DataTableStateEvent } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
-import { useEffect, useState } from 'react';
+import { Toast } from 'primereact/toast';
+import { useEffect, useRef, useState } from 'react';
 import InputMask from 'react-input-mask';
 
 export default function Component() {
@@ -26,6 +29,7 @@ export default function Component() {
     const [selectedYear, setSelectedYear] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState('');
     const [filterSearchValue, setFilterSearchValue] = useState('');
+    const toast = useRef<Toast>(null);
 
 
     const router = useRouter();
@@ -35,13 +39,23 @@ export default function Component() {
         CursoService.getCursos().then((data) => setCourses(data));
         ProfessorService.getProfessors().then((data) => setProfessors(data));
 
-        const search = searchParams.get('query');
-        if (search) {
-            TCCService.searchTCCs(`/search?query=${search}`).then((data) => setTCCs(data));
-        } else {
-            TCCService.getTCCs().then((data) => setTCCs(data));
-        }
-        
+        const fetchTCCs = async () => {
+            try {
+                const search = searchParams.get('query');
+                if (search) {
+                    const data = await TCCService.searchTCCs(`/search?query=${search}`);
+                    setTCCs(data);
+                } else {
+                    const data = await TCCService.getTCCs();
+                    setTCCs(data);
+                }
+            } catch (error) {
+                console.error('Error fetching TCCs:', error);
+                toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+            }
+        };
+
+        fetchTCCs();
     }, [first, rows, location.search]);
 
     useEffect(() => {
@@ -58,6 +72,10 @@ export default function Component() {
         setFirst(event.first || 0);
         setRows(event.rows || 10);
     };
+
+    function isAxiosResponseOfTCCResponseDTOArray(response: any): response is AxiosResponse<TCCResponseDTO[], any> {
+        return response && response.data && Array.isArray(response.data);
+    }
 
     const filterOptions = [
         { name: 'Data da Defesa', value: 'defense_date' },
@@ -126,14 +144,20 @@ export default function Component() {
         return `${day}/${month}/${year}`;
     };
 
-    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handleSearch = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
             e.type === "click"
         ) {
             if (searchQuery.trim() !== "") {
-                TCCService.searchTCCs(`/search?query=${searchQuery}`).then((data) => setTCCs(data));
-                router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+                try {
+                    searchQuery.replace(/[^a-zA-Z0-9áéíóúãõçÁÉÍÓÚÃÕÀàÈèÌìÒòÙù\s]/g, '');
+                    const data = await TCCService.searchTCCs(`/search?query=${searchQuery}`);
+                    setTCCs(data);
+                    router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+                } catch (error) {
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                }
             }
         }
     };
@@ -172,7 +196,7 @@ export default function Component() {
                 let filterValue = filterSearchValue;
 
                 if (dateFilterOption === 'month_year' && selectedMonth !== null && selectedYear !== null) {
-                    
+
                     filterValue = `${selectedYear}_${selectedMonth}`;
                     const filter = { filter: dateFilterOption, value: filterValue };
                     TCCService.filterTCCs(filter).then((data) => setTCCs(data));
@@ -188,7 +212,7 @@ export default function Component() {
                     filterValue = `${year}-${month}-${day}`;
 
                     if (!(day.includes('_') || month.includes('_') || year.includes('_'))) {
-    
+
                         const filter = { filter: selectedFilter, value: filterValue };
                         TCCService.filterTCCs(filter).then((data) => setTCCs(data));
                     }
@@ -370,7 +394,7 @@ export default function Component() {
                         currentPageReportTemplate="Exibindo {first} - {last} de {totalRecords} TCCs"
                         rowsPerPageOptions={[10, 20, 30]}
                         size="small"
-                        paginatorClassName="text-xs" 
+                        paginatorClassName="text-xs"
                         emptyMessage="Nenhum TCC correspondente foi encontrado."
                     >
                         <Column
@@ -426,6 +450,9 @@ export default function Component() {
                         />
                     </DataTable>
                 </div>
+            </div>
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
             </div>
         </div>
     );

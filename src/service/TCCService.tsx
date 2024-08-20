@@ -11,7 +11,8 @@ export class TCCService {
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
-            return [];
+            // return [];
+            throw new Error('Erro ao buscar TCCs: ' + error.message);
         }
     }
 
