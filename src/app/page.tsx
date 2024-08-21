@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import graduation_cap_image from "../../public/rtcc-if-logo.png";
 
@@ -32,31 +32,9 @@ const HomePage = () => {
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearch} // Adiciona o evento para capturar o Enter
+                    onKeyDown={handleSearch} 
                 />
             </div>
-            <nav className="flex justify-center gap-4 mt-8 w-full max-w-4xl">
-                <a
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring text-gray-600"
-                >
-                    Autores
-                </a>
-                <a
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring text-gray-600"
-                >
-                    Áreas
-                </a>
-                <a
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring text-gray-600"
-                >
-                    Orientador
-                </a>
-                <a
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring text-gray-600"
-                >
-                    Ano da Defesa
-                </a>
-            </nav>
         </div>
     );
 };

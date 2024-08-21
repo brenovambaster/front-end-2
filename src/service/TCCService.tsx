@@ -7,26 +7,23 @@ export class TCCService {
 
     static async searchTCCs(query: string): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>(BASE_URL+query);
+            const response = await axios.get<TCCResponseDTO[]>(BASE_URL + query);
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
-            return [];
+            throw new Error('Erro ao buscar TCCs: ' + error.message);
         }
     }
 
-    static async filterTCCs(filter: FilterTCCRequestDTO): Promise<TCCResponseDTO[]> {
+    static async filterTCCs(filter: { filter: string, value: string }): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>(BASE_URL, {
-                params: filter
-            });
+            const response = await axios.post<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', filter);
             return response.data;
         } catch (error) {
-            console.error('Error fetching TCCs:', error);
-            return [];
+            throw new Error('Erro ao buscar TCCs: ' + error.message);
         }
     }
-    
+
 
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
@@ -55,11 +52,9 @@ export class TCCService {
 
     static async updateTCC(formData: any): Promise<TCCResponseDTO> {
         try {
-
             const tccData = formData.get('tccData');
 
-            const parsedTCCData = JSON.parse(tccData); 
-            console.log("ID:", parsedTCCData.id);
+            const parsedTCCData = JSON.parse(tccData);
 
             const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
             return response.data;

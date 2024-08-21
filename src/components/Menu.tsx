@@ -1,8 +1,10 @@
 import { Menubar } from 'primereact/menubar';
 import Image from 'next/image';
 import graduation_cap_image from '../../public/menu-rtcc-if-logo.png';
-import { InputText } from 'primereact/inputtext';
 import { Avatar } from 'primereact/avatar';
+import { OverlayPanel } from 'primereact/overlaypanel';
+import { Button } from 'primereact/button';
+import { useRef } from 'react';
 
 const style = {
     boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.2)',
@@ -22,13 +24,9 @@ const Logo = () => (
     </div>
 );
 
-const end = (
-    <div className="flex align-items-center gap-2 pr-3">
-        <Avatar icon='pi pi-user' shape="circle" />
-    </div>
-);
-
 export default function BasicDemo() {
+    const op = useRef<OverlayPanel>(null);
+
     const items = [
         {
             label: 'Coordenadores',
@@ -41,7 +39,6 @@ export default function BasicDemo() {
             url: '/gerenciar/curso',
             icon: 'pi pi-book',
             className: 'text-xs'
-
         },
         {
             label: 'Professores',
@@ -56,6 +53,19 @@ export default function BasicDemo() {
             className: 'text-xs'
         }
     ];
+
+    const end = (
+        <div className="flex items-center gap-2 pr-3">
+            <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />
+            <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '200px' }}>
+                <div className="flex flex-col">
+                    <Button label="Perfil" icon="pi pi-user" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2" />
+                    <Button label="Configurações" icon="pi pi-cog" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                    <Button label="Logout" icon="pi pi-sign-out" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                </div>
+            </OverlayPanel>
+        </div>
+    );
 
     return (
         <Menubar className='' model={items} start={<Logo />} style={style} end={end} />

@@ -11,8 +11,10 @@ import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
-import { CoordenadorService } from '../service/CoordenadorService.tsx';
-import { CoordenadorRequestDTO } from '../types';
+
+import { CoordenadorService } from '@/service/CoordenadorService.tsx';
+import { CoordenadorRequestDTO, CursoRequestDTO } from '../types';
+import { CursoService } from "@/service/CursoService";
 
 
 export default function CoordenadorsDemo() {
@@ -24,6 +26,12 @@ export default function CoordenadorsDemo() {
         password: '',
         course: ''
     };
+
+    interface CourseOption {
+        label: string;
+        value: string;
+    }
+
 
 
     const [coordenadors, setCoordenadors] = useState<CoordenadorRequestDTO[]>([]);
@@ -38,14 +46,23 @@ export default function CoordenadorsDemo() {
     const toastBottomLeft = useRef<Toast>(null);
     const toast = useRef<Toast>(null);
     const [dialogTitle, setDialogTitle] = useState<string>('Novo Coordenador');
+    const [courses, setCourses] = useState<CourseOption[]>([]);
 
 
     useEffect(() => {
         CoordenadorService.getCoordenadors().then(data => setCoordenadors(data));
+        CursoService.getCursos().then(data => {
+            const transformedCourses = data.map(transformCourse);
+            setCourses(transformedCourses);
+        });
     }, [coordenadors, coordenador, selectedCoordenadors]);
 
     const statusBodyTemplate = (coordenador: CoordenadorRequestDTO) => {
         return <Tag value={coordenador.title} />;
+    };
+
+    const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
+        return { label: course.name, value: course.id };
     };
 
     const openNew = () => {
@@ -67,6 +84,11 @@ export default function CoordenadorsDemo() {
     };
 
     const saveCoordenador = async () => {
+
+        if (editcoordenadorDialog) {
+            coordenador.course = coordenador.course.id;
+        }
+
         if (validateFields()) {
             if (coordenador.name.trim()) {
                 try {
@@ -80,10 +102,10 @@ export default function CoordenadorsDemo() {
                         setCoordenadors([...coordenadors, newCoordenador]);
                     }
                     setCoordenadorDialog(false);
-                    toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {
-                    toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                    toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                     hideDialog();
                 }
             }
@@ -110,9 +132,9 @@ export default function CoordenadorsDemo() {
             setCoordenadors(coordenadors.filter(val => val.id !== coordenador.id));
             setDeleteCoordenadorDialog(false);
             setCoordenador(emptyCoordenador);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+            toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
 
             setDeleteCoordenadorDialog(false);
             setCoordenador(emptyCoordenador);
@@ -131,10 +153,10 @@ export default function CoordenadorsDemo() {
                 await CoordenadorService.deleteCoordenadors(selectedCoordenadors.map(p => p.id));
                 setCoordenadors(coordenadors.filter(p => !selectedCoordenadors.includes(p)));
                 setSelectedCoordenadors(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             }
             setDeleteSelectedCoordenadorsDialog(false);
         }
@@ -258,12 +280,12 @@ export default function CoordenadorsDemo() {
                     size="small"
                     aria-label="Coordenadors Table"
                 >
-                    <Column selectionMode="multiple" exportable={false} aria-label="Select" className=''/>
+                    <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }} />
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }}  sortable/>
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }}  sortable/>
-                    <Column field="username" header="Nome de Usuário" aria-label="Username"  sortable/>
-                    <Column field="course" header="Curso" aria-label="Course" style={{ width: '20%' }}  sortable/>
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} sortable />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable />
+                    <Column field="username" header="Nome de Usuário" aria-label="Username" sortable />
+                    <Column field="course.name" header="Curso" aria-label="Course" style={{ width: '20%' }} sortable />
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -312,15 +334,31 @@ export default function CoordenadorsDemo() {
                     <label htmlFor="course" className="font-bold">
                         Curso
                     </label>
-                    <Dropdown
+                    {/* <Dropdown
                         id="course"
-                        value={coordenador.course}
-                        options={courseOptions}
+                        value={editcoordenadorDialog ? coordenador.course.id : coordenador.course}
+                        options={courses}
                         onChange={(e) => setCoordenador({ ...coordenador, course: e.value })}
                         required
                         className="border border-gray-300 rounded p-2 h-10 flex items-center"
                         aria-describedby="location-of-work-help"
+                    /> */}
+
+                    <Dropdown
+                        id="course"
+                        value={coordenador.course.id} // Garanta que o valor seja o id do curso
+                        options={courses}
+                        onChange={(e) =>
+                            setCoordenador({
+                                ...coordenador,
+                                course: { id: e.value, name: courses.find(course => course.value === e.value)?.label }
+                            })
+                        }
+                        required
+                        className="border border-gray-300 rounded p-2 h-10 flex items-center"
+                        aria-describedby="location-of-work-help"
                     />
+
                     {submitted && !coordenador.course && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
                 <div className="field mb-4">

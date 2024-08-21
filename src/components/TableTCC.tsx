@@ -18,8 +18,9 @@ import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
 import React, { useEffect, useRef, useState } from "react";
 import { TCCService } from "../service/TCCService";
-import { TCCRequestDTO, TCCResponseDTO } from "../types";
-import { Console } from "console";
+import { TCCRequestDTO } from "../types";
+import { KeywordDTO } from "../types";
+import { KeywordService } from "@/service/KeywordService";
 
 export default function TCCManagement() {
     const emptyTCC: TCCRequestDTO = {
@@ -53,15 +54,17 @@ export default function TCCManagement() {
     const autoCompleteRef = useRef(null);
     const [courseOptions, setCourseOptions] = useState([]);
     const [professorOptions, setProfessorOptions] = useState([]);
+    const [keywords, setKeywords] = useState<KeywordDTO[]>();
 
     useEffect(() => {
         TCCService.getTCCs().then((data) => setTCCs(data));
         CursoService.getCursos().then((data) => setCourseOptions(data));
         ProfessorService.getProfessors().then((data) => setProfessorOptions(data));
-
-        if (typeof TCC.keywords === 'string') {
-            setTCC({ ...TCC, keywords: TCC.keywords.split(',').map((keyword: string) => keyword.trim()) });
-        }
+        KeywordService.getKeywords().then((data) => setKeywords(data));
+        KeywordService.getKeywords().then((data) => {
+            const keywordNames = data.map((item) => item.name);
+            setKeywords(keywordNames);
+        });
     }, [TCCs, TCC, selectedTCCs]);
 
 
@@ -70,30 +73,7 @@ export default function TCCManagement() {
         { label: "Inglês", value: "Inglês" },
     ];
 
-    const keywordOptions = [
-        "Metodologia", "Análise de Dados", "Pesquisa Qualitativa", "Pesquisa Quantitativa", "Métodos Estatísticos",
-        "Estudo de Caso", "Trabalho de Campo", "Revisão de Literatura", "Desenvolvimento de Software", "Engenharia de Software",
-        "Gerenciamento de Projetos", "Inteligência Artificial", "Machine Learning", "Deep Learning",
-        "Data Science", "Big Data", "Algoritmos", "Redes Neurais", "Processamento de Imagem", "Visão Computacional", "Análise de Sentimentos",
-        "Análise Preditiva", "Estatística Aplicada", "Simulação", "Otimização", "Engenharia de Dados", "Banco de Dados", "Modelagem de Dados",
-        "Sistemas Distribuídos", "Segurança da Informação", "Criptografia", "Privacidade de Dados", "Proteção de Dados", "Sistemas de Informação",
-        "Tecnologias Emergentes", "Blockchain", "Internet das Coisas (IoT)", "Computação em Nuvem", "Arquitetura de Software",
-        "Desenvolvimento Web", "Desenvolvimento Mobile", "Interfaces de Usuário", "Experiência do Usuário (UX)", "Usabilidade",
-        "Design de Sistemas", "Tecnologias de Rede", "Gerenciamento de TI", "Engenharia de Requisitos", "Qualidade de Software",
-        "Testes de Software", "Automação", "Robótica", "Sistemas Inteligentes", "Computação Gráfica", "Análise de Redes Sociais",
-        "Gestão de Conhecimento", "Educação a Distância", "Gamificação", "Metodologias Ágeis", "Scrum", "Kanban", "DevOps",
-        "Cibersegurança", "Ética em TI", "Sustentabilidade", "Tecnologia Assistiva", "Realidade Aumentada", "Realidade Virtual",
-        "Bioinformática", "Engenharia Biomédica", "Sistemas de Controle", "Engenharia Eletrônica", "Engenharia de Telecomunicações",
-        "Economia Digital", "Transformação Digital", "Tecnologia da Informação", "Gestão de Projetos Tecnológicos",
-        "Engenharia de Sistemas", "Desenvolvimento de Produtos", "Planejamento Estratégico",
-        "Gestão da Inovação", "Ciência de Dados", "Análise de Risco", "Modelagem de Processos",
-        "Desenvolvimento Sustentável", "Empreendedorismo", "Startups", "Inovação", "Tecnologia da Informação e Comunicação (TIC)",
-        "Computação de Alto Desempenho", "Sistemas Inteligentes de Transporte", "Engenharia de Produção",
-        "Automação Industrial", "Engenharia Mecânica", "Ciências Ambientais", "Gestão Ambiental", "Economia Circular",
-        "Energias Renováveis", "Sustentabilidade em TI"
-    ];
-
-    const fuse = new Fuse(keywordOptions, {
+    const fuse = new Fuse(keywords, {
         includeScore: true,
         threshold: 0.4,
         ignoreLocation: true,
@@ -107,14 +87,18 @@ export default function TCCManagement() {
     };
 
     const addKeyword = (keyword) => {
-        if (keyword && !TCC.keywords.includes(keyword)) {
-            setTCC({ ...TCC, keywords: [...TCC.keywords, keyword] });
+        if (keyword && !TCC.keywords.some((k) => k.name === keyword)) {
+            setTCC({
+                ...TCC,
+                keywords: [...TCC.keywords, { name: keyword }]
+            });
         }
         setCurrentKeyword("");
         if (autoCompleteRef.current) {
             autoCompleteRef.current.hide();
         }
     };
+
 
     const handleSelect = (e) => {
         addKeyword(e.value);
@@ -139,6 +123,7 @@ export default function TCCManagement() {
         setSubmitted(false);
         setTCCDialog(false);
         setEditTCCDialog(false);
+        setCurrentKeyword('');
     };
 
     const validateFields = () => {
@@ -179,6 +164,7 @@ export default function TCCManagement() {
     const saveTCC = async () => {
         if (validateFields()) {
             const formData = new FormData();
+            console.log(JSON.stringify(TCC));
             formData.append('tccData', JSON.stringify(TCC));
 
             if (TCC.tcc) {
@@ -187,18 +173,18 @@ export default function TCCManagement() {
 
             try {
                 if (TCC.id) {
-                    // Atualizar TCC existente
+                    TCC.course = TCC.course.id;
+
                     await TCCService.updateTCC(formData);
                     setTCCs(TCCs.map((p) => (p.id === TCC.id ? TCC : p)));
                 } else {
-                    // Criar novo TCC
                     const newTCC = await TCCService.createTCC(formData);
                     setTCCs([...TCCs, newTCC]);
                 }
-                toast.current.show({ severity: 'success', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             }
             setEditTCCDialog(false);
             setTCCDialog(false);
@@ -225,10 +211,10 @@ export default function TCCManagement() {
             setTCCs(TCCs.filter((val) => val.id !== TCC.id));
             setDeleteTCCDialog(false);
             setTCC(emptyTCC);
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+            toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+            toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             setDeleteTCCDialog(false);
             setTCC(emptyTCC);
         }
@@ -246,9 +232,9 @@ export default function TCCManagement() {
                 await TCCService.deleteTCCs(selectedTCCs.map((p) => p.id));
                 setTCCs(TCCs.filter((p) => !selectedTCCs.includes(p)));
                 setSelectedTCCs(null);
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Operação realizada com sucesso', life: 3000 });
+                toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
             } catch (error) {
-                toast.current.show({ severity: 'error', summary: 'info', detail: 'Erro ao realizar a operação', life: 3000 });
+                toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                 setSelectedTCCs(null);
             }
             setDeleteSelectedTCCsDialog(false);
@@ -562,7 +548,7 @@ export default function TCCManagement() {
 
                         onChange={(e) => {
                             const selectedMembers = professorOptions
-                                .filter(option => e.value.includes(option.id)) 
+                                .filter(option => e.value.includes(option.id))
                                 .map(option => ({
                                     id: option.id,
                                     name: option.label
@@ -651,8 +637,11 @@ export default function TCCManagement() {
                             }}
                         />
                         <Chips
-                            value={TCC.keywords}
-                            onChange={(e) => setTCC({ ...TCC, keywords: e.value })}
+                            value={TCC.keywords.map((k) => k.name)}
+                            onChange={(e) => {
+                                const newKeywords = e.value.map((name) => ({ name }));
+                                setTCC({ ...TCC, keywords: newKeywords });
+                            }}
                             required
                             className="p-2 rounded"
                             style={{
@@ -661,6 +650,7 @@ export default function TCCManagement() {
                                 width: "calc(100% + 1rem)",
                             }}
                         />
+
                     </div>
                     {submitted && !TCC.keywords.length && (
                         <small className="p-error">
