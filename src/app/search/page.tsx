@@ -17,6 +17,7 @@ import InputMask from 'react-input-mask';
 
 export default function Component() {
     const [TCCs, setTCCs] = useState<any[]>([]);
+    const [allTCCs, setAllTCCs] = useState<any[]>([]);
     const [first, setFirst] = useState<number>(0);
     const [rows, setRows] = useState<number>(10);
     const [globalFilter, setGlobalFilter] = useState<string>('');
@@ -31,7 +32,6 @@ export default function Component() {
     const [filterSearchValue, setFilterSearchValue] = useState('');
     const toast = useRef<Toast>(null);
 
-
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -45,9 +45,11 @@ export default function Component() {
                 if (search) {
                     const data = await TCCService.searchTCCs(`/search?query=${search}`);
                     setTCCs(data);
+                    setAllTCCs(data);
                 } else {
                     const data = await TCCService.getTCCs();
                     setTCCs(data);
+                    setAllTCCs(data);
                 }
             } catch (error) {
                 console.error('Error fetching TCCs:', error);
@@ -162,7 +164,7 @@ export default function Component() {
         }
     };
 
-    const handleFilter = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handleFilter = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
 
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
@@ -188,7 +190,14 @@ export default function Component() {
                     }
                 }
                 const filter = { filter: selectedFilter, value: filterValue };
-                TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                try {
+                    const data = await TCCService.filterTCCs(filter);
+                    setTCCs(data);
+                } catch (error) {
+                    console.error('Error fetching TCCs:', error);
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                }
             }
 
             if (selectedFilter === 'defense_date' && dateFilterOption) {
@@ -199,13 +208,27 @@ export default function Component() {
 
                     filterValue = `${selectedYear}_${selectedMonth}`;
                     const filter = { filter: dateFilterOption, value: filterValue };
-                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                    try {
+                        const data = await TCCService.filterTCCs(filter);
+                        setTCCs(data);
+                    } catch (error) {
+                        console.error('Error fetching TCCs:', error);
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                    }
 
                 } else if (dateFilterOption === 'year' && selectedYear !== null) {
 
                     filterValue = selectedYear;
                     const filter = { filter: dateFilterOption, value: filterValue };
-                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                    try {
+                        const data = await TCCService.filterTCCs(filter);
+                        setTCCs(data);
+                    } catch (error) {
+                        console.error('Error fetching TCCs:', error);
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                    }
 
                 } else if (dateFilterOption === 'defense_date' && filterSearchValue) {
                     const [day, month, year] = filterSearchValue.split('/');
@@ -214,7 +237,14 @@ export default function Component() {
                     if (!(day.includes('_') || month.includes('_') || year.includes('_'))) {
 
                         const filter = { filter: selectedFilter, value: filterValue };
-                        TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                        try {
+                            const data = await TCCService.filterTCCs(filter);
+                            setTCCs(data);
+                        } catch (error) {
+                            console.error('Error fetching TCCs:', error);
+                            toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                        }
                     }
                 }
             }
@@ -246,7 +276,10 @@ export default function Component() {
                             />
                             <Dropdown
                                 value={selectedYear}
-                                options={years}
+                                options={allTCCs.map(tcc => tcc.defenseDate.split('-')[0])
+                                    .filter((value, index, self) => self.indexOf(value) === index)
+                                    .map(year => ({ label: year, value: year }))
+                                }
                                 onChange={(e) => setSelectedYear(e.value)}
                                 placeholder="Selecione o ano"
                                 className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
@@ -258,7 +291,11 @@ export default function Component() {
                     {dateFilterOption === 'year' && (
                         <Dropdown
                             value={selectedYear}
-                            options={years}
+                            options={
+                                allTCCs.map(tcc => tcc.defenseDate.split('-')[0])
+                                    .filter((value, index, self) => self.indexOf(value) === index)
+                                    .map(year => ({ label: year, value: year }))
+                            }
                             onChange={(e) => setSelectedYear(e.value)}
                             placeholder="Selecione o ano"
                             className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
