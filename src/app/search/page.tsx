@@ -449,7 +449,19 @@ export default function Component() {
                             className="px-4 py-4"
                             headerClassName="font-semibold bg-gray-200 text-left"
                             style={{ minWidth: '200px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
+                            body={(rowData) => (
+                                <a
+                                    href={`http://localhost:3000/tcc/${rowData.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-black hover:underline"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    {rowData.title}
+                                </a>
+                            )}
                         />
+
                         <Column
                             field="author"
                             header="Autor"

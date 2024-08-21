@@ -11,21 +11,21 @@ function Login() {
                         <h1 className="text-4xl font-bold">Login</h1>
                     </div>
                     <div className="space-y-6">
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             <label
                                 className="text-lg font-medium leading-none"
                                 htmlFor="email"
                             >
-                                Email
+                                E-mail
                             </label>
                             <InputText
                                 id="email"
-                                placeholder="m@exemplo.com"
+                                placeholder="mail@ifnmg.edu.br"
                                 type="email"
-                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-black focus:ring-2 focus:ring-black"
                             />
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             <div className="flex items-center">
                                 <label
                                     className="text-lg font-medium leading-none"
@@ -41,13 +41,13 @@ function Login() {
                                 id="password"
                                 placeholder="********"
                                 type="password"
-                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-black focus:ring-2 focus:ring-black"
                             />
                         </div>
                         <Button
                             label="Entrar"
                             type="submit"
-                            className="w-full py-2 text-lg font-medium bg-black text-white hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            className="w-full py-2 text-lg font-medium bg-black text-white hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                         />
 
                     </div>
