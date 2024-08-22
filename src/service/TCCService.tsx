@@ -11,17 +11,16 @@ export class TCCService {
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
-            return [];
+            throw new Error('Erro ao buscar TCCs: ' + error.message);
         }
     }
-
 
     static async filterTCCs(filter: { filter: string, value: string }): Promise<TCCResponseDTO[]> {
         try {
             const response = await axios.post<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', filter);
             return response.data;
         } catch (error) {
-            return [];
+            throw new Error('Erro ao buscar TCCs: ' + error.message);
         }
     }
 

@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "primereact/button";
-import Footer from "../../../components/Footer";
 
 const TCC = () => {
 
@@ -86,11 +84,9 @@ const TCC = () => {
                                     <td className="px-4 py-2">Monografia</td>
                                     <td className="px-4 py-2">PDF</td>
                                     <td className="px-4 py-2 text-center">
-                                        <Button className="p-button-sm text-center text-[14px] font-bold">
-                                            <a href="http://localhost:8080/tcc/view/827da598-d292-4c19-814f-5fa7358696a4.pdf" download="arquivo.pdf" target="_blank">
-                                                Visualizar
-                                            </a>
-                                        </Button>
+                                        <a href="http://localhost:8080/tcc/view/eb224bc4-dca4-4971-962b-65879ab858fd.pdf" download="arquivo.pdf" className="p-button" target="_blank">
+                                            Visualizar
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -99,7 +95,6 @@ const TCC = () => {
 
                 </div>
             </div>
-            {/* <Footer margin="16" /> */}
         </div>
     );
 }

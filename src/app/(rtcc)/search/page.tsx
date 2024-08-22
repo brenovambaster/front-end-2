@@ -3,17 +3,21 @@
 import { CursoService } from '@/service/CursoService';
 import { ProfessorService } from '@/service/ProfessorService';
 import { TCCService } from '@/service/TCCService';
+import { TCCResponseDTO } from '@/types';
+import { AxiosResponse } from 'axios';
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable, DataTableStateEvent } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
-import { useEffect, useState } from 'react';
+import { Toast } from 'primereact/toast';
+import { useEffect, useRef, useState } from 'react';
 import InputMask from 'react-input-mask';
 
 export default function Component() {
     const [TCCs, setTCCs] = useState<any[]>([]);
+    const [allTCCs, setAllTCCs] = useState<any[]>([]);
     const [first, setFirst] = useState<number>(0);
     const [rows, setRows] = useState<number>(10);
     const [globalFilter, setGlobalFilter] = useState<string>('');
@@ -26,7 +30,7 @@ export default function Component() {
     const [selectedYear, setSelectedYear] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState('');
     const [filterSearchValue, setFilterSearchValue] = useState('');
-
+    const toast = useRef<Toast>(null);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -35,14 +39,26 @@ export default function Component() {
         CursoService.getCursos().then((data) => setCourses(data));
         ProfessorService.getProfessors().then((data) => setProfessors(data));
 
-        const search = searchParams.get('query');
-        if (search) {
-            TCCService.searchTCCs(`/search?query=${search}`).then((data) => setTCCs(data));
-        } else {
-            TCCService.getTCCs().then((data) => setTCCs(data));
-        }
-        
-    }, [first, rows, location.search]);
+        const fetchTCCs = async () => {
+            try {
+                const search = searchParams.get('query');
+                if (search) {
+                    const data = await TCCService.searchTCCs(`/search?query=${search}`);
+                    setTCCs(data);
+                    setAllTCCs(data);
+                } else {
+                    const data = await TCCService.getTCCs();
+                    setTCCs(data);
+                    setAllTCCs(data);
+                }
+            } catch (error) {
+                console.error('Error fetching TCCs:', error);
+                toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+            }
+        };
+
+        fetchTCCs();
+    }, [first, rows]);
 
     useEffect(() => {
         if (selectedFilter !== null) {
@@ -58,6 +74,10 @@ export default function Component() {
         setFirst(event.first || 0);
         setRows(event.rows || 10);
     };
+
+    function isAxiosResponseOfTCCResponseDTOArray(response: any): response is AxiosResponse<TCCResponseDTO[], any> {
+        return response && response.data && Array.isArray(response.data);
+    }
 
     const filterOptions = [
         { name: 'Data da Defesa', value: 'defense_date' },
@@ -126,19 +146,25 @@ export default function Component() {
         return `${day}/${month}/${year}`;
     };
 
-    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handleSearch = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
             e.type === "click"
         ) {
             if (searchQuery.trim() !== "") {
-                TCCService.searchTCCs(`/search?query=${searchQuery}`).then((data) => setTCCs(data));
-                router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+                try {
+                    searchQuery.replace(/[^a-zA-Z0-9áéíóúãõçÁÉÍÓÚÃÕÀàÈèÌìÒòÙù\s]/g, '');
+                    const data = await TCCService.searchTCCs(`/search?query=${searchQuery}`);
+                    setTCCs(data);
+                    router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+                } catch (error) {
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                }
             }
         }
     };
 
-    const handleFilter = (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handleFilter = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
 
         if (
             (e.type === "keydown" && (e as React.KeyboardEvent).key === "Enter") ||
@@ -164,7 +190,14 @@ export default function Component() {
                     }
                 }
                 const filter = { filter: selectedFilter, value: filterValue };
-                TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                try {
+                    const data = await TCCService.filterTCCs(filter);
+                    setTCCs(data);
+                } catch (error) {
+                    console.error('Error fetching TCCs:', error);
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                }
             }
 
             if (selectedFilter === 'defense_date' && dateFilterOption) {
@@ -172,25 +205,46 @@ export default function Component() {
                 let filterValue = filterSearchValue;
 
                 if (dateFilterOption === 'month_year' && selectedMonth !== null && selectedYear !== null) {
-                    
+
                     filterValue = `${selectedYear}_${selectedMonth}`;
                     const filter = { filter: dateFilterOption, value: filterValue };
-                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                    try {
+                        const data = await TCCService.filterTCCs(filter);
+                        setTCCs(data);
+                    } catch (error) {
+                        console.error('Error fetching TCCs:', error);
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                    }
 
                 } else if (dateFilterOption === 'year' && selectedYear !== null) {
 
                     filterValue = selectedYear;
                     const filter = { filter: dateFilterOption, value: filterValue };
-                    TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                    try {
+                        const data = await TCCService.filterTCCs(filter);
+                        setTCCs(data);
+                    } catch (error) {
+                        console.error('Error fetching TCCs:', error);
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                    }
 
                 } else if (dateFilterOption === 'defense_date' && filterSearchValue) {
                     const [day, month, year] = filterSearchValue.split('/');
                     filterValue = `${year}-${month}-${day}`;
 
                     if (!(day.includes('_') || month.includes('_') || year.includes('_'))) {
-    
+
                         const filter = { filter: selectedFilter, value: filterValue };
-                        TCCService.filterTCCs(filter).then((data) => setTCCs(data));
+
+                        try {
+                            const data = await TCCService.filterTCCs(filter);
+                            setTCCs(data);
+                        } catch (error) {
+                            console.error('Error fetching TCCs:', error);
+                            toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao buscar os TCCs.', life: 5000 });
+                        }
                     }
                 }
             }
@@ -222,7 +276,10 @@ export default function Component() {
                             />
                             <Dropdown
                                 value={selectedYear}
-                                options={years}
+                                options={allTCCs.map(tcc => tcc.defenseDate.split('-')[0])
+                                    .filter((value, index, self) => self.indexOf(value) === index)
+                                    .map(year => ({ label: year, value: year }))
+                                }
                                 onChange={(e) => setSelectedYear(e.value)}
                                 placeholder="Selecione o ano"
                                 className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
@@ -234,7 +291,11 @@ export default function Component() {
                     {dateFilterOption === 'year' && (
                         <Dropdown
                             value={selectedYear}
-                            options={years}
+                            options={
+                                allTCCs.map(tcc => tcc.defenseDate.split('-')[0])
+                                    .filter((value, index, self) => self.indexOf(value) === index)
+                                    .map(year => ({ label: year, value: year }))
+                            }
                             onChange={(e) => setSelectedYear(e.value)}
                             placeholder="Selecione o ano"
                             className="w-[150px] h-10 border-2 border-gray-300 rounded-md"
@@ -274,6 +335,7 @@ export default function Component() {
                         onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
                         className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
+                        onKeyDown={handleFilter}
                     />
                 );
             case 'course':
@@ -294,6 +356,7 @@ export default function Component() {
                         onChange={handleFilterSearchChange}
                         placeholder={getPlaceholder()}
                         className="w-[300px] h-10 pl-3 pr-4 border-2 border-gray-300 rounded-md"
+                        onKeyDown={handleFilter}
                     />
                 );
         }
@@ -308,9 +371,7 @@ export default function Component() {
             <div className="w-full max-w-7xl mt-4 border border-gray-300 rounded-md shadow-sm p-4 bg-gray-100">
                 <div className="flex justify-between items-center gap-4 mb-4">
                     <div className="relative flex-grow">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-500">
-                            <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
-                        </div>
+                        
 
                         <input
                             className="flex h-10 border-2 border-gray-300 px-3 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-md bg-background pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
@@ -320,6 +381,10 @@ export default function Component() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={handleSearch}
                         />
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
+                            <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
+                        </div>
+
                     </div>
                     <div className="flex-shrink-0">
                         <Button className="p-button-sm h-10 flex items-center" onClick={handleSearch}>
@@ -368,7 +433,7 @@ export default function Component() {
                         currentPageReportTemplate="Exibindo {first} - {last} de {totalRecords} TCCs"
                         rowsPerPageOptions={[10, 20, 30]}
                         size="small"
-                        paginatorClassName="text-xs" 
+                        paginatorClassName="text-xs"
                         emptyMessage="Nenhum TCC correspondente foi encontrado."
                     >
                         <Column
@@ -386,7 +451,19 @@ export default function Component() {
                             className="px-4 py-4"
                             headerClassName="font-semibold bg-gray-200 text-left"
                             style={{ minWidth: '200px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
+                            body={(rowData) => (
+                                <a
+                                    href={`http://localhost:3000/tcc/${rowData.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-black hover:underline"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    {rowData.title}
+                                </a>
+                            )}
                         />
+
                         <Column
                             field="author"
                             header="Autor"
@@ -424,6 +501,9 @@ export default function Component() {
                         />
                     </DataTable>
                 </div>
+            </div>
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
             </div>
         </div>
     );
