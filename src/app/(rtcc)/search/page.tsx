@@ -58,7 +58,7 @@ export default function Component() {
         };
 
         fetchTCCs();
-    }, [first, rows, location.search]);
+    }, [first, rows]);
 
     useEffect(() => {
         if (selectedFilter !== null) {

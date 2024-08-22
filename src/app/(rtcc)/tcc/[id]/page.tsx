@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "primereact/button";
-import Footer from "../../../components/Footer";
 
 const TCC = () => {
 

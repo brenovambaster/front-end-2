@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import graduation_cap_image from "../../public/rtcc-if-logo.png";
+import graduation_cap_image from "../../../public/rtcc-if-logo.png";
 
 
 const HomePage = () => {

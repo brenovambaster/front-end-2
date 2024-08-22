@@ -1,4 +1,4 @@
-import TableProf from "../../../components/TableProf";
+import TableProf from "../../../../components/TableProf";
 
 
 export default function ManageProfessorsPage() {

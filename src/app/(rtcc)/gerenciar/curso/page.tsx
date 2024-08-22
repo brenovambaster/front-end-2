@@ -1,4 +1,4 @@
-import TableCurso from "../../../components/TableCurso";
+import TableCurso from "../../../../components/TableCurso";
 
 
 export default function ManageCursosPage() {
