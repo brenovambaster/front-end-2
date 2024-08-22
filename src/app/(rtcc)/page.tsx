@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import graduation_cap_image from "../../../public/rtcc-if-logo.png";
 
-
 const HomePage = () => {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
@@ -23,7 +22,7 @@ const HomePage = () => {
                 <Image alt="logo" src={graduation_cap_image} height={200} width={200} />
             </header>
             <div className="relative w-full max-w-4xl mx-4 md:mx-0 mt-4">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-500">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
                     <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
                 </div>
                 <input
