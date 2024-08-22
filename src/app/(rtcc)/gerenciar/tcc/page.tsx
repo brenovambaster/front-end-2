@@ -1,6 +1,12 @@
+'use client';
+
+import { AuthContext } from "@/contexts/AuthContext";
 import TableTCC from "../../../../components/TableTCC";
+import { useContext } from "react";
 
 export default function ManageCursosPage() {
+    const { isAuthenticated } = useContext(AuthContext);
+
     return (
         <>
             <div className=" justify-center items-center">
@@ -8,6 +14,7 @@ export default function ManageCursosPage() {
                 <div className=" ">
                     <TableTCC />
                 </div>
+                <p>Autenticado? {JSON.stringify(isAuthenticated)}</p>
             </div>
         </>
     )

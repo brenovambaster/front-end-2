@@ -1,8 +1,29 @@
-import React from "react";
+'use client';
+
+import React, { useContext, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import { AuthContext } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const { signIn } = useContext(AuthContext);
+    const router = useRouter();
+
+    async function handleSignIn() {
+        const success = await signIn({ email, password });
+
+        if (success) {
+            console.log("Authenticated");
+            router.push("/");
+        } else {
+            alert("Falha na autenticação.");
+        }
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
             <div className="w-full max-w-md p-8 border border-gray-300 rounded-lg bg-white shadow-md">
@@ -19,6 +40,8 @@ function Login() {
                                 E-mail
                             </label>
                             <InputText
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 id="email"
                                 placeholder="mail@ifnmg.edu.br"
                                 type="email"
@@ -38,6 +61,8 @@ function Login() {
                                 </a>
                             </div>
                             <InputText
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 id="password"
                                 placeholder="********"
                                 type="password"
@@ -46,10 +71,9 @@ function Login() {
                         </div>
                         <Button
                             label="Entrar"
-                            type="submit"
+                            onClick={handleSignIn}
                             className="w-full py-2 text-lg font-medium bg-black text-white hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                         />
-
                     </div>
                 </div>
             </div>

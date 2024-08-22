@@ -98,3 +98,8 @@ export interface FilterTCCRequestDTO {
 export interface KeywordDTO {
     name: string;
 }
+
+export type Login = {
+    username: string;
+    password: string;
+}

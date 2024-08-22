@@ -1,7 +1,8 @@
 "use client";
 
-import { CursoService } from "@/service/CursoService";
-import { ProfessorService } from "@/service/ProfessorService";
+import { CursoService } from "@/service/cursoService";
+import { KeywordService } from "@/service/keywordService";
+import { ProfessorService } from "@/service/professorService";
 import Fuse from "fuse.js";
 import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
@@ -17,10 +18,8 @@ import { MultiSelect } from "primereact/multiselect";
 import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
 import React, { useEffect, useRef, useState } from "react";
-import { TCCService } from "../service/TCCService";
-import { TCCRequestDTO } from "../types";
-import { KeywordDTO } from "../types";
-import { KeywordService } from "@/service/KeywordService";
+import { TCCService } from "../service/tccService";
+import { KeywordDTO, TCCRequestDTO } from "../types";
 
 export default function TCCManagement() {
     const emptyTCC: TCCRequestDTO = {

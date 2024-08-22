@@ -1,8 +1,8 @@
 'use client';
 
-import { CursoService } from '@/service/CursoService';
-import { ProfessorService } from '@/service/ProfessorService';
-import { TCCService } from '@/service/TCCService';
+import { CursoService } from '@/service/cursoService';
+import { ProfessorService } from '@/service/professorService';
+import { TCCService } from '@/service/tccService';
 import { TCCResponseDTO } from '@/types';
 import { AxiosResponse } from 'axios';
 import { useRouter, useSearchParams } from "next/navigation";
@@ -371,8 +371,6 @@ export default function Component() {
             <div className="w-full max-w-7xl mt-4 border border-gray-300 rounded-md shadow-sm p-4 bg-gray-100">
                 <div className="flex justify-between items-center gap-4 mb-4">
                     <div className="relative flex-grow">
-                        
-
                         <input
                             className="flex h-10 border-2 border-gray-300 px-3 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-md bg-background pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                             placeholder="Pesquisar..."

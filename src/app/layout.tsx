@@ -8,6 +8,7 @@ import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from "primereact/api";
 import Menu from '../components/Menu';
 
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function RootLayout({
     children,
@@ -19,7 +20,9 @@ export default function RootLayout({
             <body>
                 <PrimeReactProvider>
                     <Menu />
-                    {children}
+                    <AuthProvider>
+                        {children}
+                    </AuthProvider>
                 </PrimeReactProvider>
             </body>
         </html>

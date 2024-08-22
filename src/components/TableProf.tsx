@@ -11,7 +11,7 @@ import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
-import { ProfessorService } from '../service/ProfessorService';
+import { ProfessorService } from '../service/professorService';
 import { ProfessorRequestDTO } from '../types';
 
 

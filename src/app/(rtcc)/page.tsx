@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import graduation_cap_image from "../../../public/rtcc-if-logo.png";
+import { api } from "@/service/api";
+import { Button } from "primereact/button";
 
 const HomePage = () => {
     const router = useRouter();
@@ -31,9 +33,10 @@ const HomePage = () => {
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearch} 
+                    onKeyDown={handleSearch}
                 />
             </div>
+            <Button onClick={() => {api.get("/tcc")}}>AAA</Button>
         </div>
     );
 };

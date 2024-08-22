@@ -12,9 +12,9 @@ import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { CoordenadorService } from '@/service/CoordenadorService.tsx';
-import { CoordenadorRequestDTO, CursoRequestDTO } from '../types';
-import { CursoService } from "@/service/CursoService";
+import { CoordenadorService } from '@/service/coordenadorService';
+import { CursoService } from "@/service/cursoService";
+import { CoordenadorRequestDTO } from '../types';
 
 
 export default function CoordenadorsDemo() {
