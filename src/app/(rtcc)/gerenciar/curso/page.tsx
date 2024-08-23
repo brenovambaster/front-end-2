@@ -1,7 +1,10 @@
+'use client';
 import TableCurso from "../../../../components/TableCurso";
+import withAdminProtection from "@/hoc/withAdminProtection";
 
 
-export default function ManageCursosPage() {
+
+function ManageCursosPage() {
     return (
         <main >
             <div className=" justify-center items-center">
@@ -14,3 +17,5 @@ export default function ManageCursosPage() {
         </main >
     )
 }
+
+export default withAdminProtection(ManageCursosPage); 

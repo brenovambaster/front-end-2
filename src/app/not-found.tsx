@@ -11,8 +11,8 @@ const HomePage = () => {
                     src="/404.png"
                     alt="Logo"
                     className="mx-auto mb-4"
-                    width="800"
-                    height="800"
+                    width="600"
+                    height="600"
                 />
 
                 <Button
