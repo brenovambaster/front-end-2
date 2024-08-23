@@ -1,6 +1,9 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { Menubar } from 'primereact/menubar';
 import Image from 'next/image';
-import graduation_cap_image from '../../public/menu-rtcc-if-logo.png';
+import graduation_cap_image from '../../public/navbar-rtcc-if-logo.png';
 import { Avatar } from 'primereact/avatar';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
@@ -28,6 +31,12 @@ const Logo = () => (
 export default function BasicDemo() {
     const op = useRef<OverlayPanel>(null);
     const { isAuthenticated, user } = useContext(AuthContext);
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        // Garantindo que todos os estilos sejam carregados antes de exibir a navbar
+        setTimeout(() => setIsReady(true), 50);
+    }, []);
 
     const itemsAdmin = [
         { label: 'Coordenadores', url: '/gerenciar/coordenador', icon: 'pi pi-user-edit', className: 'text-xs' },
@@ -75,5 +84,9 @@ export default function BasicDemo() {
         return <Menubar className='' model={[]} start={<Logo />} style={style} end={end} />;
     };
 
-    return renderMenubar();
+    return (
+        <div style={{ visibility: isReady ? 'visible' : 'hidden' }}>
+            {renderMenubar()}
+        </div>
+    );
 }

@@ -2,7 +2,7 @@ import { api } from "@/service/api";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { parseCookies, setCookie } from "nookies";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useRef, useState } from "react";
 
 const BASE_URL = 'http://localhost:8080/authenticate';
 
@@ -20,7 +20,9 @@ type User = {
 type AuthContextType = {
     user: User | null;
     isAuthenticated: boolean;
-    signIn: (data: SignInData) => Promise<boolean>;
+    signIn: (data: SignInData) => Promise<boolean[]>;
+
+    serverConexionError: boolean;
 };
 
 interface DecodedToken {
@@ -37,6 +39,8 @@ export const AuthContext = createContext({} as AuthContextType);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    let serverConexionError = false;
+    let authenticated = false;
 
     useEffect(() => {
         const { 'rtcc.token': token } = parseCookies();
@@ -89,20 +93,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             api.defaults.headers['Authorization'] = `Bearer ${token}`;
             setIsAuthenticated(true);
 
-            return true;
+            authenticated = true;
+            serverConexionError = false;
+            return [authenticated, serverConexionError];
+
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.status === 401) {
-                setIsAuthenticated(false);
+            setIsAuthenticated(false);
+
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    authenticated = false;
+                    serverConexionError = false;
+                } else {
+                    authenticated = false;
+                    serverConexionError = true;
+                }
             } else {
-                console.error("Erro ao autenticar:", error);
+                authenticated = false;
+                serverConexionError = true;
             }
 
-            return false;
+            console.error("Erro ao autenticar:", error)
+
+            return [authenticated, serverConexionError];
         }
     }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, signIn, serverConexionError }}>
             {children}
         </AuthContext.Provider>
     );
