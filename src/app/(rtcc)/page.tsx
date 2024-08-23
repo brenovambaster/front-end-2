@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import graduation_cap_image from "../../../public/rtcc-if-logo.png";
 import { api } from "@/service/api";
 import { Button } from "primereact/button";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const HomePage = () => {
     const router = useRouter();
@@ -18,6 +19,8 @@ const HomePage = () => {
         }
     };
 
+    const { signIn, isAuthenticated, user } = useContext(AuthContext);
+    
     return (
         <div className="flex flex-col items-center w-full">
             <header className="py-4 w-full flex justify-center">
@@ -36,6 +39,7 @@ const HomePage = () => {
                     onKeyDown={handleSearch}
                 />
             </div>
+            <Button onClick={() => {alert(JSON.stringify(user))}}>AAAA</Button>
         </div>
     );
 };

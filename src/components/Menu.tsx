@@ -4,7 +4,8 @@ import graduation_cap_image from '../../public/menu-rtcc-if-logo.png';
 import { Avatar } from 'primereact/avatar';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import { AuthContext } from '@/contexts/AuthContext';
 
 const style = {
     boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.2)',
@@ -26,32 +27,23 @@ const Logo = () => (
 
 export default function BasicDemo() {
     const op = useRef<OverlayPanel>(null);
+    const { isAuthenticated, user } = useContext(AuthContext);
 
-    const items = [
-        {
-            label: 'Coordenadores',
-            url: '/gerenciar/coordenador',
-            icon: 'pi pi-user-edit',
-            className: 'text-xs'
-        },
-        {
-            label: 'Cursos',
-            url: '/gerenciar/curso',
-            icon: 'pi pi-book',
-            className: 'text-xs'
-        },
-        {
-            label: 'Professores',
-            url: '/gerenciar/professor',
-            icon: 'pi pi-users',
-            className: 'text-xs'
-        },
-        {
-            label: 'TCCs',
-            url: '/gerenciar/tcc',
-            icon: 'pi pi-file-edit',
-            className: 'text-xs'
-        }
+    const itemsAdmin = [
+        { label: 'Coordenadores', url: '/gerenciar/coordenador', icon: 'pi pi-user-edit', className: 'text-xs' },
+        { label: 'Cursos', url: '/gerenciar/curso', icon: 'pi pi-book', className: 'text-xs' },
+        { label: 'Professores', url: '/gerenciar/professor', icon: 'pi pi-users', className: 'text-xs' },
+        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' }
+    ];
+
+    const itemsCoordinator = [
+        { label: 'Cursos', url: '/gerenciar/curso', icon: 'pi pi-book', className: 'text-xs' },
+        { label: 'Professores', url: '/gerenciar/professor', icon: 'pi pi-users', className: 'text-xs' },
+        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' }
+    ];
+
+    const itemsUser = [
+
     ];
 
     const end = (
@@ -67,7 +59,21 @@ export default function BasicDemo() {
         </div>
     );
 
-    return (
-        <Menubar className='' model={items} start={<Logo />} style={style} end={end} />
-    );
+    const renderMenubar = () => {
+
+        if (user?.roles.includes('ADMIN')) {
+            return <Menubar className='' model={itemsAdmin} start={<Logo />} style={style} end={end} />;
+
+        } else if (user?.roles.includes('COORDINATOR')) {
+
+            return <Menubar className='' model={itemsCoordinator} start={<Logo />} style={style} end={end} />;
+
+        } else if (user?.roles.includes('USER')) {
+
+            return <Menubar className='' start={<Logo />} style={style} end={end} />;
+        }
+        return <Menubar className='' model={[]} start={<Logo />} style={style} end={end} />;
+    };
+
+    return renderMenubar();
 }

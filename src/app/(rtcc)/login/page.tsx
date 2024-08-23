@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(""); // Estado para armazenar a mensagem de erro
 
     const { signIn } = useContext(AuthContext);
     const router = useRouter();
@@ -20,7 +21,7 @@ function Login() {
             console.log("Authenticated");
             router.push("/");
         } else {
-            alert("Falha na autenticação.");
+            setError("Usuário ou senha incorretos."); // Definir a mensagem de erro
         }
     }
 
@@ -68,6 +69,11 @@ function Login() {
                                 type="password"
                                 className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-black focus:ring-2 focus:ring-black"
                             />
+                            {error && (
+                                <p className="text-red-600 text-sm mt-2">
+                                    {error}
+                                </p>
+                            )}
                         </div>
                         <Button
                             label="Entrar"
