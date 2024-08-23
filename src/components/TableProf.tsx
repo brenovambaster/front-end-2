@@ -41,7 +41,7 @@ export default function ProfessorsDemo() {
 
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
-    }, [professors, professor, selectedProfessors]);
+    }, []);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
         return <Tag value={professor.title} />;
@@ -79,6 +79,8 @@ export default function ProfessorsDemo() {
                         setProfessors([...professors, newProfessor]);
                     }
                     setProfessorDialog(false);
+
+                    window.location.reload();
                     toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {

@@ -39,7 +39,6 @@ const HomePage = () => {
                     onKeyDown={handleSearch}
                 />
             </div>
-            <Button onClick={() => {alert(JSON.stringify(user))}}>AAAA</Button>
         </div>
     );
 };

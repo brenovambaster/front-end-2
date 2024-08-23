@@ -18,7 +18,7 @@ import { MultiSelect } from "primereact/multiselect";
 import { Toast } from "primereact/toast";
 import { Toolbar } from "primereact/toolbar";
 import React, { useEffect, useRef, useState } from "react";
-import { TCCService } from "../service/tccService";
+import { TCCService } from "../service/TCCService";
 import { KeywordDTO, TCCRequestDTO } from "../types";
 
 export default function TCCManagement() {
@@ -64,7 +64,7 @@ export default function TCCManagement() {
             const keywordNames = data.map((item) => item.name);
             setKeywords(keywordNames);
         });
-    }, [TCCs, TCC, selectedTCCs]);
+    }, [  ]);
 
 
     const languageOptions = [

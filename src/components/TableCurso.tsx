@@ -39,7 +39,7 @@ export default function CursosDemo() {
 
     useEffect(() => {
         CursoService.getCursos().then(data => setCursos(data));
-    }, [cursos, curso, selectedCursos]);
+    }, []);
 
     const openNew = () => {
         setCurso(emptyCurso);
@@ -72,10 +72,10 @@ export default function CursosDemo() {
                         const newCurso = await CursoService.createCurso(curso);
                         setCursos([...cursos, newCurso]);
                     }
-
                     setCursoDialog(false);
-                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
+                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
+                    window.location.reload();
                 } catch (error) {
                     toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                     hideDialog();

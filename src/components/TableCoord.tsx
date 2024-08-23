@@ -55,7 +55,7 @@ export default function CoordenadorsDemo() {
             const transformedCourses = data.map(transformCourse);
             setCourses(transformedCourses);
         });
-    }, [coordenadors, coordenador, selectedCoordenadors]);
+    }, []);
 
     const statusBodyTemplate = (coordenador: CoordenadorRequestDTO) => {
         return <Tag value={coordenador.title} />;
@@ -110,6 +110,7 @@ export default function CoordenadorsDemo() {
                         setCoordenadors([...coordenadors, newCoordenador]);
                     }
                     setCoordenadorDialog(false);
+                    window.location.reload();
                     toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {

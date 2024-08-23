@@ -1,90 +1,141 @@
 'use client';
-
-import React, { useContext, useState } from "react";
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
+import React, { useState, useContext } from "react";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { AuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(""); // Estado para armazenar a mensagem de erro
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [authError, setAuthError] = useState(""); // Estado para mensagens de erro de autenticação
 
-    const { signIn } = useContext(AuthContext);
-    const router = useRouter();
+  const { signIn } = useContext(AuthContext);
+  const router = useRouter();
 
-    async function handleSignIn() {
-        const success = await signIn({ email, password });
+  const handlePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
-        if (success) {
-            console.log("Authenticated");
-            router.push("/");
-        } else {
-            setError("Usuário ou senha incorretos."); // Definir a mensagem de erro
-        }
-    }
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="w-full max-w-md p-8 border border-gray-300 rounded-lg bg-white shadow-md">
-                <div className="space-y-8">
-                    <div className="space-y-4 text-center">
-                        <h1 className="text-4xl font-bold">Login</h1>
-                    </div>
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label
-                                className="text-lg font-medium leading-none"
-                                htmlFor="email"
-                            >
-                                E-mail
-                            </label>
-                            <InputText
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                id="email"
-                                placeholder="mail@ifnmg.edu.br"
-                                type="email"
-                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-black focus:ring-2 focus:ring-black"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center">
-                                <label
-                                    className="text-lg font-medium leading-none"
-                                    htmlFor="password"
-                                >
-                                    Senha
-                                </label>
-                                <a className="ml-auto text-sm underline hover:text-blue-500" href="#">
-                                    Esqueceu sua senha?
-                                </a>
-                            </div>
-                            <InputText
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                id="password"
-                                placeholder="********"
-                                type="password"
-                                className="w-full p-3 text-base border border-gray-300 rounded-md focus:border-black focus:ring-2 focus:ring-black"
-                            />
-                            {error && (
-                                <p className="text-red-600 text-sm mt-2">
-                                    {error}
-                                </p>
-                            )}
-                        </div>
-                        <Button
-                            label="Entrar"
-                            onClick={handleSignIn}
-                            className="w-full py-2 text-lg font-medium bg-black text-white hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                        />
-                    </div>
-                </div>
-            </div>
+  const handleSignIn = async () => {
+    // if (validateEmail(email)) {
+      setEmailError("");
+      const success = await signIn({ email, password });
+
+      if (success) {
+        console.log("Authenticated");
+        router.push("/");
+      } else {
+        setAuthError("Usuário ou senha incorretos."); // Definir a mensagem de erro
+      }
+    // } else {
+    //   setEmailError("Por favor, insira um e-mail válido.");
+    // }
+  };
+
+  return (
+    <div className="flex h-screen justify-center items-center bg-white">
+      <div className="w-full md:w-1/2 lg:w-1/3 shadow-lg rounded-lg p-8">
+        <div className="text-center mb-4">
+          <img
+            src="/rtcc-if-logo.png"
+            alt="Logo"
+            className="w-48 mx-auto"
+          />
         </div>
-    );
+
+        <div className="space-y-4">
+          
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-gray-700 font-medium mb-2"
+            >
+              E-mail
+            </label>
+            <InputText
+              id="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              className="w-full"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ width: '100%' }}
+            />
+            {emailError && <p className="text-red-500 text-sm mt-2">{emailError}</p>}
+          </div>
+
+          
+          <div className="relative">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 font-medium mb-2"
+            >
+              Senha
+            </label>
+            <InputText
+              id="password"
+              type={passwordVisible ? "text" : "password"}
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full pr-12"
+              style={{ width: '100%' }}
+            />
+            <button
+              type="button"
+              onClick={handlePasswordVisibility}
+              className="absolute inset-y-0 right-0 flex items-center px-2"
+              style={{ top: '50%', transform: 'translateY(-50%)', height: '2.5rem', width: '2.5rem' }}
+            >
+              {passwordVisible ? (
+                <FaEye className="text-gray-500 text-base" />
+              ) : (
+                <FaEyeSlash className="text-gray-500 text-base" />
+              )}
+            </button>
+            <div className="text-right mt-2">
+              <a
+                href="#"
+                className="text-black hover:underline text-sm font-medium"
+              >
+                Esqueceu a senha?
+              </a>
+            </div>
+          </div>
+
+          
+          <Button
+            type="button"
+            onClick={handleSignIn}
+            label="Entrar"
+            className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
+            style={{ width: '100%' }}
+          />
+          {authError && <p className="text-red-500 text-sm mt-2">{authError}</p>}
+        </div>
+
+        
+        <p className="mt-6 text-center text-gray-500">
+          Ainda não tem uma conta?{" "}
+          <a
+            href="#"
+            className="text-black hover:underline font-medium"
+          >
+            Inscreva-se
+          </a>
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default Login;
