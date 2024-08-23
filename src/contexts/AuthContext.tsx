@@ -50,11 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setCookie(undefined, 'rtcc.token', response.data, {
                 maxAge: 60 * 60 * 1, // 1 hora
             });
-
+            console.log(response);
             api.defaults.headers['Authorization'] = `Bearer ${response.data}`;
 
             setUser({
-                name: response.data.name, 
+                name: response.data.name,
                 email: email,
             });
 

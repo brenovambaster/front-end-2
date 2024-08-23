@@ -37,7 +37,7 @@ export default function CoordenadorsDemo() {
     const [coordenadors, setCoordenadors] = useState<CoordenadorRequestDTO[]>([]);
     const [globalFilter, setGlobalFilter] = useState<string | null>(null);
     const [coordenadorDialog, setCoordenadorDialog] = useState<boolean>(false);
-    const [editcoordenadorDialog, setEditcoordenadorDialog] = useState<boolean>(false);
+    const [editCoordenadorDialog, setEditcoordenadorDialog] = useState<boolean>(false);
     const [deleteCoordenadorDialog, setDeleteCoordenadorDialog] = useState<boolean>(false);
     const [coordenador, setCoordenador] = useState<CoordenadorRequestDTO>(emptyCoordenador);
     const [selectedCoordenadors, setSelectedCoordenadors] = useState<CoordenadorRequestDTO[] | null>(null);
@@ -80,25 +80,33 @@ export default function CoordenadorsDemo() {
     };
 
     const validateFields = () => {
-        return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.password.trim() && coordenador.course.trim();
+        console.log(JSON.stringify(coordenador));
+        if(editCoordenadorDialog) {
+            return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.course.trim();
+        }
+        return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.password.trim() && coordenador.course.name.trim();
     };
 
     const saveCoordenador = async () => {
 
-        if (editcoordenadorDialog) {
+        if (editCoordenadorDialog) {
             coordenador.course = coordenador.course.id;
         }
-
+        
         if (validateFields()) {
             if (coordenador.name.trim()) {
                 try {
+
                     if (coordenador.id) {
                         // Atualizar coordenador existente
                         await CoordenadorService.updateCoordenador(coordenador);
                         setCoordenadors(coordenadors.map(p => (p.id === coordenador.id ? coordenador : p)));
                     } else {
+                        coordenador.course = coordenador.course.id;
+
                         // Criar novo coordenador
                         const newCoordenador = await CoordenadorService.createCoordenador(coordenador);
+
                         setCoordenadors([...coordenadors, newCoordenador]);
                     }
                     setCoordenadorDialog(false);
@@ -336,7 +344,7 @@ export default function CoordenadorsDemo() {
                     </label>
                     {/* <Dropdown
                         id="course"
-                        value={editcoordenadorDialog ? coordenador.course.id : coordenador.course}
+                        value={editCoordenadorDialog ? coordenador.course.id : coordenador.course}
                         options={courses}
                         onChange={(e) => setCoordenador({ ...coordenador, course: e.value })}
                         required

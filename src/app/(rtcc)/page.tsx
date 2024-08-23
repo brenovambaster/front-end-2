@@ -36,7 +36,6 @@ const HomePage = () => {
                     onKeyDown={handleSearch}
                 />
             </div>
-            <Button onClick={() => {api.get("/tcc")}}>AAA</Button>
         </div>
     );
 };

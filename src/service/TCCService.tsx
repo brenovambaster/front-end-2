@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { FilterTCCRequestDTO, TCCRequestDTO, TCCResponseDTO } from '../types';
+import { api } from '../service/api';
+
 
 const BASE_URL = 'http://localhost:8080/tcc';
 
@@ -7,7 +9,7 @@ export class TCCService {
 
     static async searchTCCs(query: string): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>(BASE_URL + query);
+            const response = await api.get<TCCResponseDTO[]>(BASE_URL + query);
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
@@ -17,7 +19,7 @@ export class TCCService {
 
     static async filterTCCs(filter: { filter: string, value: string }): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.post<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', filter);
+            const response = await api.post<TCCResponseDTO[]>('http://localhost:8080/tcc/filter', filter);
             return response.data;
         } catch (error) {
             throw new Error('Erro ao buscar TCCs: ' + error.message);
@@ -27,7 +29,7 @@ export class TCCService {
 
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
-            const response = await axios.get<TCCResponseDTO[]>(BASE_URL);
+            const response = await api.get<TCCResponseDTO[]>(BASE_URL);
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
@@ -37,7 +39,7 @@ export class TCCService {
 
     static async createTCC(formData: FormData): Promise<TCCResponseDTO> {
         try {
-            const response = await axios.post(BASE_URL, formData, {
+            const response = await api.post(BASE_URL, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -56,7 +58,7 @@ export class TCCService {
 
             const parsedTCCData = JSON.parse(tccData);
 
-            const response = await axios.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
+            const response = await api.put<TCCResponseDTO>(`${BASE_URL}/${parsedTCCData.id}`, formData);
             return response.data;
         } catch (error) {
             console.error('Error updating TCC:', error);
@@ -66,7 +68,7 @@ export class TCCService {
 
     static async deleteTCC(id: string): Promise<void> {
         try {
-            await axios.delete(`${BASE_URL}/${id}`);
+            await api.delete(`${BASE_URL}/${id}`);
         } catch (error) {
             console.error('Error deleting TCC:', error);
             throw error;
@@ -75,7 +77,7 @@ export class TCCService {
 
     static async deleteTCCs(ids: string[]): Promise<void> {
         try {
-            await Promise.all(ids.map(id => axios.delete(`${BASE_URL}/${id}`)));
+            await Promise.all(ids.map(id => api.delete(`${BASE_URL}/${id}`)));
         } catch (error) {
             console.error('Error deleting TCCs:', error);
             throw error;
