@@ -54,8 +54,8 @@ function Login() {
     };
 
     return (
-        <div className="flex h-screen justify-center items-center bg-white">
-            <div className="w-full md:w-1/2 lg:w-1/3 shadow-lg rounded-lg p-8">
+        <div className="flex h-screen justify-center items-center bg-gray-100">
+            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white">
                 <div className="text-center mb-4">
                     <img
                         src="/nova-logo-rtcc-if-logo.png"
@@ -81,7 +81,6 @@ function Login() {
                             className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            style={{ width: '100%' }}
                         />
                         {emailError && <p className="text-red-500 text-sm mt-2">{emailError}</p>}
                     </div>
@@ -101,7 +100,6 @@ function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full pr-12 bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
-                                style={{ width: '100%' }}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         handleSignIn();
@@ -139,7 +137,6 @@ function Login() {
                         onClick={handleSignIn}
                         label="Entrar"
                         className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
-                        style={{ width: '100%' }}
                     />
                 </div>
 
@@ -161,4 +158,3 @@ function Login() {
 }
 
 export default Login;
-
