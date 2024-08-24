@@ -8,7 +8,7 @@ const withAdminProtection = (WrappedComponent: React.ComponentType) => {
   return function ProtectedRoute(props: any) {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
-
+    
     useEffect(() => {
       if (!isAuthenticated) {
         router.push('/login');
@@ -18,11 +18,10 @@ const withAdminProtection = (WrappedComponent: React.ComponentType) => {
       }
 
     }, [isAuthenticated, user, router]);
-
+    
     if (!isAuthenticated || !user?.roles.includes("ADMIN")) {
       return null;
     }
-
     return <WrappedComponent {...props} />;
   };
 };

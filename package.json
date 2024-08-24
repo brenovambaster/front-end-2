@@ -9,6 +9,9 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@emotion/react": "^11.13.3",
+        "@emotion/styled": "^11.13.0",
+        "@mui/material": "^5.16.7",
         "axios": "^1.7.4",
         "fuse.js": "7.0.0",
         "jwt-decode": "^4.0.0",

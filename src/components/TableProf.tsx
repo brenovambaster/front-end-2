@@ -37,10 +37,13 @@ export default function ProfessorsDemo() {
     const toastBottomLeft = useRef<Toast>(null);
     const toast = useRef<Toast>(null);
     const [dialogTitle, setDialogTitle] = useState<string>('Novo Professor');
+    const [isReady, setIsReady] = useState(false);
 
-
+    
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
+
+        setTimeout(() => setIsReady(true), 50);
     }, []);
 
     const statusBodyTemplate = (professor: ProfessorRequestDTO) => {
@@ -259,7 +262,7 @@ export default function ProfessorsDemo() {
     ];
 
     return (
-        <div>
+        <div style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             <div className="card m-2">
                 <Toolbar
                     start={leftToolbarTemplate}

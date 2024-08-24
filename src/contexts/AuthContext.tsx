@@ -2,7 +2,8 @@ import { api } from "@/service/api";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { parseCookies, setCookie } from "nookies";
-import { createContext, ReactNode, useEffect, useRef, useState } from "react";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 const BASE_URL = 'http://localhost:8080/authenticate';
 
@@ -21,7 +22,6 @@ type AuthContextType = {
     user: User | null;
     isAuthenticated: boolean;
     signIn: (data: SignInData) => Promise<boolean[]>;
-
     serverConexionError: boolean;
 };
 
@@ -38,13 +38,27 @@ export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        const { 'rtcc.token': token } = parseCookies();
+        if (!token) {
+            return false;
+        }
+        try {
+            const decodedToken: { exp: number } = jwtDecode(token);
+            const currentTime = Date.now() / 1000; // em segundos
+            return decodedToken.exp > currentTime;
+        } catch (error) {
+            return false;
+        }
+    });
+    const [loading, setLoading] = useState(true); 
+
     let serverConexionError = false;
     let authenticated = false;
 
     useEffect(() => {
         const { 'rtcc.token': token } = parseCookies();
-
+        
         if (token) {
             try {
                 const decodedToken = jwtDecode<DecodedToken>(token);
@@ -62,7 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } catch (error) {
                 console.error("Erro ao decodificar o token:", error);
                 setIsAuthenticated(false);
+            } finally {
+                setLoading(false); 
             }
+        } else {
+            setLoading(false);
         }
     }, []);
 
@@ -117,6 +135,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             return [authenticated, serverConexionError];
         }
+    }
+
+    const LoadingComponent = () => {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <ProgressSpinner style={{ width: '50px', height: '50px', color: 'black' }} />
+            </div>
+        );
+    };
+    
+    if (loading) {
+        return <LoadingComponent />;
     }
 
     return (

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -15,9 +15,15 @@ function Login() {
     const [passwordError, setPasswordError] = useState("");
     const [authError, setAuthError] = useState("");
     const toast = useRef<Toast>(null);
+    const [isReady, setIsReady] = useState(false);
 
     const { signIn } = useContext(AuthContext);
     const router = useRouter();
+
+    useEffect(() => {
+
+        setTimeout(() => setIsReady(true), 50);
+    }, []);
 
     const handlePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -54,7 +60,7 @@ function Login() {
     };
 
     return (
-        <div className="flex h-screen justify-center items-center bg-gray-100">
+        <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white">
                 <div className="text-center mb-4">
                     <img
@@ -81,6 +87,11 @@ function Login() {
                             className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleSignIn();
+                                }
+                            }}
                         />
                         {emailError && <p className="text-red-500 text-sm mt-2">{emailError}</p>}
                     </div>
@@ -141,9 +152,9 @@ function Login() {
                 </div>
 
                 <p className="mt-6 text-center text-gray-500">
-                    Ainda não tem uma conta?{" "}
+                    Ainda não possui uma conta?{" "}
                     <a
-                        href="#"
+                        href="/signup"
                         className="text-black hover:underline font-medium"
                     >
                         Cadastre-se

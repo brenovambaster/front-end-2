@@ -9,6 +9,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
 import { useContext, useRef } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
+import { destroyCookie } from 'nookies';
 
 const style = {
     boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.2)',
@@ -35,7 +36,7 @@ export default function BasicDemo() {
 
     useEffect(() => {
         // Garantindo que todos os estilos sejam carregados antes de exibir a navbar
-        setTimeout(() => setIsReady(true), 50);
+        setTimeout(() => setIsReady(true), 10);
     }, []);
 
     const itemsAdmin = [
@@ -46,39 +47,51 @@ export default function BasicDemo() {
     ];
 
     const itemsCoordinator = [
-        { label: 'Cursos', url: '/gerenciar/curso', icon: 'pi pi-book', className: 'text-xs' },
         { label: 'Professores', url: '/gerenciar/professor', icon: 'pi pi-users', className: 'text-xs' },
         { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' }
     ];
 
-    const itemsUser = [
-
-    ];
+    const itemsUser = [];
 
     const end = (
         <div className="flex items-center gap-2 pr-3">
+            {
+                !isAuthenticated && (
+                    <button
+                        type="button"
+                        className="bg-black text-white font-semibold py-1 px-4 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none mr-4"
+                        onClick={() => window.location.href = '/login'}
+                    >
+                        Entrar
+                    </button>
+                )
+            }
+
             <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />
             <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '200px' }}>
                 <div className="flex flex-col">
                     <Button label="Perfil" icon="pi pi-user" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2" />
                     <Button label="Configurações" icon="pi pi-cog" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
-                    <Button label="Logout" icon="pi pi-sign-out" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                    <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
+                        if (isAuthenticated) {
+                            destroyCookie(null, 'rtcc.token')
+                            window.location.href = '/';
+                        }
+
+                    }} className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
                 </div>
             </OverlayPanel>
         </div>
     );
 
+
     const renderMenubar = () => {
 
         if (user?.roles.includes('ADMIN')) {
             return <Menubar className='' model={itemsAdmin} start={<Logo />} style={style} end={end} />;
-
         } else if (user?.roles.includes('COORDINATOR')) {
-
             return <Menubar className='' model={itemsCoordinator} start={<Logo />} style={style} end={end} />;
-
         } else if (user?.roles.includes('USER')) {
-
             return <Menubar className='' start={<Logo />} style={style} end={end} />;
         }
         return <Menubar className='' model={[]} start={<Logo />} style={style} end={end} />;

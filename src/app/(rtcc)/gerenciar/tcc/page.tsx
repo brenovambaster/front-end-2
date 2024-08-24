@@ -1,11 +1,9 @@
 'use client';
 
-import { AuthContext } from "@/contexts/AuthContext";
 import TableTCC from "../../../../components/TableTCC";
-import { useContext } from "react";
+import withCoordinatorProtection from "@/hoc/withCoordinatorProtection";
 
-export default function ManageCursosPage() {
-    const { isAuthenticated } = useContext(AuthContext);
+function ManageTCCs() {
 
     return (
         <>
@@ -14,8 +12,9 @@ export default function ManageCursosPage() {
                 <div className=" ">
                     <TableTCC />
                 </div>
-                <p>Autenticado? {JSON.stringify(isAuthenticated)}</p>
             </div>
         </>
     )
 }
+
+export default withCoordinatorProtection(ManageTCCs);
