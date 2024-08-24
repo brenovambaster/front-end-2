@@ -82,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             setLoading(false);
         }
+        
     }, []);
 
     async function signIn({ email, password }: SignInData) {

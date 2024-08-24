@@ -16,7 +16,6 @@ const withAdminProtection = (WrappedComponent: React.ComponentType) => {
 
             } else if (!isAuthenticated) {
                 router.push('/login');
-
             }
 
         }, [isAuthenticated, user, router]);

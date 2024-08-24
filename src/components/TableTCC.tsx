@@ -163,7 +163,6 @@ export default function TCCManagement() {
     const saveTCC = async () => {
         if (validateFields()) {
             const formData = new FormData();
-            console.log(JSON.stringify(TCC));
             formData.append('tccData', JSON.stringify(TCC));
 
             if (TCC.tcc) {
@@ -172,11 +171,18 @@ export default function TCCManagement() {
 
             try {
                 if (TCC.id) {
+                    console.log(TCC);
+                    let tccCourse = TCC.course;
+
                     TCC.course = TCC.course.id;
 
                     await TCCService.updateTCC(formData);
                     setTCCs(TCCs.map((p) => (p.id === TCC.id ? TCC : p)));
+
+                    TCC.course = tccCourse;
                 } else {
+                    console.log(TCC);
+
                     const newTCC = await TCCService.createTCC(formData);
                     setTCCs([...TCCs, newTCC]);
                 }
@@ -469,7 +475,9 @@ export default function TCCManagement() {
                         id="course"
                         value={editTCCDialog ? TCC.course.id : TCC.course}
                         options={courseOptions.map(course => ({ label: course.name, value: course.id }))}
-                        onChange={(e) => setTCC({ ...TCC, course: e.value })}
+                        onChange={(e) => {
+                            setTCC({ ...TCC, course: e.value })
+                        }}
                         required
                         className="border border-gray-300 rounded p-2 h-10 flex items-center"
                         placeholder="Selecione o curso"
