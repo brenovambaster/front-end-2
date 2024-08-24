@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import { CoordinatorResponseDTO, CoordinatorRequestDTO } from '../types';
 import { api } from '../service/api';
 

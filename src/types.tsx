@@ -103,3 +103,20 @@ export type Login = {
     username: string;
     password: string;
 }
+
+
+export interface UserRequestDTO {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    course: string;
+}
+
+export interface UserResponseDTO {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    course: string;
+}

@@ -56,31 +56,32 @@ export default function BasicDemo() {
     const end = (
         <div className="flex items-center gap-2 pr-3">
             {
-                !isAuthenticated && (
-                    <button
-                        type="button"
-                        className="bg-black text-white font-semibold py-1 px-4 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none mr-4"
+                !isAuthenticated ? (
+                    <Button
+                        label="Fazer login"
+                        icon="pi pi-user"
+                        className="bg-white text-black py-2 px-4 rounded-full text-sm flex items-center justify-center gap-2 border border-black focus:outline-none focus:ring-0 hover:bg-gray-200"
                         onClick={() => window.location.href = '/login'}
-                    >
-                        Entrar
-                    </button>
+                    />
+
+                ) : (
+                    <>
+                        <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />
+                        <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '200px' }}>
+                            <div className="flex flex-col">
+                                <Button label="Perfil" icon="pi pi-user" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2" />
+                                <Button label="Configurações" icon="pi pi-cog" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                                <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
+                                    if (isAuthenticated) {
+                                        destroyCookie(null, 'rtcc.token');
+                                        window.location.href = '/';
+                                    }
+                                }} className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                            </div>
+                        </OverlayPanel>
+                    </>
                 )
             }
-
-            <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />
-            <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '200px' }}>
-                <div className="flex flex-col">
-                    <Button label="Perfil" icon="pi pi-user" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2" />
-                    <Button label="Configurações" icon="pi pi-cog" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
-                    <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
-                        if (isAuthenticated) {
-                            destroyCookie(null, 'rtcc.token')
-                            window.location.href = '/';
-                        }
-
-                    }} className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
-                </div>
-            </OverlayPanel>
         </div>
     );
 

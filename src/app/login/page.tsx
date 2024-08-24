@@ -17,7 +17,7 @@ function Login() {
     const toast = useRef<Toast>(null);
     const [isReady, setIsReady] = useState(false);
 
-    const { signIn } = useContext(AuthContext);
+    const { signIn, isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
 
     useEffect(() => {
@@ -59,18 +59,27 @@ function Login() {
         }
     };
 
+    if (isAuthenticated) {
+        router.push("/");
+    }
+
     return (
+
         <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
+
             <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white">
                 <div className="text-center mb-4">
-                    <img
-                        src="/nova-logo-rtcc-if-logo.png"
-                        alt="Logo"
-                        className="w-30 mx-auto"
-                        width="250"
-                        height="250"
-                    />
+                    <a href="/">
+                        <img
+                            src="/nova-logo-rtcc-if-logo.png"
+                            alt="Logo"
+                            className="w-30 mx-auto"
+                            width="250"
+                            height="250"
+                        />
+                    </a>
                 </div>
+
 
                 <div className="space-y-4">
                     <div>
@@ -147,7 +156,7 @@ function Login() {
                         type="button"
                         onClick={handleSignIn}
                         label="Entrar"
-                        className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
+                        className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300 border-black"
                     />
                 </div>
 

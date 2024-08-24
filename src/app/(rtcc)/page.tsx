@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
 import { useState } from "react";
 
 const HomePage = () => {
@@ -30,7 +31,7 @@ const HomePage = () => {
                     <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
                 </div>
                 <input
-                    className="flex h-12 border-2 border-gray-300 px-4 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full bg-background pl-14 pr-5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="flex h-12 border-2 border-gray-300 px-4 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-full bg-background pl-14 pr-5 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary "
                     placeholder="Pesquisar monografias..."
                     type="search"
                     value={searchQuery}
