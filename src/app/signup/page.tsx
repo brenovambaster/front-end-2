@@ -97,7 +97,7 @@ export default function Register() {
 
     return (
         <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white">
+            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white" style={{ boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)"}} >
                 <div className="text-center mb-4">
                     <a href="/">
                         <img

@@ -10,12 +10,13 @@ const withCoordinatorProtection = (WrappedComponent: React.ComponentType) => {
         const router = useRouter();
 
         useEffect(() => {
-            
-            if (!isAuthenticated) {
+
+            if (!user?.roles.includes("COORDINATOR") && !user?.roles.includes("ADMIN")) {
+                router.push('/not-found');
+
+            } else if (!isAuthenticated) {
                 router.push('/login');
 
-            } else if (!user?.roles.includes("COORDINATOR") && !user?.roles.includes("ADMIN")) {
-                router.push('/not-found');
             }
 
         }, [isAuthenticated, user, router]);

@@ -21,7 +21,6 @@ function Login() {
     const router = useRouter();
 
     useEffect(() => {
-
         setTimeout(() => setIsReady(true), 50);
     }, []);
 
@@ -67,7 +66,7 @@ function Login() {
 
         <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
 
-            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white">
+            <div className="w-full max-w-2xl border border-gray-300 rounded-lg p-8 bg-white" style={{ boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)" }}>
                 <div className="text-center mb-4">
                     <a href="/">
                         <img
@@ -80,29 +79,31 @@ function Login() {
                     </a>
                 </div>
 
-
                 <div className="space-y-4">
-                    <div>
+                    <div className="relative">
                         <label
                             htmlFor="email"
                             className="block text-gray-700 font-medium mb-2"
                         >
                             E-mail
                         </label>
-                        <InputText
-                            id="email"
-                            type="email"
-                            placeholder="Digite seu e-mail"
-                            className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSignIn();
-                                }
-                            }}
-                        />
-                        {emailError && <p className="text-red-500 text-sm mt-2">{emailError}</p>}
+                        <div className="relative w-full">
+                            {emailError && <p className="absolute right-0 -top-6 text-red-500 text-sm">{emailError}</p>}
+
+                            <InputText
+                                id="email"
+                                type="email"
+                                placeholder="Digite seu e-mail"
+                                className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSignIn();
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
 
                     <div className="relative">
@@ -113,6 +114,8 @@ function Login() {
                             Senha
                         </label>
                         <div className="relative w-full">
+                            {passwordError && <p className="absolute right-0 -top-6 text-red-500 text-sm">{passwordError}</p>}
+
                             <InputText
                                 id="password"
                                 type={passwordVisible ? "text" : "password"}
@@ -139,10 +142,8 @@ function Login() {
                                 )}
                             </button>
                         </div>
-                        {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
                         {authError && <p className="text-red-500 text-sm mt-2">{authError}</p>}
-
-                        <div className="text-right mt-2">
+                        <div className="text-right mt-4">
                             <a
                                 href="#"
                                 className="text-black hover:underline text-sm font-medium"
