@@ -109,7 +109,6 @@ export interface UserRequestDTO {
     id: string;
     name: string;
     email: string;
-    password: string;
     course: string;
 }
 
@@ -117,6 +116,5 @@ export interface UserResponseDTO {
     id: string;
     name: string;
     email: string;
-    password: string;
     course: string;
 }

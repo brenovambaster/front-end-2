@@ -38,13 +38,13 @@ function Login() {
         setPasswordError("");
         setAuthError("");
 
-        const [authenticated, serverConexionError] = await signIn({ email, password });
-
         if (!email || !password) {
             if (!email) setEmailError("Campo obrigatório.");
             if (!password) setPasswordError("Campo obrigatório.");
             return;
         }
+
+        const [authenticated, serverConexionError] = await signIn({ email, password });
 
         if (authenticated) {
             console.log("Authenticated");

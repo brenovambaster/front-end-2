@@ -6,6 +6,16 @@ import { UserRequestDTO, UserResponseDTO } from '../types';
 const BASE_URL = 'http://localhost:8080/academic';
 
 export class UserService {
+    static async getUser(): Promise<UserResponseDTO> {
+        try {
+            const response = await api.get(BASE_URL);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            throw error;
+        }
+    }
+
     static async getUsers(): Promise<[]> {
         try {
             const response = await api.get(BASE_URL);

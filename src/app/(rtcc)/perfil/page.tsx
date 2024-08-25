@@ -3,29 +3,56 @@ import Image from 'next/image';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import { useState } from 'react';
+import { Dialog } from 'primereact/dialog';
+import { TabPanel, TabView } from 'primereact/tabview';
+import { use, useEffect, useState } from 'react';
+import { UserResponseDTO } from '@/types';
+import { UserService } from '@/service/userService';
 
 const tccs = [
-    { id: 1, title: "Inteligência Artificial na Medicina", description: "Lucio fernandes dutra santos", tags: ["IA", "Medicina", "Bioinformática", "Medicina", "Medicina", "Medicina", "Medicina", "Medicina"] },
-    { id: 2, title: "Blockchain em Sistemas de Votação", description: "Implementação de um sistema de votação seguro usando tecnologia blockchain.", tags: ["Blockchain", "Segurança"] },
-    { id: 3, title: "Realidade Aumentada na Educação", description: "Desenvolvimento de aplicativos educacionais com realidade aumentada.", tags: ["AR", "Educação"] },
-    { id: 4, title: "Análise de Sentimentos em Redes Sociais", description: "Uso de processamento de linguagem natural para analisar opiniões online.", tags: ["NLP", "Redes Sociais"] },
-    { id: 5, title: "IoT na Agricultura de Precisão", description: "Aplicação de Internet das Coisas para otimizar a produção agrícola.", tags: ["IoT", "Agricultura"] },
-    { id: 6, title: "Cibersegurança em Sistemas Críticos", description: "Estratégias de proteção para infraestruturas críticas contra ataques cibernéticos.", tags: ["Cibersegurança"] },
-    { id: 7, title: "Computação Quântica: Algoritmos e Aplicações", description: "Estudo de algoritmos quânticos e suas potenciais aplicações práticas.", tags: ["Computação Quântica"] },
-    { id: 8, title: "Veículos Autônomos e Ética", description: "Análise dos dilemas éticos na programação de carros autônomos.", tags: ["IA", "Ética"] },
-    { id: 9, title: "Big Data na Previsão do Tempo", description: "Uso de grandes volumes de dados para melhorar previsões meteorológicas.", tags: ["Big Data", "Meteorologia"] },
-    { id: 10, title: "Bioinformática e Sequenciamento de DNA", description: "Desenvolvimento de algoritmos para análise eficiente de sequências genéticas.", tags: ["Bioinformática", "Genética"] },
+    { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina", "Medicina", "Medicina", "Medicina", "Medicina"] },
+    { id: 2, title: "Blockchain em Sistemas de Votação", description: "James Thompson Dijkstra", tags: ["Blockchain", "Segurança"] },
+    { id: 3, title: "Realidade Aumentada na Educação", description: "James Thompson Dijkstra", tags: ["AR", "Educação"] },
+    { id: 4, title: "Análise de Sentimentos em Redes Sociais", description: "James Thompson Dijkstra", tags: ["NLP", "Redes Sociais"] },
+    { id: 5, title: "IoT na Agricultura de Precisão", description: "James Thompson Dijkstra", tags: ["IoT", "Agricultura"] },
+    { id: 6, title: "Cibersegurança em Sistemas Críticos", description: "James Thompson Dijkstra", tags: ["Cibersegurança"] },
+    { id: 7, title: "Computação Quântica: Algoritmos e Aplicações", description: "James Thompson Dijkstra", tags: ["Computação Quântica"] },
+    { id: 8, title: "Veículos Autônomos e Ética", description: "James Thompson Dijkstra", tags: ["IA", "Ética"] },
+    { id: 9, title: "Big Data na Previsão do Tempo", description: "James Thompson Dijkstra", tags: ["Big Data", "Meteorologia"] },
+    { id: 10, title: "Bioinformática e Sequenciamento de DNA", description: "James Thompson Dijkstra", tags: ["Bioinformática", "Genética"] },
 ]
 
 export default function Component() {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4; // Agora exibirá 5 TCCs por página
+    const itemsPerPage = 4; // 4 TCCs por página
     const totalPages = Math.ceil(tccs.length / itemsPerPage);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentTCCs = tccs.slice(startIndex, endIndex);
+
+    const [visible, setVisible] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const [user, setUser] = useState<UserResponseDTO | null>(null);
+
+    // useEffect(() => {
+    //     UserService.getUser().then(data => setUser(data));
+    // }, []);
+
+    const headerTemplates = (label: string, index: number) => (
+        <div
+            className="flex items-center gap-2 p-3 cursor-pointer"
+            style={{
+                borderBottom: index === activeIndex ? '2px solid black' : 'none',
+                paddingBottom: '16px', // Remove padding below the header to avoid extra space
+            }}
+            onClick={() => setActiveIndex(index)}
+        >
+            <span className="font-bold whitespace-nowrap text-black">{label}</span>
+        </div>
+    );
+
 
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4">
@@ -63,10 +90,11 @@ export default function Component() {
                                 e.currentTarget.style.backgroundColor = '#2b2d39';
                                 e.currentTarget.style.color = 'white';
                             }}
+                            onClick={() => setVisible(true)}
                         />
 
                         <div className="flex flex-col items-center mt-6">
-                            <div className="flex items-center gap-4 mb-4">
+                            <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
                                 <span className="flex items-center">
                                     <i className="pi pi-heart-fill text-red-500 mr-1"></i>
                                     <span className="font-bold text-red-500">26</span>
@@ -81,6 +109,7 @@ export default function Component() {
                         </div>
                     </div>
                 </div>
+
 
 
                 {/* segundo container */}
@@ -167,6 +196,101 @@ export default function Component() {
                     </div>
                 </div>
             </div>
+            <Dialog header="Header" visible={visible} style={{ width: '50vw' }} onHide={() => { if (!visible) return; setVisible(false); }}>
+
+                <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
+                    <TabPanel
+
+
+                        headerTemplate={headerTemplates('Detalhes da Conta', 0)}
+                    >
+                        <div className="grid grid-cols-1 gap-6">
+                            <div>
+                                <label className="block font-medium">Nome</label>
+                                <input
+                                    type="text"
+                                    value="Cirilo Netflixo da Silva"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-medium">E-mail</label>
+                                <input
+                                    type="text"
+                                    value="mail@aluno.ifnmg.edu.br"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-medium">Curso</label>
+                                <input
+                                    type="text"
+                                    value="+1800-000"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-6 py-2 rounded-lg">
+                            <Button
+                                type="button"
+                                label="Salvar Alterações"
+                                className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
+                                style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                            />
+                        </div>
+
+                    </TabPanel>
+
+                    <TabPanel
+                        header={
+                            <span
+                                className={`text-base px-4 py-2 cursor-pointer ${activeIndex === 1
+                                    ? 'text-black'
+                                    : 'text-black'
+                                    }`}
+                            >
+                                Alterar Senha
+                            </span>
+                        }
+                        headerTemplate={headerTemplates('Alterar Senha', 1)}
+                    >
+                        <div className="grid grid-cols-1 gap-6">
+                            <div>
+                                <label className="block font-medium">Senha Atual</label>
+                                <input
+                                    type="password"
+                                    placeholder="Digite a senha atual"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-medium">Nova Senha</label>
+                                <input
+                                    type="password"
+                                    placeholder="Digite a nova senha"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-medium">Confirmar Nova Senha</label>
+                                <input
+                                    type="password"
+                                    placeholder="Confirme a nova senha"
+                                    className="w-full mt-2 p-2 border rounded-lg"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-6 py-2 rounded-lg">
+                            <Button
+                                type="button"
+                                label="Alterar Senha"
+                                className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
+                                style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                            />
+                        </div>
+                    </TabPanel>
+                </TabView>
+            </Dialog>
         </div>
     );
 }
