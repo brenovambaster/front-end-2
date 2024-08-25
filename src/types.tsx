@@ -110,6 +110,7 @@ export interface UserRequestDTO {
     name: string;
     email: string;
     course: string;
+    password: string;
 }
 
 export interface UserResponseDTO {

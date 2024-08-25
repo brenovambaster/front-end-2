@@ -82,8 +82,6 @@ export default function Register() {
 
             const userRequest: UserRequestDTO = { id: '', name, course, email, password };
 
-            alert(JSON.stringify(userRequest));
-
             try {
                 UserService.createUser(userRequest).then((response: UserResponseDTO) => {
                     alert('Usuário criado com sucesso!');
@@ -97,7 +95,7 @@ export default function Register() {
 
     return (
         <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white" style={{ boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)"}} >
+            <div className="w-full max-w-2xl border border-gray-300 shadow-xl rounded-lg p-8 bg-white" style={{ boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)" }} >
                 <div className="text-center mb-4">
                     <a href="/">
                         <img
@@ -225,7 +223,7 @@ export default function Register() {
                         borderColor: '#2b2d39',
                         color: 'white',
                         transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                        borderWidth: '1px', 
+                        borderWidth: '1px',
                         borderStyle: 'solid'
                     }}
                     onMouseEnter={(e) => {

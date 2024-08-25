@@ -35,4 +35,14 @@ export class UserService {
             throw error;
         }
     }
+
+    static async updateUser(user: UserRequestDTO): Promise<UserResponseDTO> {
+        try {
+            const response = await api.put<UserResponseDTO>(BASE_URL, user);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error;
+        }
+    }
 }

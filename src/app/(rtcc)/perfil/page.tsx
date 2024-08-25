@@ -6,8 +6,12 @@ import { Card } from 'primereact/card';
 import { Dialog } from 'primereact/dialog';
 import { TabPanel, TabView } from 'primereact/tabview';
 import { use, useEffect, useState } from 'react';
-import { UserResponseDTO } from '@/types';
+import { UserRequestDTO, UserResponseDTO } from '@/types';
 import { UserService } from '@/service/userService';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { CursoService } from '@/service/cursoService';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const tccs = [
     { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina", "Medicina", "Medicina", "Medicina", "Medicina"] },
@@ -34,11 +38,47 @@ export default function Component() {
     const [visible, setVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const [user, setUser] = useState<UserResponseDTO | null>(null);
+    const [submitted, setSubmitted] = useState(false);
+
+    const emptyUser: UserResponseDTO = {
+        id: '',
+        name: '',
+        email: '',
+        course: ''
+    }
+
+    const [user, setUser] = useState<UserResponseDTO>(emptyUser);
+    const [course, setCourse] = useState('');
+    const [courses, setCourses] = useState<{ label: string; value: string }[]>([]);
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordErrors, setPasswordErrors] = useState({
+        currentPassword: '',
+        password: '',
+        confirmPassword: ''
+    });
+
+    const [userDetailsErrors, setUserDetailsErrors] = useState({
+        name: '',
+        course: ''
+    });
 
     // useEffect(() => {
     //     UserService.getUser().then(data => setUser(data));
+
+    //     CursoService.getCursos().then(data => {
+    //         const transformedCourses = data.map(transformCourse);
+    //         setCourses(transformedCourses);
+    //     });
     // }, []);
+
+    const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
+        return { label: course.name, value: course.id };
+    };
 
     const headerTemplates = (label: string, index: number) => (
         <div
@@ -53,6 +93,103 @@ export default function Component() {
         </div>
     );
 
+    const handleSalvarAlteracoes = () => {
+
+    }
+
+
+    const handleCurrentPasswordVisibility = () => {
+        setCurrentPasswordVisible(!currentPasswordVisible);
+    }
+
+
+    const handlePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    };
+
+    const handleConfirmPasswordVisibility = () => {
+        setConfirmPasswordVisible(!confirmPasswordVisible);
+    };
+
+    const clearFields = () => {
+        setUser(emptyUser);
+        setCourse('');
+        setCurrentPassword('');
+        setPassword('');
+        setConfirmPassword('');
+        setSubmitted(false);
+    }
+
+    const handleTabChange = (e: any) => {
+        setActiveIndex(e.index)
+        clearFields();
+        alert('Tab changed');
+    }
+
+    const validateChangePassword = () => {
+        const newErrors = {
+            currentPassword: '',
+            password: '',
+            confirmPassword: '',
+        };
+
+        setPasswordErrors(newErrors);
+
+        if (!currentPassword) newErrors.currentPassword = 'O campo senha atual não pode ficar em branco.';
+        if (!password) newErrors.password = 'O campo nova senha não pode ficar em branco.';
+        if (!confirmPassword) newErrors.confirmPassword = 'O campo confirmar senha não pode ficar em branco.';
+        if (password && confirmPassword && password !== confirmPassword) {
+            newErrors.confirmPassword = 'As senhas não conferem.';
+        }
+
+        setPasswordErrors(newErrors);
+        return Object.values(newErrors).every(error => error === '');
+    }
+
+    const handlePasswordChange = (e: any) => {
+
+        if (validateChangePassword()) {
+
+            const userRequest: UserRequestDTO = { id: '', name: user.name, course: user.course, email: user.email, password: confirmPassword };
+
+            try {
+                UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
+                    alert('Usuário Alterado!');
+                    clearFields();
+                });
+            } catch (error) {
+                alert('Erro ao alterar senha.');
+            }
+        }
+    }
+
+    const validateChangeUserData = () => {
+        const newErrors = {
+            name: '',
+            course: '',
+        };
+
+        if (!user.name) newErrors.name = 'O campo nome não pode ficar em branco.';
+        if (!course) newErrors.course = 'O campo curso não pode ficar em branco.';
+
+        setUserDetailsErrors(newErrors);
+        return Object.values(newErrors).every(error => error === '');
+    }
+
+    const handleUserDataChange = (e: any) => {
+        if (validateChangeUserData()) {
+            const userRequest: UserRequestDTO = { id: '', name: user.name, course: course, email: user.email, password: '' };
+
+            try {
+                UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
+                    alert('Usuário Alterado!');
+                    clearFields();
+                });
+            } catch (error) {
+                alert('Erro ao alterar usuário.');
+            }
+        }
+    }
 
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4">
@@ -70,7 +207,7 @@ export default function Component() {
                                 style={{ height: 'auto' }}
                             />
                         </div>
-                        <h1 className="text-2xl font-bold mb-1 text-center">Luiz Bolsonaro de Moraes</h1>
+                        <h1 className="text-2xl font-bold mb-1 text-center">Erwin Schrödinger</h1>
                         <p className="text-gray-600 mb-4 text-center">Acadêmico</p>
                         <Button
                             icon="pi pi-pencil"
@@ -98,19 +235,17 @@ export default function Component() {
                                 <span className="flex items-center">
                                     <i className="pi pi-heart-fill text-red-500 mr-1"></i>
                                     <span className="font-bold text-red-500">26</span>
-                                    <span className="text-gray-600 ml-1">Curtidos</span>
+                                    <span className="text-gray-600 ml-1 text-red-500">Curtidos</span>
                                 </span>
                                 <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
                                     <span className="font-bold text-yellow-500">62</span>
-                                    <span className="text-gray-600 ml-1">Favoritos</span>
+                                    <span className="text-gray-600 ml-1 text-yellow-500">Favoritos</span>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
 
                 {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
@@ -144,7 +279,7 @@ export default function Component() {
                         <Button
                             icon="pi pi-chevron-left"
                             label=""
-                            className="p-button-outlined p-button-sm"
+                            className="p-button-outlined px-2 py-2 text-xs"
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
                             style={{
@@ -172,7 +307,7 @@ export default function Component() {
                             icon="pi pi-chevron-right"
                             label=""
                             iconPos="right"
-                            className="p-button-outlined p-button-sm p"
+                            className="p-button-outlined px-2 py-2 text-xs"
                             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
                             style={{
@@ -196,38 +331,78 @@ export default function Component() {
                     </div>
                 </div>
             </div>
-            <Dialog header="Header" visible={visible} style={{ width: '50vw' }} onHide={() => { if (!visible) return; setVisible(false); }}>
+            <Dialog header="" visible={visible} style={{ width: '40vw' }} onHide={() => {
+                if (!visible) return;
+                setVisible(false);
+                clearFields();
+            }}>
 
-                <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
+                <TabView activeIndex={activeIndex} onTabChange={(e) => clearFields()}>
                     <TabPanel
-
-
                         headerTemplate={headerTemplates('Detalhes da Conta', 0)}
                     >
                         <div className="grid grid-cols-1 gap-6">
-                            <div>
-                                <label className="block font-medium">Nome</label>
-                                <input
-                                    type="text"
-                                    value="Cirilo Netflixo da Silva"
-                                    className="w-full mt-2 p-2 border rounded-lg"
-                                />
+                            <div className="relative">
+                                <label
+                                    htmlFor="email"
+                                    className="block text-gray-700 font-medium mb-2"
+                                    style={{ color: '#231F20' }}
+                                >
+                                    Nome
+                                </label>
+                                <div className="relative w-full">
+                                    {userDetailsErrors.name && <p className="absolute right-0 -top-6 text-red-500 text-sm">{userDetailsErrors.name}</p>}
+                                    <InputText
+                                        id="name"
+                                        placeholder="Digite seu nome completo"
+                                        className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
+                                        value={user?.name}
+                                        onChange={(e) => setUser({ ...user, name: e.target.value })}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleSalvarAlteracoes();
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block font-medium">E-mail</label>
-                                <input
-                                    type="text"
-                                    value="mail@aluno.ifnmg.edu.br"
-                                    className="w-full mt-2 p-2 border rounded-lg"
-                                />
+                            <div className="relative">
+                                <label
+                                    htmlFor="email"
+                                    className="block text-gray-700 font-medium mb-2"
+                                    style={{ color: '#231F20' }}
+                                >
+                                    E-mail
+                                </label>
+                                <div className="relative w-full">
+                                    <InputText
+                                        id="name"
+                                        placeholder="@aluno.ifnmg.edu.br ou @ifnmg.edu.br"
+                                        className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
+                                        value={user?.email}
+                                        onChange={(e) => setUser({ ...user, email: e.target.value })}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleSalvarAlteracoes();
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block font-medium">Curso</label>
-                                <input
-                                    type="text"
-                                    value="+1800-000"
-                                    className="w-full mt-2 p-2 border rounded-lg"
+                            <div className="relative">
+                                {userDetailsErrors.course && (
+                                    <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{userDetailsErrors.course}</p>
+                                )}
+                                <label htmlFor="course" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Curso</label>
+                                <Dropdown
+                                    id="course"
+                                    value={course}
+                                    onChange={(e) => setCourse(e.value)}
+                                    options={courses}
+                                    placeholder="Selecione seu curso"
+                                    className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                 />
+
                             </div>
                         </div>
                         <div className="mt-6 py-2 rounded-lg">
@@ -236,6 +411,7 @@ export default function Component() {
                                 label="Salvar Alterações"
                                 className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
                                 style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                                onClick={handleUserDataChange}
                             />
                         </div>
 
@@ -254,30 +430,92 @@ export default function Component() {
                         }
                         headerTemplate={headerTemplates('Alterar Senha', 1)}
                     >
-                        <div className="grid grid-cols-1 gap-6">
-                            <div>
-                                <label className="block font-medium">Senha Atual</label>
-                                <input
-                                    type="password"
+                        <div className="relative">
+                            {passwordErrors.currentPassword && (
+                                <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{passwordErrors.currentPassword}</p>
+                            )}
+                            <label htmlFor="password" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Senha Atual</label>
+                            <div className="relative w-full mb-6">
+                                <InputText
+                                    id="password"
+                                    type={currentPasswordVisible ? "text" : "password"}
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
                                     placeholder="Digite a senha atual"
-                                    className="w-full mt-2 p-2 border rounded-lg"
+                                    className="w-full pr-12 bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={handleCurrentPasswordVisibility}
+                                    className="absolute inset-y-0 right-0 flex items-center px-3"
+                                    style={{ top: '50%', transform: 'translateY(-50%)' }}
+                                >
+                                    {currentPasswordVisible ? (
+                                        <FaEye className="text-gray-500 text-base" />
+                                    ) : (
+                                        <FaEyeSlash className="text-gray-500 text-base" />
+                                    )}
+                                </button>
                             </div>
-                            <div>
-                                <label className="block font-medium">Nova Senha</label>
-                                <input
-                                    type="password"
+
+                        </div>
+
+                        <div className="relative">
+                            {passwordErrors.password && (
+                                <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{passwordErrors.password}</p>
+                            )}
+                            <label htmlFor="password" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Nova Senha</label>
+                            <div className="relative w-full mb-6">
+                                <InputText
+                                    id="password"
+                                    type={passwordVisible ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Digite a nova senha"
-                                    className="w-full mt-2 p-2 border rounded-lg"
+                                    className="w-full pr-12 bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={handlePasswordVisibility}
+                                    className="absolute inset-y-0 right-0 flex items-center px-3"
+                                    style={{ top: '50%', transform: 'translateY(-50%)' }}
+                                >
+                                    {passwordVisible ? (
+                                        <FaEye className="text-gray-500 text-base" />
+                                    ) : (
+                                        <FaEyeSlash className="text-gray-500 text-base" />
+                                    )}
+                                </button>
                             </div>
-                            <div>
-                                <label className="block font-medium">Confirmar Nova Senha</label>
-                                <input
-                                    type="password"
+
+                        </div>
+
+                        <div className="relative">
+                            {passwordErrors.confirmPassword && (
+                                <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{passwordErrors.confirmPassword}</p>
+                            )}
+                            <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Confirmar Nova Senha</label>
+                            <div className="relative w-full">
+                                <InputText
+                                    id="confirmPassword"
+                                    type={confirmPasswordVisible ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="Confirme a nova senha"
-                                    className="w-full mt-2 p-2 border rounded-lg"
+                                    className="w-full pr-12 bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={handleConfirmPasswordVisibility}
+                                    className="absolute inset-y-0 right-0 flex items-center px-3"
+                                    style={{ top: '50%', transform: 'translateY(-50%)' }}
+                                >
+                                    {confirmPasswordVisible ? (
+                                        <FaEye className="text-gray-500 text-base" />
+                                    ) : (
+                                        <FaEyeSlash className="text-gray-500 text-base" />
+                                    )}
+                                </button>
                             </div>
                         </div>
                         <div className="mt-6 py-2 rounded-lg">
@@ -286,6 +524,7 @@ export default function Component() {
                                 label="Alterar Senha"
                                 className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
                                 style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                                onClick={handlePasswordChange}
                             />
                         </div>
                     </TabPanel>
