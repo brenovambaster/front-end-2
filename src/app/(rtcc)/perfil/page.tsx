@@ -43,19 +43,28 @@ export default function Component() {
                                 style={{ height: 'auto' }}
                             />
                         </div>
-                        <h1 className="text-2xl font-bold mb-1 text-center">Cirilo Netflixo da Silva</h1>
+                        <h1 className="text-2xl font-bold mb-1 text-center">Luiz Bolsonaro de Moraes</h1>
                         <p className="text-gray-600 mb-4 text-center">Acadêmico</p>
                         <Button
                             icon="pi pi-pencil"
                             label="Editar Conta"
-                            className="mb-4 w-48" // Linha alterada: Define a largura do botão como 48 unidades (pode ajustar conforme necessário)
+                            className="mb-4 w-48"
                             style={{
                                 backgroundColor: '#2b2d39',
                                 borderColor: '#2b2d39',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
                             }}
                         />
+
                         <div className="flex flex-col items-center mt-6">
                             <div className="flex items-center gap-4 mb-4">
                                 <span className="flex items-center">
@@ -112,11 +121,18 @@ export default function Component() {
                             style={{
                                 backgroundColor: '#2b2d39',
                                 borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
                                 borderWidth: '1px',
-                                borderStyle: 'solid',
-                                color: '#fff',
-                                fontSize: '0.875rem',
-                                padding: '0.5rem 1rem'
+                                borderStyle: 'solid'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
                             }}
                         />
 
@@ -133,11 +149,18 @@ export default function Component() {
                             style={{
                                 backgroundColor: '#2b2d39',
                                 borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
                                 borderWidth: '1px',
-                                borderStyle: 'solid',
-                                color: '#fff',
-                                fontSize: '0.875rem',
-                                padding: '0.5rem 1rem'
+                                borderStyle: 'solid'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
                             }}
                         />
 

@@ -161,7 +161,22 @@ function Login() {
                         onClick={handleSignIn}
                         label="Entrar"
                         className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
-                        style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                        style={{
+                            backgroundColor: '#2b2d39',
+                            borderColor: '#2b2d39',
+                            color: 'white',
+                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            borderWidth: '1px',
+                            borderStyle: 'solid'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#1d1d2c';
+                            e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#2b2d39';
+                            e.currentTarget.style.color = 'white';
+                        }}
                     />
 
 

@@ -62,10 +62,10 @@ export default function BasicDemo() {
                         icon="pi pi-user"
                         className="group border border-[#2b2d39] text-[#2b2d39] font-semibold py-2 px-4 rounded-full flex items-center justify-center space-x-2 mr-5"
                         style={{
-                            backgroundColor: 'white', // Fundo padrão
+                            backgroundColor: 'white', 
                             borderColor: '#2b2d39',
                             color: '#2b2d39',
-                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out', // Transição rápida e sincronizada
+                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out', 
                         }}
                         onClick={() => window.location.href = '/login'}
                         onMouseEnter={(e) => {
