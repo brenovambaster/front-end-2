@@ -115,7 +115,7 @@ export default function Register() {
                         {errors.name && (
                             <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{errors.name}</p>
                         )}
-                        <label htmlFor="name" className="block text-gray-700 font-medium mb-2">Nome</label>
+                        <label htmlFor="name" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Nome</label>
                         <InputText
                             id="name"
                             value={name}
@@ -129,7 +129,7 @@ export default function Register() {
                         {errors.course && (
                             <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{errors.course}</p>
                         )}
-                        <label htmlFor="course" className="block text-gray-700 font-medium mb-2">Curso</label>
+                        <label htmlFor="course" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Curso</label>
                         <Dropdown
                             id="course"
                             value={course}
@@ -145,7 +145,7 @@ export default function Register() {
                         {errors.email && (
                             <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{errors.email}</p>
                         )}
-                        <label htmlFor="email" className="block text-gray-700 font-medium mb-2">E-mail</label>
+                        <label htmlFor="email" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>E-mail</label>
                         <InputText
                             id="email"
                             value={email}
@@ -160,7 +160,7 @@ export default function Register() {
                         {errors.password && (
                             <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{errors.password}</p>
                         )}
-                        <label htmlFor="password" className="block text-gray-700 font-medium mb-2">Senha</label>
+                        <label htmlFor="password" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Senha</label>
                         <div className="relative w-full">
                             <InputText
                                 id="password"
@@ -190,7 +190,7 @@ export default function Register() {
                         {errors.confirmPassword && (
                             <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{errors.confirmPassword}</p>
                         )}
-                        <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2">Confirmar Senha</label>
+                        <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Confirmar Senha</label>
                         <div className="relative w-full">
                             <InputText
                                 id="confirmPassword"
@@ -220,11 +220,12 @@ export default function Register() {
                     label="Cadastrar"
                     className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300 mt-8 border-black"
                     onClick={handleRegister}
+                    style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
                 />
 
                 <p className="mt-6 text-center text-gray-500">
                     Já tem uma conta?{" "}
-                    <a href="/login" className="text-black hover:underline font-medium">
+                    <a href="/login" className="hover:underline font-medium" style={{ color: '#cc9747' }}>
                         Faça login
                     </a>
                 </p>

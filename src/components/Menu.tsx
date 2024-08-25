@@ -22,8 +22,8 @@ const Logo = () => (
             <Image
                 alt="logo"
                 src={graduation_cap_image}
-                height={50}
-                width={50}
+                height={35}
+                width={35}
             />
         </a>
     </div>
@@ -60,10 +60,23 @@ export default function BasicDemo() {
                     <Button
                         label="Fazer login"
                         icon="pi pi-user"
-                        className="bg-white text-black py-2 px-4 rounded-full text-sm flex items-center justify-center gap-2 border border-black focus:outline-none focus:ring-0 hover:bg-gray-200"
+                        className="group border border-[#2b2d39] text-[#2b2d39] font-semibold py-2 px-4 rounded-full flex items-center justify-center space-x-2 mr-5"
+                        style={{
+                            backgroundColor: 'white', // Fundo padrão
+                            borderColor: '#2b2d39',
+                            color: '#2b2d39',
+                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out', // Transição rápida e sincronizada
+                        }}
                         onClick={() => window.location.href = '/login'}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#2b2d39';
+                            e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'white';
+                            e.currentTarget.style.color = '#2b2d39';
+                        }}
                     />
-
                 ) : (
                     <>
                         <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />

@@ -16,8 +16,8 @@ const HomePage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center w-full">
-            <div className="text-center mb-4">
+        <div className="flex flex-col items-center w-full ">
+            <div className="text-center mb-6 mt-8">
                 <img
                     src="/nova-logo-rtcc-if-logo.png"
                     alt="Logo"
@@ -26,7 +26,7 @@ const HomePage = () => {
                     height="300"
                 />
             </div>
-            <div className="relative w-full max-w-4xl mx-4 md:mx-0">
+            <div className="relative w-full max-w-4xl mx-4 md:mx-0 ">
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
                     <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
                 </div>

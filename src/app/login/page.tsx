@@ -84,6 +84,7 @@ function Login() {
                         <label
                             htmlFor="email"
                             className="block text-gray-700 font-medium mb-2"
+                            style={{ color: '#231F20' }}
                         >
                             E-mail
                         </label>
@@ -109,7 +110,8 @@ function Login() {
                     <div className="relative">
                         <label
                             htmlFor="password"
-                            className="block text-gray-700 font-medium mb-2"
+                            className="block font-medium mb-2"
+                            style={{ color: '#231F20' }}
                         >
                             Senha
                         </label>
@@ -146,7 +148,8 @@ function Login() {
                         <div className="text-right mt-4">
                             <a
                                 href="#"
-                                className="text-black hover:underline text-sm font-medium"
+                                className="hover:underline text-sm font-medium"
+                                style={{ color: '#2b2d39' }}
                             >
                                 Esqueceu a senha?
                             </a>
@@ -157,8 +160,11 @@ function Login() {
                         type="button"
                         onClick={handleSignIn}
                         label="Entrar"
-                        className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300 border-black"
+                        className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
+                        style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
                     />
+
+
                 </div>
 
                 <p className="mt-6 text-center text-gray-500">
@@ -166,6 +172,7 @@ function Login() {
                     <a
                         href="/signup"
                         className="text-black hover:underline font-medium"
+                        style={{ color: '#cc9747' }}
                     >
                         Cadastre-se
                     </a>
