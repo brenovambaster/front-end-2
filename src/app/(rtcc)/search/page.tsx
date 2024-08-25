@@ -385,7 +385,23 @@ export default function Component() {
 
                     </div>
                     <div className="flex-shrink-0">
-                        <Button className="p-button-sm h-10 flex items-center" onClick={handleSearch}>
+                        <Button className="p-button-sm h-10 flex items-center"
+                            onClick={handleSearch}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                        >
                             <i className="pi pi-search"></i>
                             <span className="ml-2 text-sm"><b>Pesquisar</b></span>
                         </Button>
@@ -409,7 +425,23 @@ export default function Component() {
                         {renderInputField()}
                     </div>
                     <div className="flex-shrink-0">
-                        <Button className="p-button-sm h-10 flex items-center" onClick={handleFilter} >
+                        <Button className="p-button-sm h-10 flex items-center"
+                            onClick={handleFilter}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                        >
                             <span className="text-sm"><b>Aplicar</b></span>
                         </Button>
                     </div>

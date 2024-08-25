@@ -17,7 +17,7 @@ const style = {
 };
 
 const Logo = () => (
-    <div style={{ marginRight: '0.5rem' }}>
+    <div style={{ marginRight: '0.5rem', marginLeft: '0.5rem'}}>
         <a href="/">
             <Image
                 alt="logo"

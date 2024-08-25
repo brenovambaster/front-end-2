@@ -4,7 +4,7 @@
 const TCC = () => {
 
     return (
-        <div className="flex flex-col min-h-screen mt-16">
+        <div className="flex flex-col min-h-screen mt-8">
             <div className="flex-grow max-w-7xl mx-auto" style={{ maxWidth: '80%' }}>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-200">
@@ -36,7 +36,7 @@ const TCC = () => {
                             <tr className="border-b">
                                 <td className="px-4 py-4 font-semibold bg-gray-100">Resumo</td>
                                 <td className="px-4 py-2">
-                                    Este trabalho explora a aplicação de redes neurais convolucionais (CNNs) em diagnóstico
+                                Este trabalho explora a aplicação de redes neurais convolucionais (CNNs) em diagnóstico
                                     médico, com foco em imagens médicas. São discutidas as principais arquiteturas de CNNs
                                     e sua eficácia na detecção de patologias em exames de imagem, como radiografias e
                                     ressonâncias magnéticas. A pesquisa inclui uma análise de desempenho de diferentes
@@ -83,9 +83,26 @@ const TCC = () => {
                                     <td className="px-4 py-2">827da598-d292-4c19-814f-5fa7358696a4</td>
                                     <td className="px-4 py-2">Monografia</td>
                                     <td className="px-4 py-2">PDF</td>
-                                    <td className="px-4 py-2 text-center">
-                                        <a href="http://localhost:8080/tcc/view/eb224bc4-dca4-4971-962b-65879ab858fd.pdf" download="arquivo.pdf" className="p-button" target="_blank">
-                                            Visualizar
+                                    <td className="px-4 py-2 text-center ">
+                                        <a href="http://localhost:8080/tcc/view/eb224bc4-dca4-4971-962b-65879ab858fd.pdf" download="arquivo.pdf" className="p-button font-semibold" target="_blank"
+                                            style={{
+                                                backgroundColor: '#2b2d39',
+                                                borderColor: '#2b2d39',
+                                                color: 'white',
+                                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                                padding: '8px 12px',
+                                                fontSize: '14px',
+                                                fontWeight: '500',
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                                e.currentTarget.style.color = 'white';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                                e.currentTarget.style.color = 'white';
+                                            }}>
+                                            Acessar
                                         </a>
                                     </td>
                                 </tr>
