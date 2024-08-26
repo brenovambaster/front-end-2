@@ -1,14 +1,16 @@
 
-import { CoordinatorResponseDTO, CoordinatorRequestDTO } from '../types';
 import { api } from '../service/api';
 import { UserRequestDTO, UserResponseDTO } from '../types';
 
-const BASE_URL = 'http://localhost:8080/academic';
+const BASE_URL = 'http://localhost:8080/';
+const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
+
 
 export class UserService {
-    static async getUser(): Promise<UserResponseDTO> {
+    static async getUser(id: string): Promise<UserResponseDTO> {
         try {
-            const response = await api.get(BASE_URL);
+            const response = await api.get(BASE_URL + `academic/${id}`);
+            console.log(response);
             return response.data;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -38,11 +40,21 @@ export class UserService {
 
     static async updateUser(user: UserRequestDTO): Promise<UserResponseDTO> {
         try {
-            const response = await api.put<UserResponseDTO>(BASE_URL, user);
+            const response = await api.put<UserResponseDTO>(BASE_URL + `academic/${user.id}`, user);
             return response.data;
         } catch (error) {
             console.error('Error updating user:', error);
             throw error;
+        }
+    }
+
+    static async updatePassword(user: UserRequestDTO): Promise<UserResponseDTO | null> {
+        try {
+            const response = await api.put<UserResponseDTO>(PASSWORD_BASE_URL + `${user.id}`, user);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            return null;
         }
     }
 }

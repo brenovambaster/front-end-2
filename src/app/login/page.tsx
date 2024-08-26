@@ -20,6 +20,10 @@ function Login() {
     const { signIn, isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
 
+    if (isAuthenticated) {
+        router.push("/");
+    }
+
     useEffect(() => {
         setTimeout(() => setIsReady(true), 50);
     }, []);
@@ -28,7 +32,7 @@ function Login() {
         setPasswordVisible(!passwordVisible);
     };
 
-    const validateEmail = (email) => {
+    const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
@@ -44,6 +48,11 @@ function Login() {
             return;
         }
 
+        if (!validateEmail(email)) {
+            setEmailError('São permitidos apenas @aluno.ifnmg.edu.br ou @ifnmg.edu.br.');
+            return;
+        }
+    
         const [authenticated, serverConexionError] = await signIn({ email, password });
 
         if (authenticated) {
@@ -51,16 +60,13 @@ function Login() {
             router.push("/");
         } else {
             if (!serverConexionError) {
-                setAuthError("Usuário ou senha incorretos.");
+                setAuthError("Usuário ou senha incorretos ou e-mail não verificado.");
             } else {
                 toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação.', life: 5000 });
             }
         }
     };
 
-    if (isAuthenticated) {
-        router.push("/");
-    }
 
     return (
 

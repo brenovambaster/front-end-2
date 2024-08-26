@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
 import { UserRequestDTO, UserResponseDTO } from '@/types';
+import { Dialog } from 'primereact/dialog';
+import { AuthContext } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
     const [name, setName] = useState('');
@@ -27,6 +29,15 @@ export default function Register() {
         password: '',
         confirmPassword: '',
     });
+    const [visible, setVisible] = useState(false);
+
+    const { signIn, isAuthenticated } = useContext(AuthContext);
+    const router = useRouter();
+
+    if (isAuthenticated) {
+        router.push("/");
+    }
+
 
     useEffect(() => {
         CursoService.getCursos().then(data => {
@@ -84,8 +95,7 @@ export default function Register() {
 
             try {
                 UserService.createUser(userRequest).then((response: UserResponseDTO) => {
-                    alert('Usuário criado com sucesso!');
-                    window.location.href = '/login';
+                    setVisible(true);
                 });
             } catch (error) {
                 alert('Erro ao criar usuário.');
@@ -243,6 +253,25 @@ export default function Register() {
                     </a>
                 </p>
             </div>
+
+            <Dialog
+                visible={visible}
+                onHide={
+                    () => {
+                        setVisible(false);
+                        window.location.href = '/login';
+                    }
+                }
+                footer={
+                    <button className="">
+                    </button>
+                }
+                className="text-center"
+                style={{ width: '350px' }}
+            >
+                <i className="pi pi-envelope text-4xl text-blue-500 mb-4" style={{ color: '#2b2d39' }}></i>
+                <p className="m-0 text-lg mt-4 ">Um e-mail para a ativação da conta foi enviado!</p>
+            </Dialog>
         </div>
     );
 }

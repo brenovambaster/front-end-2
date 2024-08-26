@@ -13,6 +13,7 @@ type SignInData = {
 };
 
 type User = {
+    id: string;
     name: string;
     email: string;
     roles: string[];
@@ -27,9 +28,10 @@ type AuthContextType = {
 
 interface DecodedToken {
     sub: string;
-    user_name: string;
+    user_id: string;
     scope: string;
     iss: string;
+    name: string;
     exp: number;
     iat: number;
 }
@@ -51,23 +53,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return false;
         }
     });
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
     let serverConexionError = false;
     let authenticated = false;
 
     useEffect(() => {
         const { 'rtcc.token': token } = parseCookies();
-        
+
         if (token) {
             try {
                 const decodedToken = jwtDecode<DecodedToken>(token);
-                const roles = decodedToken.scope.split(' ');
 
                 const userData = {
-                    name: decodedToken.user_name,
+                    id: decodedToken.user_id,
+                    name: decodedToken.name,
                     email: decodedToken.sub,
-                    roles: roles
+                    roles: decodedToken.scope.split(' ')
                 };
 
                 setUser(userData);
@@ -77,12 +79,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.error("Erro ao decodificar o token:", error);
                 setIsAuthenticated(false);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         } else {
             setLoading(false);
         }
-        
+
     }, []);
 
     async function signIn({ email, password }: SignInData) {
@@ -96,12 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             const token = response.data;
             const decodedToken = jwtDecode<DecodedToken>(token);
-            const roles = decodedToken.scope.split(' ');
 
             const userData = {
-                name: decodedToken.user_name,
+                id: decodedToken.user_id,
+                name: decodedToken.name,
                 email: decodedToken.sub,
-                roles: roles
+                roles: decodedToken.scope.split(' ')
             };
 
             setUser(userData);
@@ -145,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             </div>
         );
     };
-    
+
     if (loading) {
         return <LoadingComponent />;
     }

@@ -17,7 +17,7 @@ const style = {
 };
 
 const Logo = () => (
-    <div style={{ marginRight: '0.5rem', marginLeft: '0.5rem'}}>
+    <div style={{ marginRight: '0.5rem', marginLeft: '0.5rem' }}>
         <a href="/">
             <Image
                 alt="logo"
@@ -60,12 +60,12 @@ export default function BasicDemo() {
                     <Button
                         label="Fazer login"
                         icon="pi pi-user"
-                        className="group border border-[#2b2d39] text-[#2b2d39] font-semibold py-2 px-4 rounded-full flex items-center justify-center space-x-2 mr-5"
+                        className="group border border-[#2b2d39] text-[#2b2d39] font-semibold py-2 px-4 rounded-full flex items-center justify-center space-x-2"
                         style={{
-                            backgroundColor: 'white', 
+                            backgroundColor: 'white',
                             borderColor: '#2b2d39',
                             color: '#2b2d39',
-                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out', 
+                            transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
                         }}
                         onClick={() => window.location.href = '/login'}
                         onMouseEnter={(e) => {
@@ -80,16 +80,51 @@ export default function BasicDemo() {
                 ) : (
                     <>
                         <Avatar icon="pi pi-user" shape="circle" onClick={(e) => op.current?.toggle(e)} style={{ cursor: 'pointer' }} />
-                        <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '200px' }}>
-                            <div className="flex flex-col">
-                                <Button label="Perfil" icon="pi pi-user" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2" />
-                                <Button label="Configurações" icon="pi pi-cog" className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                        <OverlayPanel ref={op} dismissable className="p-menu-custom" style={{ width: '180px' }}>
+                            <div className="flex flex-col ">
+                                <Button
+                                    label="Perfil"
+                                    icon="pi pi-user"
+                                    onClick={() => {
+                                        window.location.href = '/perfil';
+                                    }}
+                                    className="p-button-text p-button-plain border border-transparent hover:border-[#2b2d39] focus:border-[#2b2d39] p-2"
+                                    style={{
+                                        backgroundColor: 'white',
+                                        color: '#2b2d39',
+                                        transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#2b2d39';
+                                        e.currentTarget.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'white';
+                                        e.currentTarget.style.color = '#2b2d39';
+                                    }}
+                                />
+
+
                                 <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
                                     if (isAuthenticated) {
                                         destroyCookie(null, 'rtcc.token');
                                         window.location.href = '/';
                                     }
-                                }} className="p-button-text p-button-plain border border-transparent hover:border-blue-500 focus:border-blue-500 p-2 mt-2" />
+                                }} className="p-button-text p-button-plain border border-transparent hover:border-[#2b2d39] focus:border-[#2b2d39] p-2 mt-2"
+                                    style={{
+                                        backgroundColor: 'white',
+                                        color: '#2b2d39',
+                                        transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = '#2b2d39';
+                                        e.currentTarget.style.color = 'white';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'white';
+                                        e.currentTarget.style.color = '#2b2d39';
+                                    }}
+                                />
                             </div>
                         </OverlayPanel>
                     </>

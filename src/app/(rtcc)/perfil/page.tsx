@@ -1,16 +1,20 @@
 'use client';
+import { AuthContext } from '@/contexts/AuthContext';
+import withUserProtection from '@/hoc/withUserProtection';
+import { CursoService } from '@/service/cursoService';
+import { UserService } from '@/service/userService';
+import { UserRequestDTO, UserResponseDTO } from '@/types';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Dialog } from 'primereact/dialog';
-import { TabPanel, TabView } from 'primereact/tabview';
-import { use, useEffect, useState } from 'react';
-import { UserRequestDTO, UserResponseDTO } from '@/types';
-import { UserService } from '@/service/userService';
-import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { CursoService } from '@/service/cursoService';
+import { InputText } from 'primereact/inputtext';
+import { TabPanel, TabView } from 'primereact/tabview';
+import { Toast } from 'primereact/toast';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const tccs = [
@@ -26,7 +30,7 @@ const tccs = [
     { id: 10, title: "Bioinformática e Sequenciamento de DNA", description: "James Thompson Dijkstra", tags: ["Bioinformática", "Genética"] },
 ]
 
-export default function Component() {
+function Component() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4; // 4 TCCs por página
     const totalPages = Math.ceil(tccs.length / itemsPerPage);
@@ -56,6 +60,10 @@ export default function Component() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const toast = useRef<Toast>(null);
+    const [isReady, setIsReady] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [name, setName] = useState('');
     const [passwordErrors, setPasswordErrors] = useState({
         currentPassword: '',
         password: '',
@@ -67,14 +75,48 @@ export default function Component() {
         course: ''
     });
 
-    // useEffect(() => {
-    //     UserService.getUser().then(data => setUser(data));
+    const { user: userContext } = useContext(AuthContext);
+    const router = useRouter();
+    const rolesOptions = {
+        'ADMIN': 'Administrador',
+        'COORDINATOR': 'Coordenador',
+        'ACADEMIC': 'Acadêmico'
+    }
 
-    //     CursoService.getCursos().then(data => {
-    //         const transformedCourses = data.map(transformCourse);
-    //         setCourses(transformedCourses);
-    //     });
-    // }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userData = await UserService.getUser(userContext.id);
+                if (!userData) {
+                    router.push('/nao-encontrado');
+                    return;
+                }
+
+                userData.course = userData.course.id;
+                setUser(userData);
+                setName(userData.name);
+                setCourse(userData.course);
+
+                const cursosData = await CursoService.getCursos();
+                if (!cursosData) {
+                    router.push('/nao-encontrado');
+                    return;
+                }
+
+                const transformedCourses = cursosData.map(transformCourse);
+                setCourses(transformedCourses);
+                setIsReady(true);
+
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                router.push('/nao-encontrado');
+            }
+        };
+
+        fetchData();
+
+    }, [userContext.id, router]);
 
     const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
         return { label: course.name, value: course.id };
@@ -112,18 +154,21 @@ export default function Component() {
     };
 
     const clearFields = () => {
-        setUser(emptyUser);
-        setCourse('');
         setCurrentPassword('');
         setPassword('');
         setConfirmPassword('');
         setSubmitted(false);
-    }
 
-    const handleTabChange = (e: any) => {
-        setActiveIndex(e.index)
-        clearFields();
-        alert('Tab changed');
+        setPasswordErrors({
+            currentPassword: '',
+            password: '',
+            confirmPassword: ''
+        });
+
+        setUserDetailsErrors({
+            name: '',
+            course: ''
+        });
     }
 
     const validateChangePassword = () => {
@@ -149,18 +194,30 @@ export default function Component() {
     const handlePasswordChange = (e: any) => {
 
         if (validateChangePassword()) {
-
             const userRequest: UserRequestDTO = { id: '', name: user.name, course: user.course, email: user.email, password: confirmPassword };
 
             try {
-                UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
-                    alert('Usuário Alterado!');
+                UserService.updatePassword(userRequest).then((response: UserResponseDTO | null) => {
+                    if (!response) {
+                        toast.current?.show({ severity: 'error', detail: 'Erro ao alterar senha', life: 5000 });
+                        clearFields();
+                        setVisible(false);
+                        return;
+                    }
+                    toast.current?.show({ severity: 'success', detail: 'Senha alterada com sucesso', life: 5000 });
                     clearFields();
+                    setVisible(false);
                 });
             } catch (error) {
-                alert('Erro ao alterar senha.');
+                toast.current?.show({ severity: 'error', detail: 'Erro ao alterar senha', life: 5000 });
+                clearFields();
+                setVisible(false);
             }
         }
+
+        setTimeout(() => {
+            // window.location.reload();
+        }, 8000);
     }
 
     const validateChangeUserData = () => {
@@ -178,21 +235,32 @@ export default function Component() {
 
     const handleUserDataChange = (e: any) => {
         if (validateChangeUserData()) {
-            const userRequest: UserRequestDTO = { id: '', name: user.name, course: course, email: user.email, password: '' };
+            const userRequest: UserRequestDTO = { id: user.id, name: user.name, course: user.course, email: user.email, password: confirmPassword };
 
             try {
                 UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
-                    alert('Usuário Alterado!');
+                    if (!response) {
+                        toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
+                        clearFields();
+                        setVisible(false);
+                        return;
+                    }
+
+                    toast.current?.show({ severity: 'success', detail: 'Informações alteradas com sucesso', life: 5000 });
                     clearFields();
+                    setVisible(false);
+                    setName(response.name);
                 });
             } catch (error) {
-                alert('Erro ao alterar usuário.');
+                toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
+                clearFields();
+                setVisible(false);
             }
         }
     }
 
     return (
-        <div className="mx-auto p-4 text-gray-800 mt-4">
+        <div className="mx-auto p-4 text-gray-800 mt-4" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             {/* primeiro container */}
             <div className="flex flex-col lg:flex-row gap-8 ">
                 <div className="lg:w-1/3 rounded-lg p-16 pt-6 mt-2">
@@ -207,8 +275,8 @@ export default function Component() {
                                 style={{ height: 'auto' }}
                             />
                         </div>
-                        <h1 className="text-2xl font-bold mb-1 text-center">Erwin Schrödinger</h1>
-                        <p className="text-gray-600 mb-4 text-center">Acadêmico</p>
+                        <h1 className="text-2xl font-bold mb-1 text-center">{name}</h1>
+                        <p className="text-gray-600 mb-4 text-center">{rolesOptions[userContext?.roles[0]]}</p>
                         <Button
                             icon="pi pi-pencil"
                             label="Editar Conta"
@@ -227,7 +295,9 @@ export default function Component() {
                                 e.currentTarget.style.backgroundColor = '#2b2d39';
                                 e.currentTarget.style.color = 'white';
                             }}
-                            onClick={() => setVisible(true)}
+                            onClick={() => {
+                                setVisible(true)
+                            }}
                         />
 
                         <div className="flex flex-col items-center mt-6">
@@ -250,7 +320,7 @@ export default function Component() {
                 {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
                     <h3 className="text-md font-semibold mb-2">Favoritos</h3>
-                    <div className="grid gap-4"> {/* Aumentado o espaçamento entre os cards */}
+                    <div className="grid gap-4">
                         {currentTCCs.map((tcc) => (
                             <Card
                                 key={tcc.id}
@@ -356,11 +426,11 @@ export default function Component() {
                                         id="name"
                                         placeholder="Digite seu nome completo"
                                         className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
-                                        value={user?.name}
+                                        value={user.name}
                                         onChange={(e) => setUser({ ...user, name: e.target.value })}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
-                                                handleSalvarAlteracoes();
+                                                handleUserDataChange(e);
                                             }
                                         }}
                                     />
@@ -386,6 +456,7 @@ export default function Component() {
                                                 handleSalvarAlteracoes();
                                             }
                                         }}
+                                        disabled={true}
                                     />
                                 </div>
                             </div>
@@ -396,8 +467,8 @@ export default function Component() {
                                 <label htmlFor="course" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Curso</label>
                                 <Dropdown
                                     id="course"
-                                    value={course}
-                                    onChange={(e) => setCourse(e.value)}
+                                    value={user.course}
+                                    onChange={(e) => setUser({ ...user, course: e.target.value })}
                                     options={courses}
                                     placeholder="Selecione seu curso"
                                     className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
@@ -410,7 +481,22 @@ export default function Component() {
                                 type="button"
                                 label="Salvar Alterações"
                                 className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
-                                style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
                                 onClick={handleUserDataChange}
                             />
                         </div>
@@ -467,7 +553,7 @@ export default function Component() {
                             <label htmlFor="password" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Nova Senha</label>
                             <div className="relative w-full mb-6">
                                 <InputText
-                                    id="password"
+                                    id="newPassword"
                                     type={passwordVisible ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -494,7 +580,7 @@ export default function Component() {
                             {passwordErrors.confirmPassword && (
                                 <p className="absolute top-[-1.5rem] right-0 text-red-500 text-sm mt-2">{passwordErrors.confirmPassword}</p>
                             )}
-                            <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Confirmar Nova Senha</label>
+                            <label htmlFor="confirmNewPassword" className="block text-gray-700 font-medium mb-2" style={{ color: '#231F20' }}>Confirmar Nova Senha</label>
                             <div className="relative w-full">
                                 <InputText
                                     id="confirmPassword"
@@ -523,13 +609,34 @@ export default function Component() {
                                 type="button"
                                 label="Alterar Senha"
                                 className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300"
-                                style={{ backgroundColor: '#2b2d39', borderColor: '#2b2d39', borderWidth: '1px', borderStyle: 'solid' }}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
                                 onClick={handlePasswordChange}
                             />
                         </div>
                     </TabPanel>
                 </TabView>
             </Dialog>
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
+            </div>
         </div>
     );
 }
+
+
+export default withUserProtection(Component);

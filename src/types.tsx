@@ -117,5 +117,11 @@ export interface UserResponseDTO {
     id: string;
     name: string;
     email: string;
-    course: string;
+    password: string;
+    course: {
+        id: string;
+        name: string;
+        codeOfCourse: string;
+    };
 }
+

@@ -1,10 +1,10 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from 'react';
 
-const withCoordinatorProtection = (WrappedComponent: React.ComponentType) => {
+const withUserProtection = (WrappedComponent: React.ComponentType) => {
     return function ProtectedRoute(props: any) {
         const { isAuthenticated, user } = useContext(AuthContext);
         const router = useRouter();
@@ -15,17 +15,13 @@ const withCoordinatorProtection = (WrappedComponent: React.ComponentType) => {
 
         useEffect(() => {
 
-            if (!user?.roles.includes("COORDINATOR") && !user?.roles.includes("ADMIN")) {
+            if (!isAuthenticated) {
                 router.push('/not-found');
-
-            } else if (!isAuthenticated) {
-                router.push('/login');
-
             }
 
         }, [isAuthenticated, user, router]);
 
-        if (!isAuthenticated || (!user?.roles.includes("COORDINATOR") && !user?.roles.includes("ADMIN"))) {
+        if (!isAuthenticated) {
             return null;
         }
 
@@ -35,4 +31,4 @@ const withCoordinatorProtection = (WrappedComponent: React.ComponentType) => {
 
 
 
-export default withCoordinatorProtection;
+export default withUserProtection;

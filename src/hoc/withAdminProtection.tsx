@@ -9,6 +9,10 @@ const withAdminProtection = (WrappedComponent: React.ComponentType) => {
         const { isAuthenticated, user } = useContext(AuthContext);
         const router = useRouter();
 
+        if (!isAuthenticated) {
+            router.push('/not-found');
+        }
+
         useEffect(() => {
 
             if (!user?.roles.includes("ADMIN") || user === null) {
