@@ -32,7 +32,7 @@ const tccs = [
 
 function Component() {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4; // 4 TCCs por página
+    const itemsPerPage = 9; // 4 TCCs por página
     const totalPages = Math.ceil(tccs.length / itemsPerPage);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -117,6 +117,13 @@ function Component() {
         fetchData();
 
     }, [userContext.id, router]);
+
+    useEffect(() => {
+        if (!visible) {
+            setActiveIndex(0);
+
+        }
+    }, [visible]);
 
     const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
         return { label: course.name, value: course.id };
@@ -214,10 +221,6 @@ function Component() {
                 setVisible(false);
             }
         }
-
-        setTimeout(() => {
-            // window.location.reload();
-        }, 8000);
     }
 
     const validateChangeUserData = () => {
@@ -250,11 +253,13 @@ function Component() {
                     clearFields();
                     setVisible(false);
                     setName(response.name);
+                    setActiveIndex(0);
                 });
             } catch (error) {
                 toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
                 clearFields();
                 setVisible(false);
+                setActiveIndex(0);
             }
         }
     }
@@ -319,87 +324,87 @@ function Component() {
 
                 {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
-                    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
-                    <div className="grid gap-4">
-                        {currentTCCs.map((tcc) => (
-                            <Card
-                                key={tcc.id}
-                                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
-                                className="text-xs font-light border border-gray-400"
-                            >
-                                <p className="text-sm font-medium text-gray-600 mb-1">
-                                    {tcc.description}
-                                </p>
-                                <div className="flex flex-wrap gap-0.5">
-                                    {tcc.tags.map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            value={tag}
-                                            className="text-white text-3xs mr-0.5 mt-4"
-                                            style={{ backgroundColor: '#2b2d39' }}
-                                        />
-                                    ))}
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-
-                    {/* terceiro container */}
-                    <div className="flex gap-8 items-center mt-8 justify-center">
-                        <Button
-                            icon="pi pi-chevron-left"
-                            label=""
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
+    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {currentTCCs.map((tcc) => (
+            <Card
+                key={tcc.id}
+                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
+                className="text-xs font-light border border-gray-400"
+            >
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                    {tcc.description}
+                </p>
+                <div className="flex flex-wrap gap-0.5">
+                    {tcc.tags.map((tag, index) => (
+                        <Badge
+                            key={index}
+                            value={tag}
+                            className="text-white text-3xs mr-0.5 mt-4"
+                            style={{ backgroundColor: '#2b2d39' }}
                         />
-
-                        <span className="text-md font-medium text-gray-600">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <Button
-                            icon="pi pi-chevron-right"
-                            label=""
-                            iconPos="right"
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                        />
-
-                    </div>
+                    ))}
                 </div>
+            </Card>
+        ))}
+    </div>
+
+    {/* terceiro container */}
+    <div className="flex gap-8 items-center mt-8 justify-center">
+        <Button
+            icon="pi pi-chevron-left"
+            label=""
+            className="p-button-outlined px-2 py-2 text-xs"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            style={{
+                backgroundColor: '#2b2d39',
+                borderColor: '#2b2d39',
+                color: 'white',
+                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                borderWidth: '1px',
+                borderStyle: 'solid'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#2b2d39';
+                e.currentTarget.style.color = 'white';
+            }}
+        />
+
+        <span className="text-md font-medium text-gray-600">
+            Página {currentPage} de {totalPages}
+        </span>
+        <Button
+            icon="pi pi-chevron-right"
+            label=""
+            iconPos="right"
+            className="p-button-outlined px-2 py-2 text-xs"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            style={{
+                backgroundColor: '#2b2d39',
+                borderColor: '#2b2d39',
+                color: 'white',
+                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                borderWidth: '1px',
+                borderStyle: 'solid'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#2b2d39';
+                e.currentTarget.style.color = 'white';
+            }}
+        />
+    </div>
+</div>
+
             </div>
             <Dialog header="" visible={visible} style={{ width: '40vw' }} onHide={() => {
                 if (!visible) return;
