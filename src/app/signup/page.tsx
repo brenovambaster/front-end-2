@@ -1,16 +1,17 @@
 "use client";
 
-import { useContext, useEffect, useState } from 'react';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { AuthContext } from '@/contexts/AuthContext';
 import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
 import { UserRequestDTO, UserResponseDTO } from '@/types';
-import { Dialog } from 'primereact/dialog';
-import { AuthContext } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
+import { Toast } from 'primereact/toast';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function Register() {
     const [name, setName] = useState('');
@@ -22,6 +23,7 @@ export default function Register() {
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const [courses, setCourses] = useState<{ label: string; value: string; }[]>([]);
     const [isReady, setIsReady] = useState(false);
+    const toast = useRef<Toast>(null);
     const [errors, setErrors] = useState({
         name: '',
         course: '',
@@ -69,14 +71,14 @@ export default function Register() {
             confirmPassword: '',
         };
 
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@(aluno\.)?ifnmg\.edu\.br$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(aluno\.)ifnmg\.edu\.br$/;
 
         if (!name) newErrors.name = 'O campo nome não pode ficar em branco.';
         if (!course) newErrors.course = 'O campo curso não pode ficar em branco.';
         if (!email) {
             newErrors.email = 'O campo e-mail não pode ficar em branco.';
         } else if (!emailRegex.test(email)) {
-            newErrors.email = 'São permitidos apenas @aluno.ifnmg.edu.br ou @ifnmg.edu.br.';
+            newErrors.email = 'São permitidos apenas @aluno.ifnmg.edu.br.';
         }
         if (!password) newErrors.password = 'O campo senha não pode ficar em branco.';
         if (!confirmPassword) newErrors.confirmPassword = 'O campo confirmar senha não pode ficar em branco.';
@@ -90,7 +92,6 @@ export default function Register() {
 
     const handleRegister = () => {
         if (validateForm()) {
-
             const userRequest: UserRequestDTO = { id: '', name, course, email, password };
 
             try {
@@ -98,7 +99,7 @@ export default function Register() {
                     setVisible(true);
                 });
             } catch (error) {
-                alert('Erro ao criar usuário.');
+                toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação.', life: 5000 });
             }
         }
     };
@@ -272,6 +273,9 @@ export default function Register() {
                 <i className="pi pi-envelope text-4xl text-blue-500 mb-4" style={{ color: '#2b2d39' }}></i>
                 <p className="m-0 text-lg mt-4 ">Um e-mail para a ativação da conta foi enviado!</p>
             </Dialog>
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-right" />
+            </div>
         </div>
     );
 }

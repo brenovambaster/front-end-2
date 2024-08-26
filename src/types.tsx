@@ -125,3 +125,8 @@ export interface UserResponseDTO {
     };
 }
 
+export interface UserUpdatePasswordRequestDTO {
+    oldPassword: string
+    newPassword: string
+    newPasswordConfirmation: string
+}

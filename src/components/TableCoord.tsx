@@ -80,11 +80,10 @@ export default function CoordenadorsDemo() {
     };
 
     const validateFields = () => {
-        console.log(JSON.stringify(coordenador));
         if(editCoordenadorDialog) {
-            return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.course.trim();
+            return coordenador.name.trim() && validateEmail(coordenador.email.trim()) && coordenador.course.trim();
         }
-        return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.password.trim() && coordenador.course.name.trim();
+        return coordenador.name.trim() && validateEmail(coordenador.email.trim()) && coordenador.password.trim() && coordenador.course.name.trim();
     };
 
     const saveCoordenador = async () => {
@@ -92,7 +91,6 @@ export default function CoordenadorsDemo() {
         if (editCoordenadorDialog) {
             coordenador.course = coordenador.course.id;
         }
-        
         if (validateFields()) {
             if (coordenador.name.trim()) {
                 try {
@@ -102,8 +100,7 @@ export default function CoordenadorsDemo() {
                         await CoordenadorService.updateCoordenador(coordenador);
                         setCoordenadors(coordenadors.map(p => (p.id === coordenador.id ? coordenador : p)));
                     } else {
-                        coordenador.course = coordenador.course.id;
-
+                        
                         // Criar novo coordenador
                         const newCoordenador = await CoordenadorService.createCoordenador(coordenador);
 
@@ -264,6 +261,11 @@ export default function CoordenadorsDemo() {
         { label: 'Engenharia Química', value: 'Engenha Químicaria' }
     ];
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@ifnmg\.edu\.br$/;
+        return emailRegex.test(email);
+    }
+
     return (
         <div>
             <div className="card m-2">
@@ -291,9 +293,8 @@ export default function CoordenadorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }} />
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} sortable />
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable />
-                    <Column field="username" header="Nome de Usuário" aria-label="Username" sortable />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '30%' }} sortable />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '25%' }} sortable />
                     <Column field="course.name" header="Curso" aria-label="Course" style={{ width: '20%' }} sortable />
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
@@ -337,7 +338,7 @@ export default function CoordenadorsDemo() {
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="research-area-help"
                     />
-                    {submitted && !coordenador.email && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
+                    {submitted && !(validateEmail(coordenador.email)) && <small id="name-help" className="p-error">O e-mail deve ser no formato @ifnmg.edu.br</small>}
                 </div>
                 <div className="field mb-4">
                     <label htmlFor="course" className="font-bold">
@@ -370,7 +371,7 @@ export default function CoordenadorsDemo() {
 
                     {submitted && !coordenador.course && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field mb-4">
+                {/* <div className="field mb-4">
                     <label htmlFor="username" className="font-bold">
                         Nome de Usuário
                     </label>
@@ -383,7 +384,7 @@ export default function CoordenadorsDemo() {
                         aria-describedby="username-help"
                     />
                     {submitted && !coordenador.username && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-                </div>
+                </div> */}
                 <div className="field mb-4">
                     <label htmlFor="password" className="font-bold">
                         Senha

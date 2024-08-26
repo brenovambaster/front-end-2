@@ -33,7 +33,7 @@ function Login() {
     };
 
     const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(aluno\.)?ifnmg\.edu\.br$/;
         return emailRegex.test(email);
     };
 

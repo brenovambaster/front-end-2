@@ -1,8 +1,8 @@
 
 import { api } from '../service/api';
-import { UserRequestDTO, UserResponseDTO } from '../types';
+import { UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '../types';
 
-const BASE_URL = 'http://localhost:8080/';
+const BASE_URL = 'http://localhost:8080/academic';
 const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
 
 
@@ -48,9 +48,9 @@ export class UserService {
         }
     }
 
-    static async updatePassword(user: UserRequestDTO): Promise<UserResponseDTO | null> {
+    static async updatePassword(user: UserUpdatePasswordRequestDTO, id: string): Promise<UserResponseDTO | null> {
         try {
-            const response = await api.put<UserResponseDTO>(PASSWORD_BASE_URL + `${user.id}`, user);
+            const response = await api.put<UserResponseDTO>(PASSWORD_BASE_URL + `${id}`, user);
             return response.data;
         } catch (error) {
             console.error('Error updating user:', error);

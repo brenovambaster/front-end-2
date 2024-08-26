@@ -1,9 +1,10 @@
 'use client';
 import { AuthContext } from '@/contexts/AuthContext';
 import withUserProtection from '@/hoc/withUserProtection';
+import { CoordenadorService } from '@/service/coordenadorService';
 import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
-import { UserRequestDTO, UserResponseDTO } from '@/types';
+import { CoordinatorRequestDTO, UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '@/types';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Badge } from 'primereact/badge';
@@ -18,7 +19,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const tccs = [
-    { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina", "Medicina", "Medicina", "Medicina", "Medicina"] },
+    { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina"] },
     { id: 2, title: "Blockchain em Sistemas de Votação", description: "James Thompson Dijkstra", tags: ["Blockchain", "Segurança"] },
     { id: 3, title: "Realidade Aumentada na Educação", description: "James Thompson Dijkstra", tags: ["AR", "Educação"] },
     { id: 4, title: "Análise de Sentimentos em Redes Sociais", description: "James Thompson Dijkstra", tags: ["NLP", "Redes Sociais"] },
@@ -86,8 +87,20 @@ function Component() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userData = await UserService.getUser(userContext.id);
+                let userData = null;
+                
+                if (getUserRole() == 'Coordenador') {
+                    (JSON.stringify(userContext));
+                    userData = await CoordenadorService.getCoordenador(userContext.id);
+                } else if (getUserRole() == 'Acadêmico') {
+                    userData = await UserService.getUser(userContext.id);
+                } else {
+                    router.push('/nao-encontrado');
+                    return;
+                }
+
                 if (!userData) {
+
                     router.push('/nao-encontrado');
                     return;
                 }
@@ -125,6 +138,10 @@ function Component() {
         }
     }, [visible]);
 
+    const getUserRole = () => {
+        return rolesOptions[userContext?.roles[0]];
+    }
+
     const transformCourse = (course: { id: string; name: string; codeOfCourse: string }) => {
         return { label: course.name, value: course.id };
     };
@@ -141,11 +158,6 @@ function Component() {
             <span className="font-bold whitespace-nowrap text-black">{label}</span>
         </div>
     );
-
-    const handleSalvarAlteracoes = () => {
-
-    }
-
 
     const handleCurrentPasswordVisibility = () => {
         setCurrentPasswordVisible(!currentPasswordVisible);
@@ -201,11 +213,17 @@ function Component() {
     const handlePasswordChange = (e: any) => {
 
         if (validateChangePassword()) {
-            const userRequest: UserRequestDTO = { id: '', name: user.name, course: user.course, email: user.email, password: confirmPassword };
+            // const userRequest: UserRequestDTO = { id: '', name: user.name, course: user.course, email: user.email, password: confirmPassword };
+            const userRequest: UserUpdatePasswordRequestDTO = {
+                oldPassword: currentPassword,
+                newPassword: password,
+                newPasswordConfirmation: confirmPassword
+            };
+
 
             try {
-                UserService.updatePassword(userRequest).then((response: UserResponseDTO | null) => {
-                    if (!response) {
+                UserService.updatePassword(userRequest, user.id).then((response: UserResponseDTO | null) => {
+                    if (response == null) {
                         toast.current?.show({ severity: 'error', detail: 'Erro ao alterar senha', life: 5000 });
                         clearFields();
                         setVisible(false);
@@ -238,9 +256,55 @@ function Component() {
 
     const handleUserDataChange = (e: any) => {
         if (validateChangeUserData()) {
-            const userRequest: UserRequestDTO = { id: user.id, name: user.name, course: user.course, email: user.email, password: confirmPassword };
 
             try {
+
+                if (getUserRole() == 'Coordenador') {
+                    const coordinatorRequest: CoordinatorRequestDTO = {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        username: '',
+                        password: confirmPassword,
+                        course: course,
+                    };
+
+                    CoordenadorService.updateCoordenador(coordinatorRequest).then((response: UserResponseDTO) => {
+                        if (!response) {
+                            toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
+                            clearFields();
+                            setVisible(false);
+                            return;
+                        }
+
+                        toast.current?.show({ severity: 'success', detail: 'Informações alteradas com sucesso', life: 5000 });
+                        clearFields();
+                        setVisible(false);
+                        setName(response.name);
+                        setActiveIndex(0);
+                    });
+                }
+
+                if (getUserRole() == 'Acadêmico') {
+                    const userRequest: UserRequestDTO = { id: user.id, name: user.name, course: user.course, email: user.email, password: confirmPassword };
+
+                    UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
+                        if (!response) {
+                            toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
+                            clearFields();
+                            setVisible(false);
+                            return;
+                        }
+
+                        toast.current?.show({ severity: 'success', detail: 'Informações alteradas com sucesso', life: 5000 });
+                        clearFields();
+                        setVisible(false);
+                        setName(response.name);
+                        setActiveIndex(0);
+                    });
+                }
+
+
                 UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
                     if (!response) {
                         toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
@@ -324,86 +388,86 @@ function Component() {
 
                 {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
-    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {currentTCCs.map((tcc) => (
-            <Card
-                key={tcc.id}
-                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
-                className="text-xs font-light border border-gray-400"
-            >
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                    {tcc.description}
-                </p>
-                <div className="flex flex-wrap gap-0.5">
-                    {tcc.tags.map((tag, index) => (
-                        <Badge
-                            key={index}
-                            value={tag}
-                            className="text-white text-3xs mr-0.5 mt-4"
-                            style={{ backgroundColor: '#2b2d39' }}
+                    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {currentTCCs.map((tcc) => (
+                            <Card
+                                key={tcc.id}
+                                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
+                                className="text-xs font-light border border-gray-400"
+                            >
+                                <p className="text-sm font-medium text-gray-600 mb-1">
+                                    {tcc.description}
+                                </p>
+                                <div className="flex flex-wrap gap-0.5">
+                                    {tcc.tags.map((tag, index) => (
+                                        <Badge
+                                            key={index}
+                                            value={tag}
+                                            className="text-white text-3xs mr-0.5 mt-4"
+                                            style={{ backgroundColor: '#2b2d39' }}
+                                        />
+                                    ))}
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* terceiro container */}
+                    <div className="flex gap-8 items-center mt-8 justify-center">
+                        <Button
+                            icon="pi pi-chevron-left"
+                            label=""
+                            className="p-button-outlined px-2 py-2 text-xs"
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                borderWidth: '1px',
+                                borderStyle: 'solid'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
                         />
-                    ))}
+
+                        <span className="text-md font-medium text-gray-600">
+                            Página {currentPage} de {totalPages}
+                        </span>
+                        <Button
+                            icon="pi pi-chevron-right"
+                            label=""
+                            iconPos="right"
+                            className="p-button-outlined px-2 py-2 text-xs"
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                borderWidth: '1px',
+                                borderStyle: 'solid'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                        />
+                    </div>
                 </div>
-            </Card>
-        ))}
-    </div>
-
-    {/* terceiro container */}
-    <div className="flex gap-8 items-center mt-8 justify-center">
-        <Button
-            icon="pi pi-chevron-left"
-            label=""
-            className="p-button-outlined px-2 py-2 text-xs"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            style={{
-                backgroundColor: '#2b2d39',
-                borderColor: '#2b2d39',
-                color: 'white',
-                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                borderWidth: '1px',
-                borderStyle: 'solid'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#2b2d39';
-                e.currentTarget.style.color = 'white';
-            }}
-        />
-
-        <span className="text-md font-medium text-gray-600">
-            Página {currentPage} de {totalPages}
-        </span>
-        <Button
-            icon="pi pi-chevron-right"
-            label=""
-            iconPos="right"
-            className="p-button-outlined px-2 py-2 text-xs"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            style={{
-                backgroundColor: '#2b2d39',
-                borderColor: '#2b2d39',
-                color: 'white',
-                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                borderWidth: '1px',
-                borderStyle: 'solid'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#2b2d39';
-                e.currentTarget.style.color = 'white';
-            }}
-        />
-    </div>
-</div>
 
             </div>
             <Dialog header="" visible={visible} style={{ width: '40vw' }} onHide={() => {
@@ -477,6 +541,7 @@ function Component() {
                                     options={courses}
                                     placeholder="Selecione seu curso"
                                     className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
+                                    disabled={getUserRole() == 'Coordenador'}
                                 />
 
                             </div>

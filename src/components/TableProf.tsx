@@ -39,7 +39,7 @@ export default function ProfessorsDemo() {
     const [dialogTitle, setDialogTitle] = useState<string>('Novo Professor');
     const [isReady, setIsReady] = useState(false);
 
-    
+
     useEffect(() => {
         ProfessorService.getProfessors().then(data => setProfessors(data));
 
@@ -65,7 +65,7 @@ export default function ProfessorsDemo() {
     };
 
     const validateFields = () => {
-        return professor.name && professor.researchArea && professor.email && professor.locationOfWork && professor.title;
+        return professor.name && professor.researchArea && validateEmail(professor.email.trim()) && professor.locationOfWork && professor.title;
     };
 
     const saveProfessor = async () => {
@@ -127,7 +127,7 @@ export default function ProfessorsDemo() {
             } else {
                 toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
             }
-            
+
             setDeleteProfessorDialog(false);
             setProfessor(emptyProfessor);
         }
@@ -151,7 +151,7 @@ export default function ProfessorsDemo() {
                 if (error.isAxiosError && error.response && error.response.data.statusCode === 409) {
 
                     toast.current.show({ severity: 'warn', detail: error.response.data.message, life: 5000 });
-    
+
                 } else {
                     toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                 }
@@ -261,6 +261,11 @@ export default function ProfessorsDemo() {
         { label: 'Pós Doutor', value: 'Pós Doutor' }
     ];
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@ifnmg\.edu\.br$/;
+        return emailRegex.test(email);
+    }
+
     return (
         <div style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             <div className="card m-2">
@@ -289,15 +294,15 @@ export default function ProfessorsDemo() {
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" />
                     <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} sortable
-                    body={(rowData) => (
-                        <div style={{ maxWidth: '40rem', whiteSpace: 'normal', wordWrap: 'break-word' }}>
-                            {rowData.name}
-                        </div>
-                    )}/>
-                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }} sortable/>
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable/>
-                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" sortable/>
-                    <Column header="Titulação"  field="title"  style={{ width: '10%' }} aria-label="Title" sortable/>
+                        body={(rowData) => (
+                            <div style={{ maxWidth: '40rem', whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                                {rowData.name}
+                            </div>
+                        )} />
+                    <Column field="researchArea" header="Área de Pesquisa" aria-label="Research Area" style={{ width: '15%' }} sortable />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable />
+                    <Column field="locationOfWork" header="Local de Atuação" sortable style={{ width: '10%' }} aria-label="Location of Work" sortable />
+                    <Column header="Titulação" field="title" style={{ width: '10%' }} aria-label="Title" sortable />
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} aria-label="Actions" />
                 </DataTable>
             </div>
@@ -354,8 +359,7 @@ export default function ProfessorsDemo() {
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="email-help"
                     />
-                    {submitted && !professor.email && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-
+                    {submitted && !(validateEmail(professor.email)) && <small id="name-help" className="p-error">O e-mail deve ser no formato @ifnmg.edu.br</small>}
                 </div>
                 <div className="field mb-4">
                     <label htmlFor="locationOfWork" className="font-bold">
