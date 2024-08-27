@@ -2,7 +2,7 @@
 import { api } from '../service/api';
 import { UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '../types';
 
-const BASE_URL = 'http://localhost:8080/academic/';
+const BASE_URL = 'http://localhost:8080/academic';
 const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
 
 
@@ -40,7 +40,7 @@ export class UserService {
 
     static async updateUser(user: UserRequestDTO): Promise<UserResponseDTO> {
         try {
-            const response = await api.put<UserResponseDTO>(BASE_URL + `${user.id}`, user);
+            const response = await api.put<UserResponseDTO>(BASE_URL + `/${user.id}`, user);
             return response.data;
         } catch (error) {
             console.error('Error updating user:', error);
