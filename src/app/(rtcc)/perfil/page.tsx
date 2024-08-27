@@ -549,7 +549,7 @@ function Component() {
                                     options={courses}
                                     placeholder="Selecione seu curso"
                                     className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
-                                    disabled={getUserRole() == 'Coordenador' || getUserRole() == 'Administrador'}
+                                    disabled={getUserRole() == 'Administrador'}
                                 />
 
                             </div>
