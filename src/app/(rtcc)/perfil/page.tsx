@@ -98,7 +98,7 @@ function Component() {
                 setCourses(transformedCourses);
 
                 let userData = null;
-
+                
                 if (!isAuthenticated) {
                     router.push('/nao-encontrado');
                     return;
@@ -107,6 +107,7 @@ function Component() {
                 if (getUserRole().trim() == 'Coordenador') {
                     userData = await CoordenadorService.getCoordenador(userContext.id);
                 } else if (getUserRole().trim() == 'Acadêmico') {
+
                     userData = await UserService.getUser(userContext.id);
 
                 } else if (getUserRole().trim() == 'Administrador') {
