@@ -10,13 +10,13 @@ const withUserProtection = (WrappedComponent: React.ComponentType) => {
         const router = useRouter();
 
         if (!isAuthenticated) {
-            router.push('/not-found');
+            router.push('/login');
         }
 
         useEffect(() => {
 
             if (!isAuthenticated) {
-                router.push('/not-found');
+                router.push('/login');
             }
 
         }, [isAuthenticated, user, router]);

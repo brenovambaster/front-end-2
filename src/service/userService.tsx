@@ -2,15 +2,14 @@
 import { api } from '../service/api';
 import { UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '../types';
 
-const BASE_URL = 'http://localhost:8080/academic';
+const BASE_URL = 'http://localhost:8080/academic/';
 const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
 
 
 export class UserService {
     static async getUser(id: string): Promise<UserResponseDTO> {
         try {
-            const response = await api.get(BASE_URL + `academic/${id}`);
-            console.log(response);
+            const response = await api.get(BASE_URL + `${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -40,7 +39,7 @@ export class UserService {
 
     static async updateUser(user: UserRequestDTO): Promise<UserResponseDTO> {
         try {
-            const response = await api.put<UserResponseDTO>(BASE_URL + `academic/${user.id}`, user);
+            const response = await api.put<UserResponseDTO>(BASE_URL + `${user.id}`, user);
             return response.data;
         } catch (error) {
             console.error('Error updating user:', error);

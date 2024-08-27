@@ -76,7 +76,7 @@ function Component() {
         course: ''
     });
 
-    const { user: userContext } = useContext(AuthContext);
+    const { user: userContext, isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
     const rolesOptions = {
         'ADMIN': 'Administrador',
@@ -85,19 +85,27 @@ function Component() {
     }
 
     useEffect(() => {
+
+
         const fetchData = async () => {
-            try {
+            try {   
+                if (!isAuthenticated) {
+                    alert('Você não está autenticado. Por favor, faça login novamente.');
+                    router.push('/login');
+                    return;
+                }
+
                 let userData = null;
-                
-                if (getUserRole() == 'Coordenador') {
-                    (JSON.stringify(userContext));
+
+                if (getUserRole().trim() == 'Coordenador') {
                     userData = await CoordenadorService.getCoordenador(userContext.id);
-                } else if (getUserRole() == 'Acadêmico') {
+                } else if (getUserRole().trim() == 'Acadêmico') {
                     userData = await UserService.getUser(userContext.id);
                 } else {
                     router.push('/nao-encontrado');
                     return;
                 }
+
 
                 if (!userData) {
 
@@ -134,7 +142,6 @@ function Component() {
     useEffect(() => {
         if (!visible) {
             setActiveIndex(0);
-
         }
     }, [visible]);
 
@@ -303,22 +310,6 @@ function Component() {
                         setActiveIndex(0);
                     });
                 }
-
-
-                UserService.updateUser(userRequest).then((response: UserResponseDTO) => {
-                    if (!response) {
-                        toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
-                        clearFields();
-                        setVisible(false);
-                        return;
-                    }
-
-                    toast.current?.show({ severity: 'success', detail: 'Informações alteradas com sucesso', life: 5000 });
-                    clearFields();
-                    setVisible(false);
-                    setName(response.name);
-                    setActiveIndex(0);
-                });
             } catch (error) {
                 toast.current?.show({ severity: 'error', detail: 'Erro ao alterar informações', life: 5000 });
                 clearFields();
