@@ -86,29 +86,7 @@ function Component() {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {   
-                let userData = null;
-
-                if (getUserRole().trim() == 'Coordenador') {
-                    userData = await CoordenadorService.getCoordenador(userContext.id);
-                } else if (getUserRole().trim() == 'Acadêmico') {
-                    userData = await UserService.getUser(userContext.id);
-                } else {
-                    router.push('/nao-encontrado');
-                    return;
-                }
-
-
-                if (!userData) {
-
-                    router.push('/nao-encontrado');
-                    return;
-                }
-
-                userData.course = userData.course.id;
-                setUser(userData);
-                setName(userData.name);
-                setCourse(userData.course);
+            try {
 
                 const cursosData = await CursoService.getCursos();
                 if (!cursosData) {
@@ -118,8 +96,44 @@ function Component() {
 
                 const transformedCourses = cursosData.map(transformCourse);
                 setCourses(transformedCourses);
-                setIsReady(true);
 
+                let userData = null;
+
+                if (!isAuthenticated) {
+                    router.push('/nao-encontrado');
+                    return;
+                }
+
+                if (getUserRole().trim() == 'Coordenador') {
+                    userData = await CoordenadorService.getCoordenador(userContext.id);
+                } else if (getUserRole().trim() == 'Acadêmico') {
+                    userData = await UserService.getUser(userContext.id);
+
+                } else if (getUserRole().trim() == 'Administrador') {
+                    const emptyUser: UserResponseDTO = {
+                        id: userContext.id,
+                        name: userContext?.name,
+                        email: userContext?.email,
+                        course: ''
+                    }
+
+                    setUser(emptyUser);
+                    setName(userContext.name);
+                    setCourse('');
+                    setIsReady(true);
+                    return;
+                } else {
+                    router.push('/nao-encontrado');
+                    return;
+                }
+
+
+                userData.course = userData.course.id;
+                setUser(userData);
+                setName(userData.name);
+                setCourse(userData.course);
+
+                setIsReady(true);
 
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -150,7 +164,7 @@ function Component() {
             className="flex items-center gap-2 p-3 cursor-pointer"
             style={{
                 borderBottom: index === activeIndex ? '2px solid black' : 'none',
-                paddingBottom: '16px', // Remove padding below the header to avoid extra space
+                paddingBottom: '16px',
             }}
             onClick={() => setActiveIndex(index)}
         >
@@ -257,10 +271,17 @@ function Component() {
     }
 
     const handleUserDataChange = (e: any) => {
+
+        if (getUserRole() == 'Administrador') {
+            clearFields();
+            setVisible(false);
+            setActiveIndex(0);
+            return;
+        }
+
         if (validateChangeUserData()) {
 
             try {
-
                 if (getUserRole() == 'Coordenador') {
                     const coordinatorRequest: CoordinatorRequestDTO = {
                         id: user.id,
@@ -488,6 +509,7 @@ function Component() {
                                                 handleUserDataChange(e);
                                             }
                                         }}
+                                        disabled={getUserRole() == 'Administrador'}
                                     />
                                 </div>
                             </div>
@@ -527,7 +549,7 @@ function Component() {
                                     options={courses}
                                     placeholder="Selecione seu curso"
                                     className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
-                                    disabled={getUserRole() == 'Coordenador'}
+                                    disabled={getUserRole() == 'Coordenador' || getUserRole() == 'Administrador'}
                                 />
 
                             </div>

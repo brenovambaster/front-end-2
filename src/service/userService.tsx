@@ -9,6 +9,7 @@ const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
 export class UserService {
     static async getUser(id: string): Promise<UserResponseDTO> {
         try {
+            alert(BASE_URL + `${id}`);
             const response = await api.get(BASE_URL + `${id}`);
             return response.data;
         } catch (error) {
