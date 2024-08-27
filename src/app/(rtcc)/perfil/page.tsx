@@ -85,8 +85,6 @@ function Component() {
     }
 
     useEffect(() => {
-
-
         const fetchData = async () => {
             try {   
                 if (!isAuthenticated) {
@@ -220,22 +218,25 @@ function Component() {
     const handlePasswordChange = (e: any) => {
 
         if (validateChangePassword()) {
-            // const userRequest: UserRequestDTO = { id: '', name: user.name, course: user.course, email: user.email, password: confirmPassword };
             const userRequest: UserUpdatePasswordRequestDTO = {
                 oldPassword: currentPassword,
                 newPassword: password,
                 newPasswordConfirmation: confirmPassword
             };
 
-
             try {
                 UserService.updatePassword(userRequest, user.id).then((response: UserResponseDTO | null) => {
                     if (response == null) {
-                        toast.current?.show({ severity: 'error', detail: 'Erro ao alterar senha', life: 5000 });
-                        clearFields();
-                        setVisible(false);
+                        const newErrors = {
+                            currentPassword: 'Senha incorreta.',
+                            password: '',
+                            confirmPassword: '',
+                        };
+
+                        setPasswordErrors(newErrors);
                         return;
                     }
+
                     toast.current?.show({ severity: 'success', detail: 'Senha alterada com sucesso', life: 5000 });
                     clearFields();
                     setVisible(false);
