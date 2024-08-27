@@ -87,12 +87,6 @@ function Component() {
     useEffect(() => {
         const fetchData = async () => {
             try {   
-                if (!isAuthenticated) {
-                    alert('Você não está autenticado. Por favor, faça login novamente.');
-                    router.push('/login');
-                    return;
-                }
-
                 let userData = null;
 
                 if (getUserRole().trim() == 'Coordenador') {
