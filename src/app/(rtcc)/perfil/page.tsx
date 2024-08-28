@@ -220,6 +220,11 @@ function Component() {
             newErrors.confirmPassword = 'As senhas não conferem.';
         }
 
+        if(password.length > 0 && password.length < 8) newErrors.password = 'A senha deve ter no mínimo 8 caracteres.';
+
+        if((confirmPassword.length > 0 && confirmPassword.length < 8) && !(password && confirmPassword && password !== confirmPassword) ) newErrors.confirmPassword = 'A senha deve ter no mínimo 8 caracteres.';
+
+
         setPasswordErrors(newErrors);
         return Object.values(newErrors).every(error => error === '');
     }

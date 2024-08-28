@@ -84,7 +84,7 @@ const TCC = () => {
                                     <td className="px-4 py-2">Monografia</td>
                                     <td className="px-4 py-2">PDF</td>
                                     <td className="px-4 py-2 text-center ">
-                                        <a href="http://localhost:8080/tcc/view/eb224bc4-dca4-4971-962b-65879ab858fd.pdf" download="arquivo.pdf" className="p-button font-semibold" target="_blank"
+                                        <a href="http://localhost:8080/tcc/view/b492c93e-b1ab-4d33-bc81-0ac2b76a7569.pdf" download="arquivo.pdf" className="p-button font-semibold" target="_blank"
                                             style={{
                                                 backgroundColor: '#2b2d39',
                                                 borderColor: '#2b2d39',

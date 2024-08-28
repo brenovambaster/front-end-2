@@ -3,7 +3,7 @@
 import { AuthContext } from '@/contexts/AuthContext';
 import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
-import { UserRequestDTO, UserResponseDTO } from '@/types';
+import { UserRequestDTO } from '@/types';
 import { useRouter } from 'next/navigation';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -86,20 +86,23 @@ export default function Register() {
             newErrors.confirmPassword = 'As senhas não conferem.';
         }
 
+        if(password.length > 0 && password.length < 8) newErrors.password = 'A senha deve ter no mínimo 8 caracteres.';
+
+        if(confirmPassword.length > 0 && confirmPassword.length < 8) newErrors.confirmPassword = 'A senha deve ter no mínimo 8 caracteres.';
+
         setErrors(newErrors);
         return Object.values(newErrors).every(error => error === '');
     };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (validateForm()) {
             const userRequest: UserRequestDTO = { id: '', name, course, email, password };
 
             try {
-                UserService.createUser(userRequest).then((response: UserResponseDTO) => {
-                    setVisible(true);
-                });
+                const response = await UserService.createUser(userRequest);
+                setVisible(true);
             } catch (error) {
-                toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação.', life: 5000 });
+                toast.current?.show({ severity: 'error', detail: 'E-mail já cadastrado.', life: 5000 });
             }
         }
     };
