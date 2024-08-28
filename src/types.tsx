@@ -98,3 +98,35 @@ export interface FilterTCCRequestDTO {
 export interface KeywordDTO {
     name: string;
 }
+
+export type Login = {
+    username: string;
+    password: string;
+}
+
+
+export interface UserRequestDTO {
+    id: string;
+    name: string;
+    email: string;
+    course: string;
+    password: string;
+}
+
+export interface UserResponseDTO {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    course: {
+        id: string;
+        name: string;
+        codeOfCourse: string;
+    };
+}
+
+export interface UserUpdatePasswordRequestDTO {
+    oldPassword: string
+    newPassword: string
+    newPasswordConfirmation: string
+}

@@ -1,7 +1,10 @@
-import TableProf from "../../../components/TableProf";
+'use client';
+
+import TableProf from "../../../../components/TableProf";
+import withCoordinatorProtection from "@/hoc/withCoordinatorProtection";
 
 
-export default function ManageProfessorsPage() {
+function ManageProfessorsPage() {
     return (
         <main >
             <div className=" justify-center items-center">
@@ -14,3 +17,5 @@ export default function ManageProfessorsPage() {
         </main >
     )
 }
+
+export default withCoordinatorProtection(ManageProfessorsPage);

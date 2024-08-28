@@ -12,9 +12,9 @@ import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { CoordenadorService } from '@/service/CoordenadorService.tsx';
-import { CoordenadorRequestDTO, CursoRequestDTO } from '../types';
-import { CursoService } from "@/service/CursoService";
+import { CoordenadorService } from '@/service/coordenadorService';
+import { CursoService } from "@/service/cursoService";
+import { CoordenadorRequestDTO } from '../types';
 
 
 export default function CoordenadorsDemo() {
@@ -37,7 +37,7 @@ export default function CoordenadorsDemo() {
     const [coordenadors, setCoordenadors] = useState<CoordenadorRequestDTO[]>([]);
     const [globalFilter, setGlobalFilter] = useState<string | null>(null);
     const [coordenadorDialog, setCoordenadorDialog] = useState<boolean>(false);
-    const [editcoordenadorDialog, setEditcoordenadorDialog] = useState<boolean>(false);
+    const [editCoordenadorDialog, setEditcoordenadorDialog] = useState<boolean>(false);
     const [deleteCoordenadorDialog, setDeleteCoordenadorDialog] = useState<boolean>(false);
     const [coordenador, setCoordenador] = useState<CoordenadorRequestDTO>(emptyCoordenador);
     const [selectedCoordenadors, setSelectedCoordenadors] = useState<CoordenadorRequestDTO[] | null>(null);
@@ -55,7 +55,7 @@ export default function CoordenadorsDemo() {
             const transformedCourses = data.map(transformCourse);
             setCourses(transformedCourses);
         });
-    }, [coordenadors, coordenador, selectedCoordenadors]);
+    }, []);
 
     const statusBodyTemplate = (coordenador: CoordenadorRequestDTO) => {
         return <Tag value={coordenador.title} />;
@@ -80,28 +80,34 @@ export default function CoordenadorsDemo() {
     };
 
     const validateFields = () => {
-        return coordenador.name.trim() && coordenador.email.trim() && coordenador.username.trim() && coordenador.password.trim() && coordenador.course.trim();
+        if(editCoordenadorDialog) {
+            return coordenador.name.trim() && validateEmail(coordenador.email.trim()) && coordenador.course.trim();
+        }
+        return coordenador.name.trim() && validateEmail(coordenador.email.trim()) && coordenador.password.trim() && coordenador.course.name.trim();
     };
 
     const saveCoordenador = async () => {
 
-        if (editcoordenadorDialog) {
+        if (editCoordenadorDialog) {
             coordenador.course = coordenador.course.id;
         }
-
         if (validateFields()) {
             if (coordenador.name.trim()) {
                 try {
+
                     if (coordenador.id) {
                         // Atualizar coordenador existente
                         await CoordenadorService.updateCoordenador(coordenador);
                         setCoordenadors(coordenadors.map(p => (p.id === coordenador.id ? coordenador : p)));
                     } else {
+                        
                         // Criar novo coordenador
                         const newCoordenador = await CoordenadorService.createCoordenador(coordenador);
+
                         setCoordenadors([...coordenadors, newCoordenador]);
                     }
                     setCoordenadorDialog(false);
+                    window.location.reload();
                     toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
                 } catch (error) {
@@ -255,6 +261,11 @@ export default function CoordenadorsDemo() {
         { label: 'Engenharia Química', value: 'Engenha Químicaria' }
     ];
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@ifnmg\.edu\.br$/;
+        return emailRegex.test(email);
+    }
+
     return (
         <div>
             <div className="card m-2">
@@ -282,9 +293,8 @@ export default function CoordenadorsDemo() {
                 >
                     <Column selectionMode="multiple" exportable={false} aria-label="Select" className='' />
                     <Column field="id" header="ID" aria-label="ID" style={{ width: '10%' }} />
-                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '20%' }} sortable />
-                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '15%' }} sortable />
-                    <Column field="username" header="Nome de Usuário" aria-label="Username" sortable />
+                    <Column field="name" header="Nome" aria-label="Name" style={{ width: '30%' }} sortable />
+                    <Column field="email" header="E-mail" aria-label="Email" style={{ width: '25%' }} sortable />
                     <Column field="course.name" header="Curso" aria-label="Course" style={{ width: '20%' }} sortable />
                     <Column body={actionBodyTemplate} exportable={false} style={{ width: '10%' }} aria-label="Actions" />
                 </DataTable>
@@ -328,7 +338,7 @@ export default function CoordenadorsDemo() {
                         className="border border-gray-300 p-2 rounded"
                         aria-describedby="research-area-help"
                     />
-                    {submitted && !coordenador.email && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
+                    {submitted && !(validateEmail(coordenador.email)) && <small id="name-help" className="p-error">O e-mail deve ser no formato @ifnmg.edu.br</small>}
                 </div>
                 <div className="field mb-4">
                     <label htmlFor="course" className="font-bold">
@@ -336,7 +346,7 @@ export default function CoordenadorsDemo() {
                     </label>
                     {/* <Dropdown
                         id="course"
-                        value={editcoordenadorDialog ? coordenador.course.id : coordenador.course}
+                        value={editCoordenadorDialog ? coordenador.course.id : coordenador.course}
                         options={courses}
                         onChange={(e) => setCoordenador({ ...coordenador, course: e.value })}
                         required
@@ -361,7 +371,7 @@ export default function CoordenadorsDemo() {
 
                     {submitted && !coordenador.course && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
                 </div>
-                <div className="field mb-4">
+                {/* <div className="field mb-4">
                     <label htmlFor="username" className="font-bold">
                         Nome de Usuário
                     </label>
@@ -374,7 +384,7 @@ export default function CoordenadorsDemo() {
                         aria-describedby="username-help"
                     />
                     {submitted && !coordenador.username && <small id="name-help" className="p-error">Este campo não pode ficar em branco.</small>}
-                </div>
+                </div> */}
                 <div className="field mb-4">
                     <label htmlFor="password" className="font-bold">
                         Senha

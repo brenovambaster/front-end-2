@@ -4,13 +4,12 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
-import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
-import { CursoService } from '../service/CursoService';
+import { CursoService } from '../service/cursoService';
 import { CursoRequestDTO } from '../types';
 
 
@@ -40,7 +39,7 @@ export default function CursosDemo() {
 
     useEffect(() => {
         CursoService.getCursos().then(data => setCursos(data));
-    }, [cursos, curso, selectedCursos]);
+    }, []);
 
     const openNew = () => {
         setCurso(emptyCurso);
@@ -73,10 +72,10 @@ export default function CursosDemo() {
                         const newCurso = await CursoService.createCurso(curso);
                         setCursos([...cursos, newCurso]);
                     }
-
                     setCursoDialog(false);
-                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
 
+                    toast.current.show({ severity: 'success', detail: 'Operação realizada com sucesso', life: 5000 });
+                    window.location.reload();
                 } catch (error) {
                     toast.current.show({ severity: 'error', detail: 'Erro ao realizar a operação', life: 5000 });
                     hideDialog();

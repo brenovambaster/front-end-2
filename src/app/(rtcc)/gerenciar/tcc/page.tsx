@@ -1,6 +1,10 @@
-import TableTCC from "../../../components/TableTCC";
+'use client';
 
-export default function ManageCursosPage() {
+import TableTCC from "../../../../components/TableTCC";
+import withCoordinatorProtection from "@/hoc/withCoordinatorProtection";
+
+function ManageTCCs() {
+
     return (
         <>
             <div className=" justify-center items-center">
@@ -12,3 +16,5 @@ export default function ManageCursosPage() {
         </>
     )
 }
+
+export default withCoordinatorProtection(ManageTCCs);

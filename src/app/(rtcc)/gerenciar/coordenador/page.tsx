@@ -1,6 +1,9 @@
-import TableCoord from "../../../components/TableCoord";
+'use client';
 
-export default function ManageCursosPage() {
+import TableCoord from "../../../../components/TableCoord";
+import withAdminProtection from "@/hoc/withAdminProtection";
+
+function ManageCursosPage() {
     return (
         <>
             <div className=" justify-center items-center">
@@ -12,3 +15,6 @@ export default function ManageCursosPage() {
         </>
     )
 }
+
+
+export default withAdminProtection(ManageCursosPage);

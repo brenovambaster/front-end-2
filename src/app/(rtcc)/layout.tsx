@@ -1,14 +1,13 @@
 "use client";
 
-import '../styles/globals.css';
+import '../../styles/globals.css';
 
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 import 'primeicons/primeicons.css';
 import { PrimeReactProvider } from "primereact/api";
-import Menu from '../components/Menu';
 
-import { AuthProvider } from '@/contexts/AuthContext';
+import Menu from '../../components/Menu';
 
 export default function RootLayout({
     children,
@@ -19,9 +18,8 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <PrimeReactProvider>
-                    <AuthProvider>
-                        {children}
-                    </AuthProvider>
+                    <Menu />
+                    {children}
                 </PrimeReactProvider>
             </body>
         </html>

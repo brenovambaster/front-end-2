@@ -1,8 +1,8 @@
 'use client';
 
-import { CursoService } from '@/service/CursoService';
-import { ProfessorService } from '@/service/ProfessorService';
-import { TCCService } from '@/service/TCCService';
+import { CursoService } from '@/service/cursoService';
+import { ProfessorService } from '@/service/professorService';
+import { TCCService } from '@/service/tccService';
 import { TCCResponseDTO } from '@/types';
 import { AxiosResponse } from 'axios';
 import { useRouter, useSearchParams } from "next/navigation";
@@ -58,7 +58,7 @@ export default function Component() {
         };
 
         fetchTCCs();
-    }, [first, rows, location.search]);
+    }, [first, rows]);
 
     useEffect(() => {
         if (selectedFilter !== null) {
@@ -371,10 +371,6 @@ export default function Component() {
             <div className="w-full max-w-7xl mt-4 border border-gray-300 rounded-md shadow-sm p-4 bg-gray-100">
                 <div className="flex justify-between items-center gap-4 mb-4">
                     <div className="relative flex-grow">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center text-gray-500">
-                            <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
-                        </div>
-
                         <input
                             className="flex h-10 border-2 border-gray-300 px-3 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full rounded-md bg-background pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                             placeholder="Pesquisar..."
@@ -383,9 +379,29 @@ export default function Component() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={handleSearch}
                         />
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
+                            <i className="pi pi-search" style={{ fontSize: "1.25rem" }}></i>
+                        </div>
+
                     </div>
                     <div className="flex-shrink-0">
-                        <Button className="p-button-sm h-10 flex items-center" onClick={handleSearch}>
+                        <Button className="p-button-sm h-10 flex items-center"
+                            onClick={handleSearch}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                        >
                             <i className="pi pi-search"></i>
                             <span className="ml-2 text-sm"><b>Pesquisar</b></span>
                         </Button>
@@ -409,7 +425,23 @@ export default function Component() {
                         {renderInputField()}
                     </div>
                     <div className="flex-shrink-0">
-                        <Button className="p-button-sm h-10 flex items-center" onClick={handleFilter} >
+                        <Button className="p-button-sm h-10 flex items-center"
+                            onClick={handleFilter}
+                            style={{
+                                backgroundColor: '#2b2d39',
+                                borderColor: '#2b2d39',
+                                color: 'white',
+                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2b2d39';
+                                e.currentTarget.style.color = 'white';
+                            }}
+                        >
                             <span className="text-sm"><b>Aplicar</b></span>
                         </Button>
                     </div>
@@ -449,7 +481,19 @@ export default function Component() {
                             className="px-4 py-4"
                             headerClassName="font-semibold bg-gray-200 text-left"
                             style={{ minWidth: '200px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
+                            body={(rowData) => (
+                                <a
+                                    href={`http://localhost:3000/tcc/${rowData.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-black hover:underline"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    {rowData.title}
+                                </a>
+                            )}
                         />
+
                         <Column
                             field="author"
                             header="Autor"
