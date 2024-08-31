@@ -1,73 +1,103 @@
 "use client";
 
+import { TCCService } from "@/service/tccService";
+import { TCCResponseDTO } from "@/types";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const TCC = () => {
+    const pathname = usePathname();
+    const segments = pathname.split('/');
+    const fileName = segments[segments.length - 1];
+
+    const [tcc, setTCC] = useState<TCCResponseDTO | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const getTCC = async () => {
+            try {
+                const response = await TCCService.getTCC(fileName);
+                setTCC(response);
+            } catch (error) {
+                console.error("Error fetching TCC:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getTCC();
+    }, [fileName]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!tcc) {
+        return <div>No TCC data available</div>;
+    }
+
+    function formatDateToBrazilian(dateString: string): string {
+        const dateParts = dateString.split('-');
+        const [year, month, day] = dateParts;
+        return `${day}/${month}/${year}`;
+    }
 
     return (
         <div className="flex flex-col min-h-screen mt-8">
-            <div className="flex-grow max-w-7xl mx-auto" style={{ maxWidth: '80%' }}>
+            <div className="flex-grow max-w-7xl mx-auto" style={{ width: '80%' }}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200">
+                    <table className="min-w-full bg-white border border-gray-200 table-fixed">
                         <tbody>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Título</td>
-                                <td className="px-4 py-2">Aplicações de Redes Neurais Convolucionais em Diagnóstico Médico</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Título</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.title}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Autor</td>
-                                <td className="px-4 py-2">Ana Clara Mendes</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Autor</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.author}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Curso</td>
-                                <td className="px-4 py-2">Ciência da Computação</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Curso</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.course.name}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Data da Defesa</td>
-                                <td className="px-4 py-2">15/06/2023</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Data da Defesa</td>
+                                <td className="px-4 py-2 w-3/4">{formatDateToBrazilian(tcc.defenseDate)}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Orientador</td>
-                                <td className="px-4 py-2">Prof. Dr. Lucas Almeida</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Orientador</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.advisor.name}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Membros da banca</td>
-                                <td className="px-4 py-2">Prof. Dr. Carolina Lima, Prof. Dr. Rafael Costa</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Membros da banca</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.committeeMembers.map((prof) => prof.name).join(', ')}</td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Resumo</td>
-                                <td className="px-4 py-2">
-                                Este trabalho explora a aplicação de redes neurais convolucionais (CNNs) em diagnóstico
-                                    médico, com foco em imagens médicas. São discutidas as principais arquiteturas de CNNs
-                                    e sua eficácia na detecção de patologias em exames de imagem, como radiografias e
-                                    ressonâncias magnéticas. A pesquisa inclui uma análise de desempenho de diferentes
-                                    modelos e a proposta de uma nova abordagem para melhorar a acurácia do diagnóstico.
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Resumo</td>
+                                <td className="px-4 py-2 w-3/4">
+                                    {tcc.summary}
                                 </td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Abstract</td>
-                                <td className="px-4 py-2">
-                                    This thesis explores the application of convolutional neural networks (CNNs) in medical
-                                    diagnosis, focusing on medical imaging. It discusses the main CNN architectures and their
-                                    effectiveness in detecting pathologies in imaging exams, such as X-rays and MRIs.
-                                    The research includes a performance analysis of different models and proposes a
-                                    new approach to improve diagnostic accuracy.
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Abstract</td>
+                                <td className="px-4 py-2 w-3/4">
+                                    {tcc.abstractText}
                                 </td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Palavras-Chave</td>
-                                <td className="px-4 py-2">
-                                    Redes Neurais Convolucionais, Diagnóstico Médico, Imagens Médicas, Aprendizado Profundo
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Palavras-Chave</td>
+                                <td className="px-4 py-2 w-3/4">
+                                    {tcc.keywords?.map((keyword) => keyword.name).join(', ')}
                                 </td>
                             </tr>
                             <tr className="border-b">
-                                <td className="px-4 py-4 font-semibold bg-gray-100">Idioma</td>
-                                <td className="px-4 py-2">Português</td>
+                                <td className="px-4 py-4 font-semibold bg-gray-100 w-1/4">Idioma</td>
+                                <td className="px-4 py-2 w-3/4">{tcc.language}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div className="mt-8 border">
-                    {/* <h3 className="px-4 py-2 text-lg font-semibold bg-gray-400 rounded-sm">Arquivos associados a este item:</h3> */}
                     <div className="overflow-x-auto">
                         <table className="min-w-full bg-white table-fixed">
                             <thead>
@@ -84,7 +114,7 @@ const TCC = () => {
                                     <td className="px-4 py-2">Monografia</td>
                                     <td className="px-4 py-2">PDF</td>
                                     <td className="px-4 py-2 text-center ">
-                                        <a href="http://localhost:8080/tcc/view/b492c93e-b1ab-4d33-bc81-0ac2b76a7569.pdf" download="arquivo.pdf" className="p-button font-semibold" target="_blank"
+                                        <a href={`http://localhost:8080/tcc/view/${tcc.pathFile.split('\\').pop()}`} download="arquivo.pdf" className="p-button font-semibold" target="_blank"
                                             style={{
                                                 backgroundColor: '#2b2d39',
                                                 borderColor: '#2b2d39',
@@ -114,6 +144,8 @@ const TCC = () => {
             </div>
         </div>
     );
+
+
 }
 
 export default TCC;
