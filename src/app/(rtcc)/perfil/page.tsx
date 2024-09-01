@@ -17,6 +17,7 @@ import { TabPanel, TabView } from 'primereact/tabview';
 import { Toast } from 'primereact/toast';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FiTrash2 } from 'react-icons/fi';
 
 const tccs = [
     { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina"] },
@@ -403,27 +404,45 @@ function Component() {
                     <h3 className="text-md font-semibold mb-2">Favoritos</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {currentTCCs.map((tcc) => (
-                            <Card
-                                key={tcc.id}
-                                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
-                                className="text-xs font-light border border-gray-400"
-                            >
-                                <p className="text-sm font-medium text-gray-600 mb-1">
-                                    {tcc.description}
-                                </p>
-                                <div className="flex flex-wrap gap-0.5">
-                                    {tcc.tags.map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            value={tag}
-                                            className="text-white text-3xs mr-0.5 mt-4"
-                                            style={{ backgroundColor: '#2b2d39' }}
-                                        />
-                                    ))}
-                                </div>
-                            </Card>
+                            <div key={tcc.id} className="relative group">
+                                <Card
+                                    title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{tcc.title}</span>}
+                                    className="text-xs font-light border border-gray-400 relative"
+                                >
+                                    <p className="text-sm font-medium text-gray-600 mb-1">
+                                        {tcc.description}
+                                    </p>
+                                    <div className="flex flex-wrap gap-0.5">
+                                        {tcc.tags.map((tag, index) => (
+                                            <Badge
+                                                key={index}
+                                                value={tag}
+                                                className="text-white text-3xs mr-0.5 mt-4"
+                                                style={{ backgroundColor: '#2b2d39' }}
+                                            />
+                                        ))}
+                                    </div>
+                                    {/* Ícone de lixeira movido mais para a direita e para cima */}
+                                    <div
+                                        className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                        onClick={() => {
+                                            // if (typeof onDelete === 'function') {
+                                            //     onDelete(tcc.id);
+                                            // }
+                                            alert('TCC removido com sucesso!');
+                                        }}
+                                    >
+                                        <div className="bg-red-700 text-white rounded-full p-2">
+                                            <FiTrash2 className="text-white text-lg" />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
                         ))}
                     </div>
+
+
+
 
                     {/* terceiro container */}
                     <div className="flex gap-8 items-center mt-8 justify-center">
