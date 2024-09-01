@@ -98,13 +98,13 @@ function Component() {
                 setCourses(transformedCourses);
 
                 let userData = null;
-                
                 if (!isAuthenticated) {
                     router.push('/nao-encontrado');
                     return;
                 }
 
                 if (getUserRole().trim() == 'Coordenador') {
+
                     userData = await CoordenadorService.getCoordenador(userContext.id);
                 } else if (getUserRole().trim() == 'Acadêmico') {
 
@@ -220,9 +220,9 @@ function Component() {
             newErrors.confirmPassword = 'As senhas não conferem.';
         }
 
-        if(password.length > 0 && password.length < 8) newErrors.password = 'A senha deve ter no mínimo 8 caracteres.';
+        if (password.length > 0 && password.length < 8) newErrors.password = 'A senha deve ter no mínimo 8 caracteres.';
 
-        if((confirmPassword.length > 0 && confirmPassword.length < 8) && !(password && confirmPassword && password !== confirmPassword) ) newErrors.confirmPassword = 'A senha deve ter no mínimo 8 caracteres.';
+        if ((confirmPassword.length > 0 && confirmPassword.length < 8) && !(password && confirmPassword && password !== confirmPassword)) newErrors.confirmPassword = 'A senha deve ter no mínimo 8 caracteres.';
 
 
         setPasswordErrors(newErrors);
@@ -399,7 +399,6 @@ function Component() {
                     </div>
                 </div>
 
-                {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
                     <h3 className="text-md font-semibold mb-2">Favoritos</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

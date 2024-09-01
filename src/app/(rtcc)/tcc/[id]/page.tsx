@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegStar, FaStar } from 'react-icons/fa';
 import { FiDownload } from "react-icons/fi";
 
+
+
 const TCC = () => {
     const pathname = usePathname();
     const segments = pathname.split('/');
