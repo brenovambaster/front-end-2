@@ -4,6 +4,7 @@ import { UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '.
 
 const BASE_URL = 'http://localhost:8080/academic';
 const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
+const RECOVER_PASSWORD_BASE_URL = 'http://localhost:8080/user/reset-password';
 
 
 export class UserService {
@@ -54,6 +55,18 @@ export class UserService {
         } catch (error) {
             console.error('Error updating user:', error);
             return null;
+        }
+    }
+
+    static async recoverPassword(email: string) {
+        try {
+            const url = `${RECOVER_PASSWORD_BASE_URL}?email=${encodeURIComponent(email)}`;
+            const response = await api.put<UserResponseDTO>(url);
+            return response.status;
+
+        } catch (error) {
+            console.error('Error recovering password:', error);
+            return error.response?.status;
         }
     }
 }

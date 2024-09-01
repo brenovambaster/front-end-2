@@ -6,6 +6,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { AuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { Toast } from "primereact/toast";
+import { UserService } from "@/service/userService";
+import { Dialog } from "primereact/dialog";
 
 function Login() {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -15,6 +17,7 @@ function Login() {
     const [authError, setAuthError] = useState("");
     const toast = useRef<Toast>(null);
     const [isReady, setIsReady] = useState(false);
+    const [visible, setVisible] = useState(false);
 
     const { signIn, isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
@@ -47,18 +50,16 @@ function Login() {
             return;
         }
 
-        // const [authenticated, serverConexionError] = await signIn({ email });
+        const statusResponse = await UserService.recoverPassword(email.trim())
+        
+        if(statusResponse == 200) {
+            setVisible(true);
+        } else if(statusResponse == 400) {
+            setEmailError("E-mail não cadastrado.");
+        }else if(statusResponse == undefined) {
+            toast.current?.show({ severity: "error", summary: "Erro", detail: "Ocorreu um erro durante a operação." });
 
-        // if (authenticated) {
-        //     console.log("Authenticated");
-        //     router.push("/");
-        // } else {
-        //     if (!serverConexionError) {
-        //         setAuthError("Usuário ou senha incorretos ou e-mail não verificado.");
-        //     } else {
-        //         toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação.', life: 5000 });
-        //     }
-        // }
+        }
     };
 
 
@@ -111,7 +112,7 @@ function Login() {
                         <Button
                             type="button"
                             onClick={handleSignIn}
-                            label="Recuperar Senha"
+                            label="Enviar Nova Senha"
                             className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300 mt-6"
                             style={{
                                 backgroundColor: '#2b2d39',
@@ -144,6 +145,24 @@ function Login() {
                     </a>
                 </p>
             </div>
+            <Dialog
+                visible={visible}
+                onHide={
+                    () => {
+                        setVisible(false);
+                        window.location.href = '/login';
+                    }
+                }
+                footer={
+                    <button className="">
+                    </button>
+                }
+                className="text-center"
+                style={{ width: '350px' }}
+            >
+                <i className="pi pi-envelope text-4xl text-blue-500 mb-4" style={{ color: '#2b2d39' }}></i>
+                <p className="m-0 text-lg mt-4 ">Uma e-mail com a nova senha foi enviado!</p>
+            </Dialog>
             <div className="card flex justify-content-center">
                 <Toast ref={toast} position="bottom-right" />
             </div>
