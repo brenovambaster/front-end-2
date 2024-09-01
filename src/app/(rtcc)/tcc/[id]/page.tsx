@@ -1,13 +1,16 @@
 "use client";
 
+import { AuthContext } from "@/contexts/AuthContext";
 import { TCCService } from "@/service/tccService";
+import { UserService } from "@/service/userService";
 import { TCCResponseDTO } from "@/types";
 import axios from 'axios';
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { useContext, useEffect, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegStar, FaStar } from 'react-icons/fa';
 import { FiDownload } from "react-icons/fi";
-
 
 
 const TCC = () => {
@@ -16,29 +19,61 @@ const TCC = () => {
     const fileName = segments[segments.length - 1];
 
     const [tcc, setTCC] = useState<TCCResponseDTO | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [fetchingTCC, setFetchingTCC] = useState<boolean>(true);
+
+    const [fetchingLikedTCCs, setFetchingLikedTCCs] = useState<boolean>(true);
+    const [fetchingFavoritedTCCs, setFetchingFavoritedTCCs] = useState<boolean>(true);
 
     const [liked, setLiked] = useState(false);
     const [favorited, setFavorited] = useState(false);
     const [animateLike, setAnimateLike] = useState(false);
     const [animateFavorite, setAnimateFavorite] = useState(false);
+    const { user, isAuthenticated } = useContext(AuthContext);
+    const [visible, setVisible] = useState(false);
+
+    let tryingToLike = false;
+    let tryingToFavorite = false;
 
     const handleLikeClick = () => {
-        setLiked(prevLiked => {
-            const newLikedState = !prevLiked;
-            setAnimateLike(true);
-            setTimeout(() => setAnimateLike(false), 300);
-            return newLikedState;
-        });
-    };
+
+        if (user != null) {
+            if (!liked) {
+                UserService.likeTCC(user.id, tcc.id);
+            } else {
+                UserService.unlikeTCC(user.id, tcc.id);
+            }
+
+            setLiked(prevLiked => {
+                const newLikedState = !prevLiked;
+                setAnimateLike(true);
+                setTimeout(() => setAnimateLike(false), 300);
+                return newLikedState;
+            });
+        } else {
+            tryingToLike = true;
+            setVisible(true);
+        }
+    }
 
     const handleFavoriteClick = () => {
-        setFavorited(prevFavorited => {
-            const newFavoritedState = !prevFavorited;
-            setAnimateFavorite(true);
-            setTimeout(() => setAnimateFavorite(false), 300);
-            return newFavoritedState;
-        });
+
+        if (user != null) {
+            if (!favorited) {
+                UserService.favoriteTCC(user.id, tcc.id);
+            } else {
+                UserService.unfavoriteTCC(user.id, tcc.id);
+            }
+
+            setFavorited(prevFavorited => {
+                const newFavoritedState = !prevFavorited;
+                setAnimateFavorite(true);
+                setTimeout(() => setAnimateFavorite(false), 300);
+                return newFavoritedState;
+            });
+        } else {
+            tryingToFavorite = true;
+            setVisible(true);
+        }
     };
 
 
@@ -51,14 +86,39 @@ const TCC = () => {
             } catch (error) {
                 console.error("Error fetching TCC:", error);
             } finally {
-                setLoading(false);
+                setFetchingTCC(false);
             }
         };
 
+
+        const getLikedTCCs = async () => {
+            try {
+                const likedTCCs = await UserService.getLikedTCCs(user.id);
+                setLiked(likedTCCs.some((tcc) => tcc.id === tcc.id));
+            } catch (error) {
+                console.error("Error fetching liked TCCs:", error);
+            } finally {
+                setFetchingLikedTCCs(false);
+            }
+        }
+
+        const getFavoritedTCCs = async () => {
+            try {
+                const favoritedTCCs = await UserService.getFavoritedTCCs(user.id);
+                setFavorited(favoritedTCCs.some((tcc) => tcc.id === tcc.id));
+            } catch (error) {
+                console.error("Error fetching favorited TCCs:", error);
+            } finally {
+                setFetchingFavoritedTCCs(false);
+            }
+        }
         getTCC();
+        getLikedTCCs(); 
+        getFavoritedTCCs();
+        
     }, [fileName]);
 
-    if (loading) {
+    if (fetchingTCC || fetchingLikedTCCs || fetchingFavoritedTCCs) {
         return null;
     }
 
@@ -73,7 +133,6 @@ const TCC = () => {
         const [year, month, day] = dateParts;
         return `${day}/${month}/${year}`;
     }
-
 
     const downloadTCC = async () => {
         try {
@@ -90,6 +149,17 @@ const TCC = () => {
             console.error('Erro ao baixar o arquivo:', error);
         }
     };
+
+    const footerContent = (
+        <div>
+            <Button label="Não" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" style={{ color: '#2b2d39' }} />
+            <Button label="Sim" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus style={{
+                backgroundColor: '#2b2d39',
+                border: 'none',
+                boxShadow: 'none'
+            }} />
+        </div>
+    );
 
     return (
         <div className="flex flex-col min-h-screen mt-8">
@@ -259,6 +329,22 @@ const TCC = () => {
                     </div>
                 </div>
             </div>
+
+            <Dialog
+                header="Realizar login"
+                visible={visible}
+                position='bottom-right'
+                style={{ width: '30vw' }}
+                onHide={() => {
+                    if (!visible) return; setVisible(false);
+                }}
+                footer={footerContent}
+                draggable={false}
+                resizable={false}>
+                <p className="m-0">
+                    {tryingToLike ? 'Deseja realizar o login para curtir este TCC?' : 'Deseja realizar o login para favoritar este TCC?'}
+                </p>
+            </Dialog>
         </div>
     );
 }

@@ -1,25 +1,21 @@
 'use client';
-import React, { useState, useContext, useRef, useEffect } from "react";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { AuthContext } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import { Toast } from "primereact/toast";
 import { UserService } from "@/service/userService";
+import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { InputText } from "primereact/inputtext";
+import { Toast } from "primereact/toast";
+import { useContext, useEffect, useRef, useState } from "react";
 
-function Login() {
-    const [passwordVisible, setPasswordVisible] = useState(false);
+function RecuperarSenha() {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [authError, setAuthError] = useState("");
     const toast = useRef<Toast>(null);
     const [isReady, setIsReady] = useState(false);
     const [visible, setVisible] = useState(false);
 
-    const { signIn, isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
 
     if (isAuthenticated) {
@@ -37,8 +33,6 @@ function Login() {
 
     const handleSignIn = async () => {
         setEmailError("");
-        setPasswordError("");
-        setAuthError("");
 
         if (!email) {
             if (!email) setEmailError("Campo obrigatório.");
@@ -170,4 +164,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default RecuperarSenha;

@@ -5,7 +5,7 @@ import { UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '.
 const BASE_URL = 'http://localhost:8080/academic';
 const PASSWORD_BASE_URL = 'http://localhost:8080/user/change-password/';
 const RECOVER_PASSWORD_BASE_URL = 'http://localhost:8080/user/reset-password';
-
+const TCC_BASE_URL = 'http://localhost:8080/tcc';
 
 export class UserService {
     static async getUser(id: string): Promise<UserResponseDTO> {
@@ -67,6 +67,66 @@ export class UserService {
         } catch (error) {
             console.error('Error recovering password:', error);
             return error.response?.status;
+        }
+    }
+
+    static async likeTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/like/add`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error liking TCC:', error);
+            return error.response?.status;
+        }
+    }
+
+    static async unlikeTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/like/remove`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error unliking TCC:', error);
+            return error.response?.status;
+        }
+    }
+
+    static async favoriteTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/favorites/add`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error favoriting TCC:', error);
+            return error.response?.status;
+        }
+    }
+
+    static async unfavoriteTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/favorites/remove`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error unfavoriting TCC:', error);
+            return error.response?.status;
+        }
+    }
+
+    static async getLikedTCCs(academicId: string) {
+        try {
+            const response = await api.get(`${TCC_BASE_URL}/like/by-academic?academicId=${academicId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching liked TCCs:', error);
+            return [];
+        }
+    }
+
+    static async getFavoritedTCCs(academicId: string) {
+        try {
+            const response = await api.get(`${TCC_BASE_URL}/favorites/by-academic?academicId=${academicId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching favorited TCCs:', error);
+            return [];
         }
     }
 }
