@@ -407,30 +407,26 @@ function Component() {
                             <div key={tcc.id} className="relative group">
                                 <Card
                                     title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{tcc.title}</span>}
-                                    className="text-xs font-light border border-gray-400 relative"
+                                    className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
                                 >
-                                    <p className="text-sm font-medium text-gray-600 mb-1">
-                                        {tcc.description}
-                                    </p>
-                                    <div className="flex flex-wrap gap-0.5">
-                                        {tcc.tags.map((tag, index) => (
-                                            <Badge
-                                                key={index}
-                                                value={tag}
-                                                className="text-white text-3xs mr-0.5 mt-4"
-                                                style={{ backgroundColor: '#2b2d39' }}
-                                            />
-                                        ))}
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600 mb-1">
+                                            {tcc.description}
+                                        </p>
+                                        <div className="flex flex-wrap gap-0.5">
+                                            {tcc.tags.map((tag, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    value={tag}
+                                                    className="text-white text-3xs mr-0.5 mt-4"
+                                                    style={{ backgroundColor: '#2b2d39' }}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
-                                    {/* Ícone de lixeira movido mais para a direita e para cima */}
                                     <div
                                         className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                        onClick={() => {
-                                            // if (typeof onDelete === 'function') {
-                                            //     onDelete(tcc.id);
-                                            // }
-                                            alert('TCC removido com sucesso!');
-                                        }}
+                                        onClick={() => alert('TCC removido com sucesso!')}
                                     >
                                         <div className="bg-red-700 text-white rounded-full p-2">
                                             <FiTrash2 className="text-white text-lg" />
@@ -440,9 +436,6 @@ function Component() {
                             </div>
                         ))}
                     </div>
-
-
-
 
                     {/* terceiro container */}
                     <div className="flex gap-8 items-center mt-8 justify-center">
