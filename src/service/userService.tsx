@@ -73,7 +73,8 @@ export class UserService {
     static async likeTCC(academicId: string, tccId: string) {
         try {
             const response = await api.post(`${TCC_BASE_URL}/like/add`, { academicId, tccId });
-            return response.data;
+            
+            return response;
         } catch (error) {
             console.error('Error liking TCC:', error);
             return error.response?.status;

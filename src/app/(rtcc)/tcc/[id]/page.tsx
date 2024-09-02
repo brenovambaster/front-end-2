@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthContext } from "@/contexts/AuthContext";
+import { api } from "@/service/api";
 import { TCCService } from "@/service/tccService";
 import { UserService } from "@/service/userService";
 import { TCCResponseDTO } from "@/types";
@@ -38,14 +39,24 @@ const TCC = () => {
     const toast = useRef<Toast>(null);
 
 
-    const handleLikeClick = () => {
+    const handleLikeClick = async () => {
         if (user != null) {
             if (!liked) {
 
-                UserService.likeTCC(user.id, tcc.id);
+                const response = await UserService.likeTCC(user.id, tcc.id);
+
+                if (response === undefined) {
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+                    return;
+                }
                 setNumLikes(prevNumLikes => prevNumLikes + 1);
             } else {
-                UserService.unlikeTCC(user.id, tcc.id);
+                const response = await UserService.unlikeTCC(user.id, tcc.id);
+
+                if (response === undefined) {
+                    toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+                    return;
+                }
                 setNumLikes(prevNumLikes => (prevNumLikes - 1) < 0 ? 0 : prevNumLikes - 1);
             }
 
@@ -68,12 +79,23 @@ const TCC = () => {
 
                 if (!favorited) {
 
-                    await UserService.favoriteTCC(user.id, tcc.id);
+                    const response = await UserService.favoriteTCC(user.id, tcc.id);
+
+                    if (response === undefined) {
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+                        return;
+                    }
 
                     setNumFavorites(prevNumFavorites => prevNumFavorites + 1);
                     setFavorited(true);
                 } else {
-                    await UserService.unfavoriteTCC(user.id, tcc.id);
+                    const response = await UserService.unfavoriteTCC(user.id, tcc.id);
+
+                    if (response === undefined) {
+                        toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+                        return;
+                    }
+
                     setNumFavorites(prevNumFavorites => (prevNumFavorites - 1) < 0 ? 0 : prevNumFavorites - 1);
                     setFavorited(false);
                 }
@@ -164,6 +186,8 @@ const TCC = () => {
             link.click();
         } catch (error) {
             console.error('Erro ao baixar o arquivo:', error);
+            toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+
         }
     };
 
@@ -203,11 +227,25 @@ const TCC = () => {
         const link = window.location.href;
         navigator.clipboard.writeText(link).then(() => {
             // exibindo um toast no canto superior direito
-            toast.current?.show({ severity: 'success', detail: 'O link foi copiado para a área de transferência',style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+            toast.current?.show({ severity: 'success', detail: 'O link foi copiado para a área de transferência', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
         }).catch((err) => {
             console.error('Erro ao copiar o link: ', err);
         });
     };
+
+    const showTCC = async () => {
+        try {
+            await api.get(`http://localhost:8080/tcc/view/${tcc.pathFile.split('\\').pop()}`);
+
+        } catch (error) {
+            toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+            return;
+        }
+
+        const url = `http://localhost:8080/tcc/view/${tcc.pathFile.split('\\').pop()}`;
+        window.open(url, '_blank');
+        console.log(url);
+    }
 
     return (
         <div className="flex flex-col min-h-screen mt-8">
@@ -348,7 +386,7 @@ const TCC = () => {
 
 
                                             <a
-                                                href={`http://localhost:8080/tcc/view/${tcc.pathFile.split('\\').pop()}`}
+                                                onClick={showTCC}
                                                 download="arquivo.pdf"
                                                 className="p-button font-semibold rounded-full"
                                                 target="_blank"
