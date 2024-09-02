@@ -17,7 +17,7 @@ const HomePage = () => {
 
                 <Button
                     type="button"
-                    className="bg-black text-white font-semibold py-3 px-8 rounded-md hover:bg-gray-800 transition duration-300 mx-auto w-80 flex items-center justify-center space-x-2" // Ajuste o padding e a largura
+                    className="bg-black text-white font-semibold py-3 px-8 rounded-md hover:bg-gray-800 transition duration-300 mx-auto w-80 flex items-center justify-center space-x-2"
                     onClick={() => window.location.href = "/"}
                 >
                     <span>Retornar à Página Inicial</span>

@@ -78,7 +78,6 @@ const TCC = () => {
                 setTimeout(() => setAnimateFavorite(false), 300);
             } catch (error) {
                 console.error("Erro ao atualizar o favorito:", error);
-                // Tratar erro, se necessário
             }
         } else {
             setAuthMessage('Deseja realizar o login para favoritar este TCC?');

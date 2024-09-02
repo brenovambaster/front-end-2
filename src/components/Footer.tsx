@@ -1,5 +1,5 @@
 interface FooterProps {
-    margin?: string; // Defina a prop margin como opcional e do tipo string
+    margin?: string; 
 }
 
 const Footer: React.FC<FooterProps> = ({ margin = "0" }) => {

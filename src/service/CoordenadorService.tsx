@@ -18,7 +18,6 @@ export class CoordenadorService {
 
     static async getCoordenadors(): Promise<CoordinatorResponseDTO[]> {
         try {
-            // const response = await axios.get<CoordinatorResponseDTO[]>(BASE_URL);
             const response = await api.get(BASE_URL);
             return response.data;
         } catch (error) {

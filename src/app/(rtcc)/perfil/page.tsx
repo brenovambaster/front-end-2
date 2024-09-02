@@ -357,9 +357,6 @@ function Component() {
         setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
 
         UserService.unfavoriteTCC(user.id, hoveredTCCId);
-
-        // Opcional: Aqui você pode fazer uma chamada para o backend para remover o item do servidor
-        // fetch(`/api/removeTCC/${id}`, { method: 'DELETE' });
     };
 
     return (

@@ -486,7 +486,6 @@ export default function Component() {
                             style={{ minWidth: '200px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
                             body={(rowData) => (
                                 <a
-                                    // href={BASE_URL + `/${rowData.pathFile.split('\\').pop().replace(".pdf", "")}`}
                                     href={BASE_URL + '/' + rowData.id}
                                     target="_blank"
                                     rel="noopener noreferrer"
