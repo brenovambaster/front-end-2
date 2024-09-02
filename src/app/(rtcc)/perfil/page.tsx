@@ -353,10 +353,19 @@ function Component() {
         }
     }
 
-    const handleRemoveFavorite = (id) => {
-        setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
+    const handleRemoveFavorite = async (id) => {
+        try {
+            const response = await UserService.unfavoriteTCC(user.id, hoveredTCCId);
+            
+            if (!response) {
+                toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
+                return;
+            }
 
-        UserService.unfavoriteTCC(user.id, hoveredTCCId);
+            setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
+        } catch (error) {
+            toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
+        }
     };
 
     const handleCardClick = (tccId: string) => {
