@@ -8,9 +8,10 @@ import axios from 'axios';
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { useContext, useEffect, useState } from "react";
+import { Toast } from "primereact/toast";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegStar, FaStar } from 'react-icons/fa';
-import { FiDownload } from "react-icons/fi";
+import { FiCopy, FiDownload } from "react-icons/fi";
 
 
 const TCC = () => {
@@ -34,6 +35,8 @@ const TCC = () => {
     const [numFavorites, setNumFavorites] = useState<number>(0);
     const [authMessage, setAuthMessage] = useState<string>('');
     const router = useRouter();
+    const toast = useRef<Toast>(null);
+
 
     const handleLikeClick = () => {
         if (user != null) {
@@ -62,11 +65,11 @@ const TCC = () => {
     const handleFavoriteClick = async () => {
         if (user != null) {
             try {
-               
+
                 if (!favorited) {
-                    
+
                     await UserService.favoriteTCC(user.id, tcc.id);
-                    
+
                     setNumFavorites(prevNumFavorites => prevNumFavorites + 1);
                     setFavorited(true);
                 } else {
@@ -84,7 +87,7 @@ const TCC = () => {
             setVisible(true);
         }
     };
-    
+
 
 
     useEffect(() => {
@@ -100,13 +103,13 @@ const TCC = () => {
                 setFetchingTCC(false);
             }
         };
-    
+
         getTCC();
     }, [fileName]);
-    
+
     useEffect(() => {
         if (!tcc || !user) return;
-    
+
         const getLikedTCCs = async () => {
             try {
                 const likedTCCs = await UserService.getLikedTCCs(user.id);
@@ -117,7 +120,7 @@ const TCC = () => {
                 setFetchingLikedTCCs(false);
             }
         };
-    
+
         const getFavoritedTCCs = async () => {
             try {
                 const favoritedTCCs = await UserService.getFavoritedTCCs(user.id);
@@ -128,7 +131,7 @@ const TCC = () => {
                 setFetchingFavoritedTCCs(false);
             }
         };
-    
+
         getLikedTCCs();
         getFavoritedTCCs();
     }, [tcc, user]);
@@ -195,6 +198,16 @@ const TCC = () => {
                 }} />
         </div>
     );
+
+    const copyLink = () => {
+        const link = window.location.href;
+        navigator.clipboard.writeText(link).then(() => {
+            // exibindo um toast no canto superior direito
+            toast.current?.show({ severity: 'success', detail: 'O link foi copiado para a área de transferência',style: { whiteSpace: 'nowrap', minWidth: '500px' } });
+        }).catch((err) => {
+            console.error('Erro ao copiar o link: ', err);
+        });
+    };
 
     return (
         <div className="flex flex-col min-h-screen mt-8">
@@ -287,7 +300,7 @@ const TCC = () => {
 
                                                     }}
                                                 >
-                                                    {(liked && numLikes > 0)? <FaHeart /> : <FaRegHeart />}
+                                                    {(liked && numLikes > 0) ? <FaHeart /> : <FaRegHeart />}
                                                 </button>
 
                                                 <span
@@ -391,6 +404,38 @@ const TCC = () => {
                                             >
                                                 <FiDownload />
                                             </div>
+
+                                            <div
+                                                onClick={copyLink}
+                                                className="p-button font-semibold"
+                                                style={{
+                                                    backgroundColor: '#2b2d39',
+                                                    borderColor: '#2b2d39',
+                                                    color: 'white',
+                                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                                    padding: '8px 12px',
+                                                    fontSize: '14px',
+                                                    fontWeight: '500',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '50%',
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    lineHeight: '40px',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                                    e.currentTarget.style.color = 'white';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                                    e.currentTarget.style.color = 'white';
+                                                }}
+                                            >
+                                                <FiCopy />
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -415,6 +460,10 @@ const TCC = () => {
                     {authMessage}
                 </p>
             </Dialog>
+
+            <div className="card flex justify-content-center">
+                <Toast ref={toast} position="bottom-center" />
+            </div>
         </div>
     );
 }
