@@ -359,6 +359,11 @@ function Component() {
         UserService.unfavoriteTCC(user.id, hoveredTCCId);
     };
 
+    const handleCardClick = (tccId: string) => {
+        const url = `/tcc/${tccId}`;
+        window.open(url, '_blank');
+    };
+
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             {/* primeiro container */}
@@ -422,7 +427,7 @@ function Component() {
                                 onMouseEnter={() => setHoveredTCCId(tcc.id)}
                                 onMouseLeave={() => setHoveredTCCId(null)}
                             >
-                                <Link href={`/tcc/${tcc.id}`} passHref>
+                                <Link href={''} passHref>
                                     <Card
                                         title={
                                             <span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>
@@ -430,6 +435,7 @@ function Component() {
                                             </span>
                                         }
                                         className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
+                                        onClick={() => handleCardClick(tcc.id)}
                                     >
                                         <div>
                                             <p className="text-sm font-medium text-gray-600 mb-1">
@@ -446,7 +452,6 @@ function Component() {
                                                 ))}
                                             </div>
                                         </div>
-
                                     </Card>
                                 </Link>
                                 <div

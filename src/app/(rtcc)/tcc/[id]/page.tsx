@@ -226,7 +226,6 @@ const TCC = () => {
     const copyLink = () => {
         const link = window.location.href;
         navigator.clipboard.writeText(link).then(() => {
-            // exibindo um toast no canto superior direito
             toast.current?.show({ severity: 'success', detail: 'O link foi copiado para a área de transferência', style: { whiteSpace: 'nowrap', minWidth: '500px' } });
         }).catch((err) => {
             console.error('Erro ao copiar o link: ', err);
