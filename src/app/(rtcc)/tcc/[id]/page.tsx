@@ -158,7 +158,7 @@ const TCC = () => {
         getFavoritedTCCs();
     }, [tcc, user]);
 
-    if (fetchingTCC || fetchingLikedTCCs || fetchingFavoritedTCCs) {
+    if (fetchingTCC ) {
         return null;
     }
 
