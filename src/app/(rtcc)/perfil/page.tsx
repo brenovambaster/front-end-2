@@ -16,6 +16,7 @@ import { InputText } from 'primereact/inputtext';
 import { TabPanel, TabView } from 'primereact/tabview';
 import { Toast } from 'primereact/toast';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineFileSearch } from 'react-icons/ai';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FiTrash2 } from 'react-icons/fi';
 
@@ -34,8 +35,8 @@ const tccs = [
 
 function Component() {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 9; // 4 TCCs por página
-    const totalPages = Math.ceil(tccs.length / itemsPerPage);
+    const itemsPerPage = 8; // 4 TCCs por página
+    const [totalPages, setTotalPages] = useState(0);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -66,6 +67,7 @@ function Component() {
     const [isReady, setIsReady] = useState(false);
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState('');
+    const [favoriteTCCs, setFavoriteTCCs] = useState<number[]>([]);
     const [passwordErrors, setPasswordErrors] = useState({
         currentPassword: '',
         password: '',
@@ -110,6 +112,13 @@ function Component() {
                 } else if (getUserRole().trim() == 'Acadêmico') {
 
                     userData = await UserService.getUser(userContext.id);
+
+                    const favorites = await UserService.getFavoritedTCCs(userContext.id);
+
+                    if (favorites) {
+                        setFavoriteTCCs(favorites);
+                        setTotalPages(Math.ceil(favorites.length / itemsPerPage));
+                    }
 
                 } else if (getUserRole().trim() == 'Administrador') {
                     const emptyUser: UserResponseDTO = {
@@ -392,8 +401,8 @@ function Component() {
                                 </span> */}
                                 <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                    <span className="font-bold text-yellow-500">62</span>
-                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold">Favoritos</span>
+                                    <span className="font-bold text-yellow-500 pl-1">{favoriteTCCs.length}</span>
+                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold pl-1">{favoriteTCCs.length == 1 ? 'Favorito': 'Favoritos'}</span>
                                 </span>
                             </div>
                         </div>
@@ -401,23 +410,23 @@ function Component() {
                 </div>
 
                 <div className="lg:w-2/3 mr-8">
-                    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {currentTCCs.map((tcc) => (
+                    {favoriteTCCs?.length > 0 ? <h3 className="text-md font-semibold mb-2">Favoritos</h3> : null}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {favoriteTCCs.map((tcc) => (
                             <div key={tcc.id} className="relative group">
                                 <Card
-                                    title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{tcc.title}</span>}
+                                    title={<span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>{tcc.title}</span>}
                                     className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
                                 >
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 mb-1">
-                                            {tcc.description}
+                                            {tcc.author}
                                         </p>
                                         <div className="flex flex-wrap gap-0.5">
-                                            {tcc.tags.map((tag, index) => (
+                                            {tcc.keywords.map((tag, index) => (
                                                 <Badge
                                                     key={index}
-                                                    value={tag}
+                                                    value={tag.name}
                                                     className="text-white text-3xs mr-0.5 mt-4"
                                                     style={{ backgroundColor: '#2b2d39' }}
                                                 />
@@ -437,60 +446,69 @@ function Component() {
                         ))}
                     </div>
 
-                    {/* terceiro container */}
-                    <div className="flex gap-8 items-center mt-8 justify-center">
-                        <Button
-                            icon="pi pi-chevron-left"
-                            label=""
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                        />
+                    {favoriteTCCs?.length <= 0 ? (
+                        <div className="flex flex-col items-center justify-center mt-44">
+                            <div className="text-gray-400 mb-4">
+                                <AiOutlineFileSearch className="text-gray-500 text-6xl" />
+                            </div>
+                            <p className="text-2xl font-medium text-gray-600">Você ainda não possui TCCs favoritados</p>
+                            <p className="text-base text-gray-500">Comece a explorar e adicione favoritos!</p>
+                        </div>
+                    ) : (
+                        <div className="flex gap-8 items-center mt-8 justify-center">
+                            <Button
+                                icon="pi pi-chevron-left"
+                                label=""
+                                className="p-button-outlined px-2 py-2 text-xs"
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                            />
 
-                        <span className="text-md font-medium text-gray-600">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <Button
-                            icon="pi pi-chevron-right"
-                            label=""
-                            iconPos="right"
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                        />
-                    </div>
+                            <span className="text-md font-medium text-gray-600">
+                                Página {currentPage} de {totalPages}
+                            </span>
+
+                            <Button
+                                icon="pi pi-chevron-right"
+                                label=""
+                                iconPos="right"
+                                className="p-button-outlined px-2 py-2 text-xs"
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                            />
+                        </div>)}
                 </div>
 
             </div>
@@ -545,11 +563,6 @@ function Component() {
                                         className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                         value={user?.email}
                                         onChange={(e) => setUser({ ...user, email: e.target.value })}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleSalvarAlteracoes();
-                                            }
-                                        }}
                                         disabled={true}
                                     />
                                 </div>
