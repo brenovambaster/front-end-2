@@ -38,11 +38,12 @@ const TCC = () => {
     const handleLikeClick = () => {
         if (user != null) {
             if (!liked) {
+
                 UserService.likeTCC(user.id, tcc.id);
                 setNumLikes(prevNumLikes => prevNumLikes + 1);
             } else {
                 UserService.unlikeTCC(user.id, tcc.id);
-                setNumLikes(prevNumLikes => prevNumLikes - 1);
+                setNumLikes(prevNumLikes => (prevNumLikes - 1) < 0 ? 0 : prevNumLikes - 1);
             }
 
             setLiked(prevLiked => {
@@ -58,32 +59,36 @@ const TCC = () => {
     }
 
 
-    const handleFavoriteClick = () => {
-
+    const handleFavoriteClick = async () => {
         if (user != null) {
-            if (!favorited) {
-                UserService.favoriteTCC(user.id, tcc.id);
-                setNumFavorites(prevNumFavorites => prevNumFavorites + 1);
-            } else {
-                UserService.unfavoriteTCC(user.id, tcc.id);
-                setNumFavorites(prevNumFavorites => prevNumFavorites - 1);
-            }
-
-            setFavorited(prevFavorited => {
-                const newFavoritedState = !prevFavorited;
+            try {
+               
+                if (!favorited) {
+                    
+                    await UserService.favoriteTCC(user.id, tcc.id);
+                    
+                    setNumFavorites(prevNumFavorites => prevNumFavorites + 1);
+                    setFavorited(true);
+                } else {
+                    await UserService.unfavoriteTCC(user.id, tcc.id);
+                    setNumFavorites(prevNumFavorites => (prevNumFavorites - 1) < 0 ? 0 : prevNumFavorites - 1);
+                    setFavorited(false);
+                }
                 setAnimateFavorite(true);
                 setTimeout(() => setAnimateFavorite(false), 300);
-                return newFavoritedState;
-            });
+            } catch (error) {
+                console.error("Erro ao atualizar o favorito:", error);
+                // Tratar erro, se necessário
+            }
         } else {
             setAuthMessage('Deseja realizar o login para favoritar este TCC?');
             setVisible(true);
         }
     };
+    
 
 
     useEffect(() => {
-
         const getTCC = async () => {
             try {
                 const response = await TCCService.getTCC(fileName);
@@ -96,34 +101,38 @@ const TCC = () => {
                 setFetchingTCC(false);
             }
         };
-
-
+    
+        getTCC();
+    }, [fileName]);
+    
+    useEffect(() => {
+        if (!tcc || !user) return;
+    
         const getLikedTCCs = async () => {
             try {
                 const likedTCCs = await UserService.getLikedTCCs(user.id);
-                setLiked(likedTCCs.some((tcc) => tcc.id === tcc.id));
+                setLiked(likedTCCs.some((tccIt) => tccIt.id === tcc.id));
             } catch (error) {
                 console.error("Error fetching liked TCCs:", error);
             } finally {
                 setFetchingLikedTCCs(false);
             }
-        }
-
+        };
+    
         const getFavoritedTCCs = async () => {
             try {
                 const favoritedTCCs = await UserService.getFavoritedTCCs(user.id);
-                setFavorited(favoritedTCCs.some((tcc) => tcc.id === tcc.id));
+                setFavorited(favoritedTCCs.some((tccIt) => tccIt.id === tcc.id));
             } catch (error) {
                 console.error("Error fetching favorited TCCs:", error);
             } finally {
                 setFetchingFavoritedTCCs(false);
             }
-        }
-        getTCC();
+        };
+    
         getLikedTCCs();
         getFavoritedTCCs();
-
-    }, [fileName]);
+    }, [tcc, user]);
 
     if (fetchingTCC || fetchingLikedTCCs || fetchingFavoritedTCCs) {
         return null;
@@ -272,20 +281,20 @@ const TCC = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        color: liked ? 'red' : 'gray',
+                                                        color: (liked && numLikes > 0) ? 'red' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
                                                         paddingBottom: '0',
 
 
                                                     }}
                                                 >
-                                                    {liked ? <FaHeart /> : <FaRegHeart />}
+                                                    {(liked && numLikes > 0)? <FaHeart /> : <FaRegHeart />}
                                                 </button>
 
                                                 <span
                                                     style={{
                                                         fontSize: '14px',
-                                                        color: liked ? 'red' : 'gray',
+                                                        color: (liked && numLikes > 0) ? 'red' : 'gray',
                                                         marginTop: '0',
                                                         fontWeight: 'bold'
 
@@ -305,18 +314,18 @@ const TCC = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        color: favorited ? '#f59e0b' : 'gray',
+                                                        color: (favorited && numFavorites > 0) ? '#f59e0b' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
                                                         paddingBottom: '0',
                                                     }}
                                                 >
-                                                    {favorited ? <FaStar /> : <FaRegStar />}
+                                                    {(favorited && numFavorites > 0) ? <FaStar /> : <FaRegStar />}
                                                 </button>
 
                                                 <span
                                                     style={{
                                                         fontSize: '14px',
-                                                        color: favorited ? '#f59e0b' : 'gray',
+                                                        color: (favorited && numFavorites > 0) ? '#f59e0b' : 'gray',
                                                         marginTop: '0',
                                                         fontWeight: 'bold'
                                                     }}

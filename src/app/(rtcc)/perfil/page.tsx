@@ -46,6 +46,7 @@ function Component() {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const [submitted, setSubmitted] = useState(false);
+    const [hoveredTCCId, setHoveredTCCId] = useState('');
 
     const emptyUser: UserResponseDTO = {
         id: '',
@@ -351,6 +352,15 @@ function Component() {
         }
     }
 
+    const handleRemoveFavorite = (id) => {
+        setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
+
+        UserService.unfavoriteTCC(user.id, hoveredTCCId);
+
+        // Opcional: Aqui você pode fazer uma chamada para o backend para remover o item do servidor
+        // fetch(`/api/removeTCC/${id}`, { method: 'DELETE' });
+    };
+
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             {/* primeiro container */}
@@ -402,7 +412,7 @@ function Component() {
                                 <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
                                     <span className="font-bold text-yellow-500 pl-1">{favoriteTCCs.length}</span>
-                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold pl-1">{favoriteTCCs.length == 1 ? 'Favorito': 'Favoritos'}</span>
+                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold pl-1">{favoriteTCCs.length == 1 ? 'Favorito' : 'Favoritos'}</span>
                                 </span>
                             </div>
                         </div>
@@ -413,7 +423,12 @@ function Component() {
                     {favoriteTCCs?.length > 0 ? <h3 className="text-md font-semibold mb-2">Favoritos</h3> : null}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {favoriteTCCs.map((tcc) => (
-                            <div key={tcc.id} className="relative group">
+                            <div
+                                key={tcc.id}
+                                className="relative group"
+                                onMouseEnter={() => setHoveredTCCId(tcc.id)}
+                                onMouseLeave={() => setHoveredTCCId(null)}
+                            >
                                 <Card
                                     title={<span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>{tcc.title}</span>}
                                     className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
@@ -435,7 +450,10 @@ function Component() {
                                     </div>
                                     <div
                                         className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                        onClick={() => alert('TCC removido com sucesso!')}
+                                        onClick={() => {
+                                            handleRemoveFavorite(tcc.id);
+                                            // setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== hoveredTCCId));
+                                        }}
                                     >
                                         <div className="bg-red-700 text-white rounded-full p-2">
                                             <FiTrash2 className="text-white text-lg" />
