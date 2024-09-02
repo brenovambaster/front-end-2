@@ -111,6 +111,16 @@ export class UserService {
         }
     }
 
+    static async unfavoriteTCCProfile(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/favorites/remove`, { academicId, tccId });
+            return response;
+        } catch (error) {
+            console.error('Error unfavoriting TCC:', error);
+            return error.response?.status;
+        }
+    }
+
     static async getLikedTCCs(academicId: string) {
         try {
             const response = await api.get(`${TCC_BASE_URL}/like/by-academic?academicId=${academicId}`);

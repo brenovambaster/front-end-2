@@ -44,6 +44,8 @@ function Component() {
     const currentTCCs = tccs.slice(startIndex, endIndex);
 
     const [visible, setVisible] = useState(false);
+    const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+    const [tccIdToDelete, setTccIdToDelete] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
 
     const [submitted, setSubmitted] = useState(false);
@@ -354,10 +356,10 @@ function Component() {
     }
 
     const handleRemoveFavorite = async (id) => {
+
         try {
-            const response = await UserService.unfavoriteTCC(user.id, hoveredTCCId);
-            
-            if (!response) {
+            const response = await UserService.unfavoriteTCCProfile(user.id, id);
+            if (response.status !== 200) {
                 toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
                 return;
             }
@@ -366,12 +368,46 @@ function Component() {
         } catch (error) {
             toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
         }
+
+        toast.current?.show({ severity: 'success', detail: 'TCC removido dos favoritos', life: 5000 });
     };
 
     const handleCardClick = (tccId: string) => {
         const url = `/tcc/${tccId}`;
         window.open(url, '_blank');
     };
+
+    const footerContent = (
+        <div>
+            <Button
+                label="Não"
+                icon="pi pi-times"
+                onClick={
+                    () => {
+                        setConfirmDeleteModalVisible(false);
+                    }
+                }
+                className="p-button-text"
+                style={{ color: '#2b2d39' }}
+            />
+
+            <Button
+                label="Sim"
+                icon="pi pi-check"
+                onClick={
+                    () => {
+                        setConfirmDeleteModalVisible(false);
+                        handleRemoveFavorite(tccIdToDelete);
+                    }
+                }
+                autoFocus
+                style={{
+                    backgroundColor: '#2b2d39',
+                    border: 'none',
+                    boxShadow: 'none'
+                }} />
+        </div>
+    );
 
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
@@ -434,7 +470,7 @@ function Component() {
                                 key={tcc.id}
                                 className="relative group"
                                 onMouseEnter={() => setHoveredTCCId(tcc.id)}
-                                onMouseLeave={() => setHoveredTCCId(null)}
+                                // onMouseLeave={() => setHoveredTCCId(null)}
                             >
                                 <Link href={''} passHref>
                                     <Card
@@ -467,7 +503,9 @@ function Component() {
                                     className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleRemoveFavorite(tcc.id);
+                                        // handleRemoveFavorite(tcc.id);
+                                        setTccIdToDelete(tcc.id);
+                                        setConfirmDeleteModalVisible(true);
                                     }}
                                 >
                                     <div className="bg-red-700 text-white rounded-full p-2">
@@ -771,8 +809,23 @@ function Component() {
                     </TabPanel>
                 </TabView>
             </Dialog>
+            <Dialog
+                header="Remover Favorito"
+                visible={confirmDeleteModalVisible}
+                position='center'
+                style={{ width: '40vw' }}
+                onHide={() => {
+                    if (!confirmDeleteModalVisible) return; setConfirmDeleteModalVisible(false);
+                }}
+                footer={footerContent}
+                draggable={false}
+                resizable={false}>
+                <p className="m-0">
+                    Deseja realmente remover <strong>{favoriteTCCs.find((tcc) => tcc.id === tccIdToDelete)?.title}</strong> dos favoritos?
+                </p>
+            </Dialog>
             <div className="card flex justify-content-center">
-                <Toast ref={toast} position="bottom-right" />
+                <Toast ref={toast}  position="bottom-right"/>
             </div>
         </div>
     );
