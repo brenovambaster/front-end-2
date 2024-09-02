@@ -383,17 +383,17 @@ function Component() {
                             }}
                         />
 
-                        <div className="flex flex-col items-center mt-6">
+                        <div className="flex flex-col items-center mt-2">
                             <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
-                                <span className="flex items-center">
+                                {/* <span className="flex items-center">
                                     <i className="pi pi-heart-fill text-red-500 mr-1"></i>
                                     <span className="font-bold text-red-500">26</span>
                                     <span className="text-gray-600 ml-1 text-red-500">Curtidos</span>
-                                </span>
+                                </span> */}
                                 <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
                                     <span className="font-bold text-yellow-500">62</span>
-                                    <span className="text-gray-600 ml-1 text-yellow-500">Favoritos</span>
+                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold">Favoritos</span>
                                 </span>
                             </div>
                         </div>

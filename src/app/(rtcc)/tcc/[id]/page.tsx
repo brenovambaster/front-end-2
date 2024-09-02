@@ -305,7 +305,7 @@ const TCC = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        color: favorited ? '#ccac00' : 'gray',
+                                                        color: favorited ? '#f59e0b' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
                                                         paddingBottom: '0',
                                                     }}
@@ -316,7 +316,7 @@ const TCC = () => {
                                                 <span
                                                     style={{
                                                         fontSize: '14px',
-                                                        color: favorited ? '#ccac00' : 'gray',
+                                                        color: favorited ? '#f59e0b' : 'gray',
                                                         marginTop: '0',
                                                         fontWeight: 'bold'
                                                     }}
