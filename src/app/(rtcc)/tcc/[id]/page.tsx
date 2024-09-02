@@ -31,16 +31,22 @@ const TCC = () => {
     const { user, isAuthenticated } = useContext(AuthContext);
     const [visible, setVisible] = useState(false);
 
+    const [numLikes, setNumLikes] = useState<number>(0);
+    const [numFavorites, setNumFavorites] = useState<number>(0);
+
+
+
     let tryingToLike = false;
     let tryingToFavorite = false;
 
     const handleLikeClick = () => {
-
         if (user != null) {
             if (!liked) {
                 UserService.likeTCC(user.id, tcc.id);
+                setNumLikes(prevNumLikes => prevNumLikes + 1);
             } else {
                 UserService.unlikeTCC(user.id, tcc.id);
+                setNumLikes(prevNumLikes => prevNumLikes - 1);
             }
 
             setLiked(prevLiked => {
@@ -55,13 +61,16 @@ const TCC = () => {
         }
     }
 
+
     const handleFavoriteClick = () => {
 
         if (user != null) {
             if (!favorited) {
                 UserService.favoriteTCC(user.id, tcc.id);
+                setNumFavorites(prevNumFavorites => prevNumFavorites + 1);
             } else {
                 UserService.unfavoriteTCC(user.id, tcc.id);
+                setNumFavorites(prevNumFavorites => prevNumFavorites - 1);
             }
 
             setFavorited(prevFavorited => {
@@ -83,6 +92,8 @@ const TCC = () => {
             try {
                 const response = await TCCService.getTCC(fileName);
                 setTCC(response);
+                setNumLikes(response.numLikes);
+                setNumFavorites(response.numFavorites);
             } catch (error) {
                 console.error("Error fetching TCC:", error);
             } finally {
@@ -113,9 +124,9 @@ const TCC = () => {
             }
         }
         getTCC();
-        getLikedTCCs(); 
+        getLikedTCCs();
         getFavoritedTCCs();
-        
+
     }, [fileName]);
 
     if (fetchingTCC || fetchingLikedTCCs || fetchingFavoritedTCCs) {
@@ -216,7 +227,8 @@ const TCC = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="mt-8 border">
+
+                <div className="mt-8 border mb-8">
                     <div className="overflow-x-auto">
                         <table className="min-w-full bg-white table-fixed">
                             <thead>
@@ -234,36 +246,69 @@ const TCC = () => {
                                     <td className="px-4 py-2">PDF</td>
                                     <td className="px-4 py-2 text-center">
                                         <div className="flex items-center justify-center space-x-2">
-                                            <button
-                                                onClick={handleLikeClick}
-                                                className={`p-2 ${animateLike ? 'animate-shake' : ''}`}
-                                                style={{
-                                                    fontSize: '24px',
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    color: liked ? 'red' : 'gray',
-                                                    transition: 'color 0.2s ease-in-out',
 
-                                                }}
-                                            >
-                                                {liked ? <FaHeart /> : <FaRegHeart />}
-                                            </button>
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <button
+                                                    onClick={handleLikeClick}
+                                                    className={`p-2 ${animateLike ? 'animate-shake' : ''}`}
+                                                    style={{
+                                                        fontSize: '24px',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: liked ? 'red' : 'gray',
+                                                        transition: 'color 0.2s ease-in-out',
+                                                        paddingBottom: '0', 
+                                                        
 
-                                            <button
-                                                onClick={handleFavoriteClick}
-                                                className={`p-2 ${animateFavorite ? 'animate-shake' : ''}`}
-                                                style={{
-                                                    fontSize: '24px',
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    color: favorited ? 'yellow' : 'gray',
-                                                    transition: 'color 0.2s ease-in-out',
-                                                }}
-                                            >
-                                                {favorited ? <FaStar /> : <FaRegStar />}
-                                            </button>
+                                                    }}
+                                                >
+                                                    {liked ? <FaHeart /> : <FaRegHeart />}
+                                                </button>
+
+                                                <span
+                                                    style={{
+                                                        fontSize: '14px',
+                                                        color: liked ? 'red' : 'gray',
+                                                        marginTop: '0',
+                                                        fontWeight: 'bold'
+
+                                                    }}
+                                                    className="-mt-32"
+                                                >
+                                                    {numLikes}
+                                                </span>
+                                            </div>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <button
+                                                    onClick={handleFavoriteClick}
+                                                    className={`p-2 ${animateFavorite ? 'animate-shake' : ''}`}
+                                                    style={{
+                                                        fontSize: '24px',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: favorited ? '#ccac00' : 'gray',
+                                                        transition: 'color 0.2s ease-in-out',
+                                                        paddingBottom: '0', 
+                                                    }}
+                                                >
+                                                    {favorited ? <FaStar /> : <FaRegStar />}
+                                                </button>
+
+                                                <span
+                                                    style={{
+                                                        fontSize: '14px',
+                                                        color: favorited ? '#ccac00' : 'gray',
+                                                        marginTop: '0', 
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    {numFavorites}
+                                                </span>
+                                            </div>
+
 
                                             <a
                                                 href={`http://localhost:8080/tcc/view/${tcc.pathFile.split('\\').pop()}`}
@@ -290,6 +335,7 @@ const TCC = () => {
                                             >
                                                 Visualizar
                                             </a>
+
                                             <div
                                                 onClick={downloadTCC}
                                                 className="p-button font-semibold"
