@@ -6,6 +6,7 @@ import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
 import { CoordinatorRequestDTO, UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '@/types';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
@@ -404,11 +405,6 @@ function Component() {
 
                         <div className="flex flex-col items-center mt-2">
                             <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
-                                {/* <span className="flex items-center">
-                                    <i className="pi pi-heart-fill text-red-500 mr-1"></i>
-                                    <span className="font-bold text-red-500">26</span>
-                                    <span className="text-gray-600 ml-1 text-red-500">Curtidos</span>
-                                </span> */}
                                 <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
                                     <span className="font-bold text-yellow-500 pl-1">{favoriteTCCs.length}</span>
@@ -429,37 +425,44 @@ function Component() {
                                 onMouseEnter={() => setHoveredTCCId(tcc.id)}
                                 onMouseLeave={() => setHoveredTCCId(null)}
                             >
-                                <Card
-                                    title={<span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>{tcc.title}</span>}
-                                    className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
-                                >
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-600 mb-1">
-                                            {tcc.author}
-                                        </p>
-                                        <div className="flex flex-wrap gap-0.5">
-                                            {tcc.keywords.map((tag, index) => (
-                                                <Badge
-                                                    key={index}
-                                                    value={tag.name}
-                                                    className="text-white text-3xs mr-0.5 mt-4"
-                                                    style={{ backgroundColor: '#2b2d39' }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div
-                                        className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                        onClick={() => {
-                                            handleRemoveFavorite(tcc.id);
-                                            // setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== hoveredTCCId));
-                                        }}
+                                <Link href={`/tcc/${tcc.id}`} passHref>
+                                    <Card
+                                        title={
+                                            <span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>
+                                                {tcc.title}
+                                            </span>
+                                        }
+                                        className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
                                     >
-                                        <div className="bg-red-700 text-white rounded-full p-2">
-                                            <FiTrash2 className="text-white text-lg" />
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-600 mb-1">
+                                                {tcc.author}
+                                            </p>
+                                            <div className="flex flex-wrap gap-0.5">
+                                                {tcc.keywords.map((tag, index) => (
+                                                    <Badge
+                                                        key={index}
+                                                        value={tag.name}
+                                                        className="text-white text-3xs mr-0.5 mt-4"
+                                                        style={{ backgroundColor: '#2b2d39' }}
+                                                    />
+                                                ))}
+                                            </div>
                                         </div>
+
+                                    </Card>
+                                </Link>
+                                <div
+                                    className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRemoveFavorite(tcc.id);
+                                    }}
+                                >
+                                    <div className="bg-red-700 text-white rounded-full p-2">
+                                        <FiTrash2 className="text-white text-lg" />
                                     </div>
-                                </Card>
+                                </div>
                             </div>
                         ))}
                     </div>
