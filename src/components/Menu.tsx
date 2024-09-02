@@ -106,10 +106,9 @@ export default function BasicDemo() {
 
 
                                 <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
-                                    if (isAuthenticated) {
+                                    
                                         destroyCookie(null, 'rtcc.token');
                                         window.location.href = '/';
-                                    }
                                 }} className="p-button-text p-button-plain border border-transparent hover:border-[#2b2d39] focus:border-[#2b2d39] p-2 mt-2"
                                     style={{
                                         backgroundColor: 'white',

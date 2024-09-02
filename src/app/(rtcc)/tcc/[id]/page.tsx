@@ -30,14 +30,10 @@ const TCC = () => {
     const [animateFavorite, setAnimateFavorite] = useState(false);
     const { user, isAuthenticated } = useContext(AuthContext);
     const [visible, setVisible] = useState(false);
-
     const [numLikes, setNumLikes] = useState<number>(0);
     const [numFavorites, setNumFavorites] = useState<number>(0);
-
-
-
-    let tryingToLike = false;
-    let tryingToFavorite = false;
+    const [authMessage, setAuthMessage] = useState<string>('');
+    const router = useRouter();
 
     const handleLikeClick = () => {
         if (user != null) {
@@ -56,7 +52,7 @@ const TCC = () => {
                 return newLikedState;
             });
         } else {
-            tryingToLike = true;
+            setAuthMessage('Deseja realizar o login para curtir este TCC?');
             setVisible(true);
         }
     }
@@ -80,7 +76,7 @@ const TCC = () => {
                 return newFavoritedState;
             });
         } else {
-            tryingToFavorite = true;
+            setAuthMessage('Deseja realizar o login para favoritar este TCC?');
             setVisible(true);
         }
     };
@@ -134,7 +130,6 @@ const TCC = () => {
     }
 
     if (!tcc) {
-        const router = useRouter();
         router.push('/nao-encontrado');
         return null;
     }
@@ -163,12 +158,33 @@ const TCC = () => {
 
     const footerContent = (
         <div>
-            <Button label="Não" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" style={{ color: '#2b2d39' }} />
-            <Button label="Sim" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus style={{
-                backgroundColor: '#2b2d39',
-                border: 'none',
-                boxShadow: 'none'
-            }} />
+            <Button
+                label="Não"
+                icon="pi pi-times"
+                onClick={
+                    () => {
+                        setVisible(false);
+                    }
+                }
+                className="p-button-text"
+                style={{ color: '#2b2d39' }}
+            />
+
+            <Button
+                label="Sim"
+                icon="pi pi-check"
+                onClick={
+                    () => {
+                        setVisible(false);
+                        router.push('/login');
+                    }
+                }
+                autoFocus
+                style={{
+                    backgroundColor: '#2b2d39',
+                    border: 'none',
+                    boxShadow: 'none'
+                }} />
         </div>
     );
 
@@ -258,8 +274,8 @@ const TCC = () => {
                                                         cursor: 'pointer',
                                                         color: liked ? 'red' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
-                                                        paddingBottom: '0', 
-                                                        
+                                                        paddingBottom: '0',
+
 
                                                     }}
                                                 >
@@ -291,7 +307,7 @@ const TCC = () => {
                                                         cursor: 'pointer',
                                                         color: favorited ? '#ccac00' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
-                                                        paddingBottom: '0', 
+                                                        paddingBottom: '0',
                                                     }}
                                                 >
                                                     {favorited ? <FaStar /> : <FaRegStar />}
@@ -301,7 +317,7 @@ const TCC = () => {
                                                     style={{
                                                         fontSize: '14px',
                                                         color: favorited ? '#ccac00' : 'gray',
-                                                        marginTop: '0', 
+                                                        marginTop: '0',
                                                         fontWeight: 'bold'
                                                     }}
                                                 >
@@ -388,7 +404,7 @@ const TCC = () => {
                 draggable={false}
                 resizable={false}>
                 <p className="m-0">
-                    {tryingToLike ? 'Deseja realizar o login para curtir este TCC?' : 'Deseja realizar o login para favoritar este TCC?'}
+                    {authMessage}
                 </p>
             </Dialog>
         </div>
