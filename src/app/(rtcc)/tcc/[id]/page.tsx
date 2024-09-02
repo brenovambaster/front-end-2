@@ -41,6 +41,18 @@ const TCC = () => {
 
     const handleLikeClick = async () => {
         if (user != null) {
+            if (user.roles.includes('ADMIN') || user.roles.includes('COORDINATOR')) {
+                toast.current?.show({
+                    severity: 'info',
+                    detail: 'Apenas acadêmicos podem curtir TCCs',
+                    style: {
+                        whiteSpace: 'nowrap',
+                        minWidth: '450px'
+                    }
+                });
+                return;
+            }
+
             if (!liked) {
 
                 const response = await UserService.likeTCC(user.id, tcc.id);
@@ -76,6 +88,18 @@ const TCC = () => {
     const handleFavoriteClick = async () => {
         if (user != null) {
             try {
+
+                if (user.roles.includes('ADMIN') || user.roles.includes('COORDINATOR')) {
+                    toast.current?.show({
+                        severity: 'info',
+                        detail: 'Apenas acadêmicos podem favoritar TCCs',
+                        style: {
+                            whiteSpace: 'nowrap',
+                            minWidth: '450px'
+                        }
+                    });
+                    return;
+                }
 
                 if (!favorited) {
 
@@ -158,7 +182,7 @@ const TCC = () => {
         getFavoritedTCCs();
     }, [tcc, user]);
 
-    if (fetchingTCC ) {
+    if (fetchingTCC) {
         return null;
     }
 
