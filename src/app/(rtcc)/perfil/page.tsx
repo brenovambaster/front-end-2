@@ -367,6 +367,7 @@ function Component() {
             setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
         } catch (error) {
             toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
+            return;
         }
 
         toast.current?.show({ severity: 'success', detail: 'TCC removido dos favoritos', life: 5000 });
