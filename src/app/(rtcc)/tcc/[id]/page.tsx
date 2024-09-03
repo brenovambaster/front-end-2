@@ -158,8 +158,12 @@ const TCC = () => {
 
         const getLikedTCCs = async () => {
             try {
-                const likedTCCs = await UserService.getLikedTCCs(user.id);
-                setLiked(likedTCCs.some((tccIt) => tccIt.id === tcc.id));
+                const response = await UserService.checkIfUserLikedTCC(user.id, tcc.id);
+                if (response !== null) {
+                    setLiked(true);
+                } else {
+                    setLiked(false);
+                }
             } catch (error) {
                 console.error("Error fetching liked TCCs:", error);
             } finally {
@@ -169,8 +173,12 @@ const TCC = () => {
 
         const getFavoritedTCCs = async () => {
             try {
-                const favoritedTCCs = await UserService.getFavoritedTCCs(user.id);
-                setFavorited(favoritedTCCs.some((tccIt) => tccIt.id === tcc.id));
+                const response = await UserService.checkIfUserFavoritedTCC(user.id, tcc.id);
+                if (response !== null) {
+                    setFavorited(true);
+                } else {
+                    setFavorited(false);
+                }
             } catch (error) {
                 console.error("Error fetching favorited TCCs:", error);
             } finally {

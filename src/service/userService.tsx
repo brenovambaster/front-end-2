@@ -140,4 +140,24 @@ export class UserService {
             return [];
         }
     }
+
+    static async checkIfUserLikedTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/like/get-liked-tcc`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error checking if user liked TCC:', error);
+            return null;
+        }
+    }
+
+    static async checkIfUserFavoritedTCC(academicId: string, tccId: string) {
+        try {
+            const response = await api.post(`${TCC_BASE_URL}/favorites/get-favorite-tcc`, { academicId, tccId });
+            return response.data;
+        } catch (error) {
+            console.error('Error checking if user favorited TCC:', error);
+            return null;
+        }
+    }
 }
