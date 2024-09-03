@@ -57,12 +57,14 @@ export default function BasicDemo() {
 
     const handleLogout = () => {
         try {
-          destroyCookie(null, 'rtcc.token');
-          window.location.href = '/';
+            for (let i = 0; i < 5; i++) {
+                destroyCookie(null, 'rtcc.token');
+            }
+            window.location.href = '/';
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      };
+    };
 
     const end = (
         <div className="flex items-center gap-2 pr-3">

@@ -40,6 +40,7 @@ export default function Component() {
 
     useEffect(() => {
         CursoService.getCursos().then((data) => setCourses(data));
+
         ProfessorService.getProfessors().then((data) => setProfessors(data));
 
         const fetchTCCs = async () => {

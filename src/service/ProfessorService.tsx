@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ProfessorResponseDTO, ProfessorRequestDTO } from '../types';
 import { api } from '../service/api';
 
