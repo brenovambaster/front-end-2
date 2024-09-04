@@ -6,6 +6,7 @@ import { CursoService } from '@/service/cursoService';
 import { UserService } from '@/service/userService';
 import { CoordinatorRequestDTO, UserRequestDTO, UserResponseDTO, UserUpdatePasswordRequestDTO } from '@/types';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
@@ -16,7 +17,9 @@ import { InputText } from 'primereact/inputtext';
 import { TabPanel, TabView } from 'primereact/tabview';
 import { Toast } from 'primereact/toast';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineFileSearch } from 'react-icons/ai';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FiTrash2 } from 'react-icons/fi';
 
 const tccs = [
     { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina"] },
@@ -33,17 +36,20 @@ const tccs = [
 
 function Component() {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 9; // 4 TCCs por página
-    const totalPages = Math.ceil(tccs.length / itemsPerPage);
+    const itemsPerPage = 8; // 4 TCCs por página
+    const [totalPages, setTotalPages] = useState(0);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentTCCs = tccs.slice(startIndex, endIndex);
 
     const [visible, setVisible] = useState(false);
+    const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+    const [tccIdToDelete, setTccIdToDelete] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
 
     const [submitted, setSubmitted] = useState(false);
+    const [hoveredTCCId, setHoveredTCCId] = useState('');
 
     const emptyUser: UserResponseDTO = {
         id: '',
@@ -65,6 +71,7 @@ function Component() {
     const [isReady, setIsReady] = useState(false);
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState('');
+    const [favoriteTCCs, setFavoriteTCCs] = useState<number[]>([]);
     const [passwordErrors, setPasswordErrors] = useState({
         currentPassword: '',
         password: '',
@@ -98,17 +105,24 @@ function Component() {
                 setCourses(transformedCourses);
 
                 let userData = null;
-                
                 if (!isAuthenticated) {
                     router.push('/nao-encontrado');
                     return;
                 }
 
                 if (getUserRole().trim() == 'Coordenador') {
+
                     userData = await CoordenadorService.getCoordenador(userContext.id);
                 } else if (getUserRole().trim() == 'Acadêmico') {
 
                     userData = await UserService.getUser(userContext.id);
+
+                    const favorites = await UserService.getFavoritedTCCs(userContext.id);
+
+                    if (favorites) {
+                        setFavoriteTCCs(favorites);
+                        setTotalPages(Math.ceil(favorites.length / itemsPerPage));
+                    }
 
                 } else if (getUserRole().trim() == 'Administrador') {
                     const emptyUser: UserResponseDTO = {
@@ -219,6 +233,11 @@ function Component() {
         if (password && confirmPassword && password !== confirmPassword) {
             newErrors.confirmPassword = 'As senhas não conferem.';
         }
+
+        if (password.length > 0 && password.length < 8) newErrors.password = 'A senha deve ter no mínimo 8 caracteres.';
+
+        if ((confirmPassword.length > 0 && confirmPassword.length < 8) && !(password && confirmPassword && password !== confirmPassword)) newErrors.confirmPassword = 'A senha deve ter no mínimo 8 caracteres.';
+
 
         setPasswordErrors(newErrors);
         return Object.values(newErrors).every(error => error === '');
@@ -336,6 +355,61 @@ function Component() {
         }
     }
 
+    const handleRemoveFavorite = async (id) => {
+
+        try {
+            const response = await UserService.unfavoriteTCCProfile(user.id, id);
+            if (response.status !== 200) {
+                toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
+                return;
+            }
+
+            setFavoriteTCCs((prevTCCs) => prevTCCs.filter((tcc) => tcc.id !== id));
+        } catch (error) {
+            toast.current?.show({ severity: 'error', detail: 'Erro ao remover favorito', life: 5000 });
+            return;
+        }
+
+        toast.current?.show({ severity: 'success', detail: 'TCC removido dos favoritos', life: 5000 });
+    };
+
+    const handleCardClick = (tccId: string) => {
+        const url = `/tcc/${tccId}`;
+        window.open(url, '_blank');
+    };
+
+    const footerContent = (
+        <div>
+            <Button
+                label="Não"
+                icon="pi pi-times"
+                onClick={
+                    () => {
+                        setConfirmDeleteModalVisible(false);
+                    }
+                }
+                className="p-button-text"
+                style={{ color: '#2b2d39' }}
+            />
+
+            <Button
+                label="Sim"
+                icon="pi pi-check"
+                onClick={
+                    () => {
+                        setConfirmDeleteModalVisible(false);
+                        handleRemoveFavorite(tccIdToDelete);
+                    }
+                }
+                autoFocus
+                style={{
+                    backgroundColor: '#2b2d39',
+                    border: 'none',
+                    boxShadow: 'none'
+                }} />
+        </div>
+    );
+
     return (
         <div className="mx-auto p-4 text-gray-800 mt-4" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
             {/* primeiro container */}
@@ -377,104 +451,135 @@ function Component() {
                             }}
                         />
 
-                        <div className="flex flex-col items-center mt-6">
+                        <div className="flex flex-col items-center mt-2">
                             <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
                                 <span className="flex items-center">
-                                    <i className="pi pi-heart-fill text-red-500 mr-1"></i>
-                                    <span className="font-bold text-red-500">26</span>
-                                    <span className="text-gray-600 ml-1 text-red-500">Curtidos</span>
-                                </span>
-                                <span className="flex items-center">
                                     <i className="pi pi-star-fill text-yellow-500 mr-1"></i>
-                                    <span className="font-bold text-yellow-500">62</span>
-                                    <span className="text-gray-600 ml-1 text-yellow-500">Favoritos</span>
+                                    <span className="font-bold text-yellow-500 pl-1">{favoriteTCCs.length}</span>
+                                    <span className="text-gray-600 ml-1 text-yellow-500 font-bold pl-1">{favoriteTCCs.length == 1 ? 'Favorito' : 'Favoritos'}</span>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* segundo container */}
                 <div className="lg:w-2/3 mr-8">
-                    <h3 className="text-md font-semibold mb-2">Favoritos</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {currentTCCs.map((tcc) => (
-                            <Card
+                    {favoriteTCCs?.length > 0 ? <h3 className="text-md font-semibold mb-2">Favoritos</h3> : null}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {favoriteTCCs.map((tcc) => (
+                            <div
                                 key={tcc.id}
-                                title={<span style={{ fontSize: '16px', fontWeight: 'strong' }}>{tcc.title}</span>}
-                                className="text-xs font-light border border-gray-400"
+                                className="relative group"
+                                onMouseEnter={() => setHoveredTCCId(tcc.id)}
+                                // onMouseLeave={() => setHoveredTCCId(null)}
                             >
-                                <p className="text-sm font-medium text-gray-600 mb-1">
-                                    {tcc.description}
-                                </p>
-                                <div className="flex flex-wrap gap-0.5">
-                                    {tcc.tags.map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            value={tag}
-                                            className="text-white text-3xs mr-0.5 mt-4"
-                                            style={{ backgroundColor: '#2b2d39' }}
-                                        />
-                                    ))}
+                                <Link href={''} passHref>
+                                    <Card
+                                        title={
+                                            <span style={{ fontSize: '16px', fontWeight: 'bold', lineHeight: '1.6' }}>
+                                                {tcc.title}
+                                            </span>
+                                        }
+                                        className="text-xs font-light border border-gray-400 relative h-full flex flex-col justify-between"
+                                        onClick={() => handleCardClick(tcc.id)}
+                                    >
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-600 mb-1">
+                                                {tcc.author}
+                                            </p>
+                                            <div className="flex flex-wrap gap-0.5">
+                                                {tcc.keywords.map((tag, index) => (
+                                                    <Badge
+                                                        key={index}
+                                                        value={tag.name}
+                                                        className="text-white text-3xs mr-0.5 mt-4"
+                                                        style={{ backgroundColor: '#2b2d39' }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Link>
+                                <div
+                                    className="absolute -top-4 -right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // handleRemoveFavorite(tcc.id);
+                                        setTccIdToDelete(tcc.id);
+                                        setConfirmDeleteModalVisible(true);
+                                    }}
+                                >
+                                    <div className="bg-red-700 text-white rounded-full p-2">
+                                        <FiTrash2 className="text-white text-lg" />
+                                    </div>
                                 </div>
-                            </Card>
+                            </div>
                         ))}
                     </div>
 
-                    {/* terceiro container */}
-                    <div className="flex gap-8 items-center mt-8 justify-center">
-                        <Button
-                            icon="pi pi-chevron-left"
-                            label=""
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                        />
+                    {favoriteTCCs?.length <= 0 ? (
+                        <div className="flex flex-col items-center justify-center mt-44">
+                            <div className="text-gray-400 mb-4">
+                                <AiOutlineFileSearch className="text-gray-500 text-6xl" />
+                            </div>
+                            <p className="text-2xl font-medium text-gray-600">Você ainda não possui TCCs favoritados</p>
+                            <p className="text-base text-gray-500">Comece a explorar e adicione favoritos!</p>
+                        </div>
+                    ) : (
+                        <div className="flex gap-8 items-center mt-8 justify-center">
+                            <Button
+                                icon="pi pi-chevron-left"
+                                label=""
+                                className="p-button-outlined px-2 py-2 text-xs"
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                            />
 
-                        <span className="text-md font-medium text-gray-600">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <Button
-                            icon="pi pi-chevron-right"
-                            label=""
-                            iconPos="right"
-                            className="p-button-outlined px-2 py-2 text-xs"
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            style={{
-                                backgroundColor: '#2b2d39',
-                                borderColor: '#2b2d39',
-                                color: 'white',
-                                transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                                borderWidth: '1px',
-                                borderStyle: 'solid'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#1d1d2c';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2b2d39';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                        />
-                    </div>
+                            <span className="text-md font-medium text-gray-600">
+                                Página {currentPage} de {totalPages}
+                            </span>
+
+                            <Button
+                                icon="pi pi-chevron-right"
+                                label=""
+                                iconPos="right"
+                                className="p-button-outlined px-2 py-2 text-xs"
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                style={{
+                                    backgroundColor: '#2b2d39',
+                                    borderColor: '#2b2d39',
+                                    color: 'white',
+                                    transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#1d1d2c';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2b2d39';
+                                    e.currentTarget.style.color = 'white';
+                                }}
+                            />
+                        </div>)}
                 </div>
 
             </div>
@@ -529,11 +634,6 @@ function Component() {
                                         className="w-full bg-white border border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
                                         value={user?.email}
                                         onChange={(e) => setUser({ ...user, email: e.target.value })}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleSalvarAlteracoes();
-                                            }
-                                        }}
                                         disabled={true}
                                     />
                                 </div>
@@ -710,8 +810,23 @@ function Component() {
                     </TabPanel>
                 </TabView>
             </Dialog>
+            <Dialog
+                header="Remover Favorito"
+                visible={confirmDeleteModalVisible}
+                position='center'
+                style={{ width: '40vw' }}
+                onHide={() => {
+                    if (!confirmDeleteModalVisible) return; setConfirmDeleteModalVisible(false);
+                }}
+                footer={footerContent}
+                draggable={false}
+                resizable={false}>
+                <p className="m-0">
+                    Deseja realmente remover <strong>{favoriteTCCs.find((tcc) => tcc.id === tccIdToDelete)?.title}</strong> dos favoritos?
+                </p>
+            </Dialog>
             <div className="card flex justify-content-center">
-                <Toast ref={toast} position="bottom-right" />
+                <Toast ref={toast}  position="bottom-right"/>
             </div>
         </div>
     );

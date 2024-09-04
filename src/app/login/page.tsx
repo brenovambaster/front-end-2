@@ -60,7 +60,7 @@ function Login() {
             router.push("/");
         } else {
             if (!serverConexionError) {
-                setAuthError("Usuário ou senha incorretos ou e-mail não verificado.");
+                setAuthError("Credenciais incorretas ou e-mail não verificado.");
             } else {
                 toast.current?.show({ severity: 'error', detail: 'Ocorreu um erro ao realizar a operação.', life: 5000 });
             }
@@ -153,7 +153,7 @@ function Login() {
                         {authError && <p className="text-red-500 text-sm mt-2">{authError}</p>}
                         <div className="text-right mt-4">
                             <a
-                                href="#"
+                                href="/recuperar-senha"
                                 className="hover:underline text-sm font-medium"
                                 style={{ color: '#2b2d39' }}
                             >

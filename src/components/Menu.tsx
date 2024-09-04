@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Menubar } from 'primereact/menubar';
-import Image from 'next/image';
-import graduation_cap_image from '../../public/navbar-rtcc-if-logo.png';
-import { Avatar } from 'primereact/avatar';
-import { OverlayPanel } from 'primereact/overlaypanel';
-import { Button } from 'primereact/button';
-import { useContext, useRef } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { destroyCookie } from 'nookies';
+import { Avatar } from 'primereact/avatar';
+import { Button } from 'primereact/button';
+import { Menubar } from 'primereact/menubar';
+import { OverlayPanel } from 'primereact/overlaypanel';
+import { useContext, useEffect, useRef, useState } from 'react';
+import graduation_cap_image from '../../public/navbar-rtcc-if-logo.png';
 
 const style = {
     boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.2)',
@@ -33,6 +33,8 @@ export default function BasicDemo() {
     const op = useRef<OverlayPanel>(null);
     const { isAuthenticated, user } = useContext(AuthContext);
     const [isReady, setIsReady] = useState(false);
+    const router = useRouter();
+
 
     useEffect(() => {
         // Garantindo que todos os estilos sejam carregados antes de exibir a navbar
@@ -52,6 +54,17 @@ export default function BasicDemo() {
     ];
 
     const itemsUser = [];
+
+    const handleLogout = () => {
+        try {
+            for (let i = 0; i < 5; i++) {
+                destroyCookie(null, 'rtcc.token');
+            }
+            window.location.href = '/';
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const end = (
         <div className="flex items-center gap-2 pr-3">
@@ -105,12 +118,7 @@ export default function BasicDemo() {
                                 />
 
 
-                                <Button label="Logout" icon="pi pi-sign-out" onClick={() => {
-                                    if (isAuthenticated) {
-                                        destroyCookie(null, 'rtcc.token');
-                                        window.location.href = '/';
-                                    }
-                                }} className="p-button-text p-button-plain border border-transparent hover:border-[#2b2d39] focus:border-[#2b2d39] p-2 mt-2"
+                                <Button label="Logout" icon="pi pi-sign-out" onClick={handleLogout} className="p-button-text p-button-plain border border-transparent hover:border-[#2b2d39] focus:border-[#2b2d39] p-2 mt-2"
                                     style={{
                                         backgroundColor: 'white',
                                         color: '#2b2d39',

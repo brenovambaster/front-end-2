@@ -6,6 +6,7 @@ import { api } from '../service/api';
 const BASE_URL = 'http://localhost:8080/tcc';
 
 export class TCCService {
+    
 
     static async searchTCCs(query: string): Promise<TCCResponseDTO[]> {
         try {
@@ -26,6 +27,15 @@ export class TCCService {
         }
     }
 
+    static async getTCC(id: string): Promise<TCCResponseDTO> {
+        try {
+            const response = await api.get<TCCResponseDTO>(`${BASE_URL}/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching TCC:', error);
+            throw new Error('Erro ao buscar TCC: ' + error.message);
+        }
+    }
 
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {

@@ -16,6 +16,9 @@ import { useEffect, useRef, useState } from 'react';
 import InputMask from 'react-input-mask';
 
 export default function Component() {
+
+    const BASE_URL = 'http://localhost:3000/tcc';
+
     const [TCCs, setTCCs] = useState<any[]>([]);
     const [allTCCs, setAllTCCs] = useState<any[]>([]);
     const [first, setFirst] = useState<number>(0);
@@ -37,6 +40,7 @@ export default function Component() {
 
     useEffect(() => {
         CursoService.getCursos().then((data) => setCourses(data));
+
         ProfessorService.getProfessors().then((data) => setProfessors(data));
 
         const fetchTCCs = async () => {
@@ -483,11 +487,10 @@ export default function Component() {
                             style={{ minWidth: '200px', textAlign: 'left', paddingLeft: '8px', paddingRight: '8px' }}
                             body={(rowData) => (
                                 <a
-                                    href={`http://localhost:3000/tcc/${rowData.id}`}
+                                    href={BASE_URL + '/' + rowData.id}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-black hover:underline"
-                                    style={{ textDecoration: 'none' }}
                                 >
                                     {rowData.title}
                                 </a>
