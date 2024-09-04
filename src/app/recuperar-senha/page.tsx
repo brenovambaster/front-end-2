@@ -7,6 +7,7 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { useContext, useEffect, useRef, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 
 function RecuperarSenha() {
     const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ function RecuperarSenha() {
     const toast = useRef<Toast>(null);
     const [isReady, setIsReady] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
@@ -31,28 +33,36 @@ function RecuperarSenha() {
         return emailRegex.test(email);
     };
 
-    const handleSignIn = async () => {
+    const handlePasswordRecover = async () => {
         setEmailError("");
-
+        setLoading(true); 
+    
         if (!email) {
-            if (!email) setEmailError("Campo obrigatório.");
+            setLoading(false); 
+            setEmailError("Campo obrigatório.");
             return;
         }
-
+    
         if (!validateEmail(email)) {
+            setLoading(false);
             setEmailError('São permitidos apenas @aluno.ifnmg.edu.br ou @ifnmg.edu.br');
             return;
         }
-
-        const statusResponse = await UserService.recoverPassword(email.trim())
         
-        if(statusResponse == 200) {
-            setVisible(true);
-        } else if(statusResponse == 400) {
-            setEmailError("E-mail não cadastrado.");
-        }else if(statusResponse == undefined) {
+        try {
+            const statusResponse = await UserService.recoverPassword(email.trim());
+            
+            if (statusResponse == 200) {
+                setVisible(true);
+            } else if (statusResponse == 400) {
+                setEmailError("E-mail não cadastrado.");
+            } else {
+                toast.current?.show({ severity: "error", summary: "Erro", detail: "Ocorreu um erro durante a operação." });
+            }
+        } catch (error) {
             toast.current?.show({ severity: "error", summary: "Erro", detail: "Ocorreu um erro durante a operação." });
-
+        } finally {
+            setLoading(false); // Desativa a animação após a resposta ou erro
         }
     };
 
@@ -60,7 +70,12 @@ function RecuperarSenha() {
     return (
 
         <div className="flex h-screen justify-center items-center bg-gray-100" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-
+            {loading && (
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col justify-center items-center z-50">
+                <AiOutlineLoading className="text-white text-5xl animate-spin" />
+                <p className="mt-5 text-white text-lg">Enviando o e-mail. Por favor, aguarde...</p>
+            </div>
+        )}
             <div className="w-full max-w-2xl border border-gray-300 rounded-lg p-8 bg-white" style={{ boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)" }}>
                 <div className="text-center mb-4">
                     <a href="/">
@@ -95,7 +110,7 @@ function RecuperarSenha() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
-                                        handleSignIn();
+                                        handlePasswordRecover();
                                     }
                                 }}
                             />
@@ -105,7 +120,7 @@ function RecuperarSenha() {
                     <div>
                         <Button
                             type="button"
-                            onClick={handleSignIn}
+                            onClick={handlePasswordRecover}
                             label="Enviar Nova Senha"
                             className="w-full text-white font-semibold py-2 rounded-md hover:bg-gray-800 transition duration-300 mt-6"
                             style={{
