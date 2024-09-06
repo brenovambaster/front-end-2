@@ -57,12 +57,10 @@ export default function BasicDemo() {
 
     const handleLogout = () => {
         try {
-            for (let i = 0; i < 5; i++) {
-                destroyCookie(null, 'rtcc.token');
-            }
+            destroyCookie(null, 'rtcc.token', { path: '/' });
             window.location.href = '/';
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao tentar destruir o cookie:', error);
         }
     };
 

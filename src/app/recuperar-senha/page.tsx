@@ -62,7 +62,7 @@ function RecuperarSenha() {
         } catch (error) {
             toast.current?.show({ severity: "error", summary: "Erro", detail: "Ocorreu um erro durante a operação." });
         } finally {
-            setLoading(false); // Desativa a animação após a resposta ou erro
+            setLoading(false); 
         }
     };
 
