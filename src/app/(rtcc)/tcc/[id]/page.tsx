@@ -362,7 +362,7 @@ const TCC = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        color: (liked && numLikes > 0) ? 'red' : 'gray',
+                                                        color: (liked && numLikes > 0) ? '#ff3040' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
                                                         paddingBottom: '0',
 
@@ -375,7 +375,7 @@ const TCC = () => {
                                                 <span
                                                     style={{
                                                         fontSize: '14px',
-                                                        color: (liked && numLikes > 0) ? 'red' : 'gray',
+                                                        color: (liked && numLikes > 0) ? '#ff3040' : 'gray',
                                                         marginTop: '0',
                                                         fontWeight: 'bold'
 
@@ -395,7 +395,7 @@ const TCC = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        color: (favorited && numFavorites > 0) ? '#f59e0b' : 'gray',
+                                                        color: (favorited && numFavorites > 0) ? '#ffc83d' : 'gray',
                                                         transition: 'color 0.2s ease-in-out',
                                                         paddingBottom: '0',
                                                     }}
@@ -406,7 +406,7 @@ const TCC = () => {
                                                 <span
                                                     style={{
                                                         fontSize: '14px',
-                                                        color: (favorited && numFavorites > 0) ? '#f59e0b' : 'gray',
+                                                        color: (favorited && numFavorites > 0) ? '#ffc83d' : 'gray',
                                                         marginTop: '0',
                                                         fontWeight: 'bold'
                                                     }}
