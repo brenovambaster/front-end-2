@@ -45,15 +45,19 @@ export default function BasicDemo() {
         { label: 'Coordenadores', url: '/gerenciar/coordenador', icon: 'pi pi-user-edit', className: 'text-xs' },
         { label: 'Cursos', url: '/gerenciar/curso', icon: 'pi pi-book', className: 'text-xs' },
         { label: 'Professores', url: '/gerenciar/professor', icon: 'pi pi-users', className: 'text-xs' },
-        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' }
+        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' },
+        { label: 'Trending Topics', url: '/trending-topics', icon: 'pi pi-chart-bar', className: 'text-xs' }
     ];
 
     const itemsCoordinator = [
         { label: 'Professores', url: '/gerenciar/professor', icon: 'pi pi-users', className: 'text-xs' },
-        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' }
+        { label: 'TCCs', url: '/gerenciar/tcc', icon: 'pi pi-file-edit', className: 'text-xs' },
+        { label: 'Trending Topics', url: '/trending-topics', icon: 'pi pi-chart-bar', className: 'text-xs' }
     ];
 
-    const itemsUser = [];
+    const itemsUser = [
+        { label: 'Trending Topics', url: '/trending-topics', icon: 'pi pi-chart-bar', className: 'text-xs' }
+    ];
 
     const handleLogout = () => {
         try {
@@ -141,15 +145,14 @@ export default function BasicDemo() {
 
 
     const renderMenubar = () => {
-
         if (user?.roles.includes('ADMIN')) {
             return <Menubar className='' model={itemsAdmin} start={<Logo />} style={style} end={end} />;
         } else if (user?.roles.includes('COORDINATOR')) {
             return <Menubar className='' model={itemsCoordinator} start={<Logo />} style={style} end={end} />;
-        } else if (user?.roles.includes('USER')) {
-            return <Menubar className='' start={<Logo />} style={style} end={end} />;
+        } else if (user?.roles.includes('ACADEMIC')) {
+            return <Menubar className='' model={itemsUser} start={<Logo />} style={style} end={end} />;
         }
-        return <Menubar className='' model={[]} start={<Logo />} style={style} end={end} />;
+        return <Menubar className='' model={itemsUser} start={<Logo />} style={style} end={end} />;
     };
 
     return (
