@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Text } from '@visx/text';
 import { scaleLog } from '@visx/scale';
 import Wordcloud from '@visx/wordcloud/lib/Wordcloud';
-import { totoAfricaLyrics } from './text.fixture';
 
-interface ExampleProps {
+interface WordCloudProps {
     width: number;
     height: number;
     showControls?: boolean;
@@ -21,7 +20,7 @@ const colors = ['#20222c', '#474b5f', '#646985', '#cc9747'];
 
 type SpiralType = 'archimedean' | 'rectangular';
 
-export default function Example({ width, height, showControls, keywordsText }: ExampleProps) {
+export default function WordCloud({ width, height, showControls, keywordsText }: WordCloudProps) {
     const [spiralType, setSpiralType] = useState<SpiralType>('archimedean');
     const [withRotation, setWithRotation] = useState(false);
 
