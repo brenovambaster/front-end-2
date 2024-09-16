@@ -21,18 +21,7 @@ import { AiOutlineFileSearch } from 'react-icons/ai';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FiTrash2 } from 'react-icons/fi';
 
-const tccs = [
-    { id: 1, title: "Inteligência Artificial na Medicina", description: "James Thompson Dijkstra", tags: ["IA", "Medicina", "Bioinformática", "Medicina"] },
-    { id: 2, title: "Blockchain em Sistemas de Votação", description: "James Thompson Dijkstra", tags: ["Blockchain", "Segurança"] },
-    { id: 3, title: "Realidade Aumentada na Educação", description: "James Thompson Dijkstra", tags: ["AR", "Educação"] },
-    { id: 4, title: "Análise de Sentimentos em Redes Sociais", description: "James Thompson Dijkstra", tags: ["NLP", "Redes Sociais"] },
-    { id: 5, title: "IoT na Agricultura de Precisão", description: "James Thompson Dijkstra", tags: ["IoT", "Agricultura"] },
-    { id: 6, title: "Cibersegurança em Sistemas Críticos", description: "James Thompson Dijkstra", tags: ["Cibersegurança"] },
-    { id: 7, title: "Computação Quântica: Algoritmos e Aplicações", description: "James Thompson Dijkstra", tags: ["Computação Quântica"] },
-    { id: 8, title: "Veículos Autônomos e Ética", description: "James Thompson Dijkstra", tags: ["IA", "Ética"] },
-    { id: 9, title: "Big Data na Previsão do Tempo", description: "James Thompson Dijkstra", tags: ["Big Data", "Meteorologia"] },
-    { id: 10, title: "Bioinformática e Sequenciamento de DNA", description: "James Thompson Dijkstra", tags: ["Bioinformática", "Genética"] },
-]
+
 
 function Component() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +30,6 @@ function Component() {
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentTCCs = tccs.slice(startIndex, endIndex);
 
     const [visible, setVisible] = useState(false);
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
