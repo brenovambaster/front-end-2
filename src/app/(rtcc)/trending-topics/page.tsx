@@ -35,8 +35,8 @@ export default function Component() {
                     error = true;
                 }
 
-                const mostLikedTCCsResponse = await TCCService.getTCCs();
-                const mostFavoritedTCCsResponse = await TCCService.getTCCs();
+                const mostLikedTCCsResponse = await TCCService.getMostLikedTCCs();
+                const mostFavoritedTCCsResponse = await TCCService.getMostFavoritedTCCs();
 
                 setKeywordsText(allTCCsResponse.map((tcc) => tcc.keywords.map((keyword) => keyword.name).join('|')).join('|'));
 

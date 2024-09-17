@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { FilterTCCRequestDTO, TCCRequestDTO, TCCResponseDTO } from '../types';
 import { api } from '../service/api';
+import { get } from 'http';
 
 
 const BASE_URL = 'http://localhost:8080/tcc';
@@ -40,6 +41,26 @@ export class TCCService {
     static async getTCCs(): Promise<TCCResponseDTO[]> {
         try {
             const response = await api.get<TCCResponseDTO[]>(BASE_URL);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching TCCs:', error);
+            return [];
+        }
+    }
+
+    static async getMostLikedTCCs(): Promise<TCCResponseDTO[]> {
+        try {
+            const response = await api.get<TCCResponseDTO[]>(BASE_URL + '/like/most-liked');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching TCCs:', error);
+            return [];
+        }
+    }
+
+    static async getMostFavoritedTCCs(): Promise<TCCResponseDTO[]> {
+        try {
+            const response = await api.get<TCCResponseDTO[]>(BASE_URL + '/favorite/most-favorited');
             return response.data;
         } catch (error) {
             console.error('Error fetching TCCs:', error);
