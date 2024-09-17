@@ -86,17 +86,30 @@ export default function TCCManagement() {
     };
 
     const addKeyword = (keyword) => {
-        if (keyword && !TCC.keywords.some((k) => k.name === keyword)) {
+        if (keyword) {
+            const keywordsArray = keyword.split(',').map((k) => k.trim()).filter(k => k !== "");
+    
+            const newKeywords = [...TCC.keywords];
+    
+            keywordsArray.forEach((newKeyword) => {
+                if (!newKeywords.some((k) => k.name === newKeyword)) {
+                    newKeywords.push({ name: newKeyword });
+                }
+            });
+    
             setTCC({
                 ...TCC,
-                keywords: [...TCC.keywords, { name: keyword }]
+                keywords: newKeywords
             });
         }
+    
         setCurrentKeyword("");
+    
         if (autoCompleteRef.current) {
             autoCompleteRef.current.hide();
         }
     };
+    
 
 
     const handleSelect = (e) => {
